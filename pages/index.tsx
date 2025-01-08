@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
-const socket: Socket = io(); // Connects to the Socket.IO server (API route)
+const socket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000"); // Use environment variable or localhost
 
 const Home = () => {
     const [messages, setMessages] = useState<string[]>([]);
