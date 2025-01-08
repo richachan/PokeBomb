@@ -1,46 +1,36 @@
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
-const socket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000"); // Use environment variable or localhost
+const socket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000/api/socket"); // Use the environment variable or localhost for local development
 
 const Home = () => {
     const [messages, setMessages] = useState<string[]>([]);
     const [inputValue, setInputValue] = useState<string>("");
 
     useEffect(() => {
-        // Listen for incoming messages
+        console.log("Connecting to server...");
         socket.on("message", (text: string) => {
-            setMessages((prev) => [...prev, text]); // Append the new message
+            setMessages((prev) => [...prev, text]);
         });
 
         return () => {
-            socket.off("message"); // Cleanup the event listener on unmount
+            socket.off("message");
         };
     }, []);
 
     const sendMessage = () => {
         if (inputValue.trim()) {
-            socket.emit("message", inputValue); // Emit the message to the server
-            setInputValue(""); // Clear the input field
+            socket.emit("message", inputValue);
+            setInputValue("");
         }
     };
 
     return (
-        <div
-            style={{
-                backgroundColor: "#f5f5f5",
-                color: "#333",
-                minHeight: "100vh",
-                padding: "20px",
-                fontFamily: "Arial, sans-serif",
-            }}
-        >
+        <div>
             <h1>Real-Time Chat</h1>
-            <ul style={{ listStyleType: "none", padding: 0 }}>
+            <ul>
                 {messages.map((msg, index) => (
-                    <li key={index} style={{ marginBottom: "10px" }}>
-                        {msg}
-                    </li>
+                    <li key={index}>{msg}</li>
                 ))}
             </ul>
             <input
@@ -48,28 +38,8 @@ const Home = () => {
                 placeholder="Type your message"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                style={{
-                    padding: "10px",
-                    fontSize: "16px",
-                    marginRight: "10px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                }}
             />
-            <button
-                onClick={sendMessage}
-                style={{
-                    padding: "10px 20px",
-                    fontSize: "16px",
-                    backgroundColor: "#007bff",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                }}
-            >
-                Send
-            </button>
+            <button onClick={sendMessage}>Send</button>
         </div>
     );
 };
