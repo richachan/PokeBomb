@@ -1,41 +1,55 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { Server } from "socket.io";
+// pages/api/socket.ts
 
+import type { NextApiRequest, NextApiResponse } from 'next';
+import type { Server as HTTPServer } from 'http';
+import type { Socket } from 'net';
+import { Server } from 'socket.io';
+
+/** 
+ * Extend Next.js' default NextApiResponse to include 
+ * a Socket.IO server instance on res.socket.server.io
+ */
 type NextApiResponseServerIO = NextApiResponse & {
-    socket: {
-        server: {
-            io?: Server;
-        };
+  socket: Socket & {
+    server: HTTPServer & {
+      io?: Server;
     };
+  };
 };
 
-export default function handler(req: NextApiRequest, res: NextApiResponseServerIO) {
-    if (!res.socket.server.io) {
-        console.log("Initializing Socket.IO...");
+export default function handler(
+  req: NextApiRequest,
+  res: NextApiResponseServerIO
+) {
+  // If Socket.IO server is not set up yet, set it up
+  if (!res.socket.server.io) {
+    console.log('Initializing new Socket.IO server...');
+    
+    const io = new Server(res.socket.server, {
+      path: '/api/socket_io', // optional path
+      cors: {
+        origin: '*',
+      },
+    });
 
-        const io = new Server(res.socket.server as any, {
-            cors: {
-                origin: "*", // Allow all origins
-                methods: ["GET", "POST"],
-            },
-        });
+    io.on('connection', (socket) => {
+      console.log('A client connected:', socket.id);
 
-        res.socket.server.io = io;
+      socket.on('message', (msg) => {
+        io.emit('message', msg);
+      });
 
-        io.on("connection", (socket) => {
-            console.log("A user connected:", socket.id);
+      socket.on('disconnect', () => {
+        console.log('Client disconnected:', socket.id);
+      });
+    });
 
-            // Handle incoming messages
-            socket.on("message", (message: string) => {
-                console.log(`Message received: ${message}`);
-                io.emit("message", `${socket.id.substring(0, 5)}: ${message}`);
-            });
+    // Attach the Socket.IO server to the Next.js socket server
+    res.socket.server.io = io;
+  } else {
+    console.log('Socket.IO server already running');
+  }
 
-            socket.on("disconnect", () => {
-                console.log("A user disconnected:", socket.id);
-            });
-        });
-    }
-
-    res.end();
+  // We must end the response so Next.js can finish the API route
+  res.end();
 }
