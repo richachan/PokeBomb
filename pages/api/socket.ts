@@ -14,7 +14,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponseServerI
         console.log("Initializing Socket.IO...");
 
         // Explicitly cast `res.socket.server` to work with Socket.IO
-        const io = new IOServer(res.socket.server as any, {
+        const io = new Server(res.socket.server as any, {
             cors: {
                 origin: "*", // Allow all origins (adjust as needed)
                 methods: ["GET", "POST"],
