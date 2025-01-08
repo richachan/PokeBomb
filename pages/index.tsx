@@ -1,20 +1,19 @@
-import React, { JSX, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-// Initialize the socket connection
-const socket: Socket = io('ws://localhost:8080');
+const socket: Socket = io('ws://localhost:8080'); // Replace with your server URL if different
 
-const Home: React.FC = (): JSX.Element => {
+const Home = () => {
     const [messages, setMessages] = useState<string[]>([]);
-    const [inputValue, setInputValue] = useState('');
+    const [inputValue, setInputValue] = useState<string>('');
 
     useEffect(() => {
-        // Listen for incoming messages
+        // Listen for messages from the server
         socket.on('message', (text: string) => {
             setMessages((prev) => [...prev, text]);
         });
 
-        // Cleanup the event listener on component unmount
+        // Cleanup the socket connection
         return () => {
             socket.off('message');
         };
@@ -22,49 +21,32 @@ const Home: React.FC = (): JSX.Element => {
 
     const sendMessage = () => {
         if (inputValue.trim()) {
-            socket.emit('message', inputValue);
+            socket.emit('message', inputValue); // Emit the input value to the server
             setInputValue(''); // Clear the input field after sending
         }
     };
 
     return (
-        <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-            <h1>Real-Time Chat</h1>
-            <ul style={{ listStyleType: 'none', padding: 0 }}>
-                {messages.map((msg, index) => (
-                    <li key={index} style={{ marginBottom: '10px' }}>
-                        {msg}
-                    </li>
-                ))}
-            </ul>
-            <input
-                type="text"
-                placeholder="Type a message"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                style={{
-                    padding: '10px',
-                    fontSize: '16px',
-                    marginRight: '10px',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px',
-                }}
-            />
-            <button
-                onClick={sendMessage}
-                style={{
-                    padding: '10px 20px',
-                    fontSize: '16px',
-                    backgroundColor: '#007bff',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                }}
-            >
-                Send
-            </button>
-        </div>
+        <>
+            <head>
+                <meta charSet="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>Document</title>
+            </head>
+            <body>
+                <ul>
+                    {messages.map((msg, index) => (
+                        <li key={index}>{msg}</li>
+                    ))}
+                </ul>
+                <input
+                    placeholder="message"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                />
+                <button onClick={sendMessage}>Send</button>
+            </body>
+        </>
     );
 };
 
