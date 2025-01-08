@@ -1,6 +1,14 @@
+import type { NextApiRequest, NextApiResponse } from "next";
 import { Server } from "socket.io";
-import { NextApiRequest } from "next";
-import { NextApiResponseServerIO } from "@/types/next"; // Custom type
+
+type NextApiResponseServerIO = NextApiResponse & {
+  socket: {
+    server: {
+      io: Server
+    }
+  }
+};
+
 
 export default function handler(req: NextApiRequest, res: NextApiResponseServerIO) {
     if (!res.socket.server.io) {
