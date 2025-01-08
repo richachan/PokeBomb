@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
-const socket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000/api/socket"); // Use the environment variable or localhost for local development
+const socket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:10000"); // Use the URL set in Render or localhost for local dev
 
 const Home = () => {
     const [messages, setMessages] = useState<string[]>([]);
     const [inputValue, setInputValue] = useState<string>("");
 
     useEffect(() => {
-        console.log("Connecting to server...");
         socket.on("message", (text: string) => {
             setMessages((prev) => [...prev, text]);
         });

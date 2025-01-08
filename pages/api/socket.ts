@@ -4,19 +4,18 @@ import { Server } from "socket.io";
 type NextApiResponseServerIO = NextApiResponse & {
     socket: {
         server: {
-            io: Server;
+            io?: Server;
         };
     };
 };
 
 export default function handler(req: NextApiRequest, res: NextApiResponseServerIO) {
-    // Check if Socket.IO is already initialized
     if (!res.socket.server.io) {
         console.log("Initializing Socket.IO...");
 
         const io = new Server(res.socket.server as any, {
             cors: {
-                origin: "*", // Allow all origins for simplicity
+                origin: "*", // Allow all origins
                 methods: ["GET", "POST"],
             },
         });
@@ -29,7 +28,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponseServerI
             // Handle incoming messages
             socket.on("message", (message: string) => {
                 console.log(`Message received: ${message}`);
-                io.emit("message", `${socket.id.substring(0, 5)}: ${message}`); // Broadcast to all clients
+                io.emit("message", `${socket.id.substring(0, 5)}: ${message}`);
             });
 
             socket.on("disconnect", () => {
@@ -38,5 +37,5 @@ export default function handler(req: NextApiRequest, res: NextApiResponseServerI
         });
     }
 
-    res.end(); // End the response
+    res.end();
 }
