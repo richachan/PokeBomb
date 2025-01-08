@@ -9,12 +9,18 @@ type NextApiResponseServerIO = NextApiResponse & {
   }
 };
 
-
 export default function handler(req: NextApiRequest, res: NextApiResponseServerIO) {
     if (!res.socket.server.io) {
         console.log("Initializing Socket.IO...");
 
-        const io = new Server(res.socket.server);
+        // Explicitly cast `res.socket.server` to work with Socket.IO
+        const io = new IOServer(res.socket.server as any, {
+            cors: {
+                origin: "*", // Allow all origins (adjust as needed)
+                methods: ["GET", "POST"],
+            },
+        });
+
         res.socket.server.io = io;
 
         io.on("connection", (socket) => {
