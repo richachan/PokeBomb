@@ -1,21 +1,21 @@
-// pages/index.tsx
-
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
-type Message = { user: string; text: string };
+type displayMessage = { user: string; text: string };
 
 export default function Home() {
-  const router = useRouter
+  const router = useRouter();
+  const { query } = router;
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<string[]>([]);
+  const [user, setUser] = useState<string>('');
 
   useEffect(() => {
 
-
-    
+    const username = query.username as string;
+    setUser(username);
 
     // Ensure the server side is initialized
     fetch('/api/socket').catch((err) => console.error(err));
@@ -28,8 +28,9 @@ export default function Home() {
         console.log('Connected:', socket?.id);
       });
 
-      socket.on('message', (msg: string) => {
-        setMessages((prev) => [...prev, msg]);
+      socket.on('message', (msg: displayMessage) => {
+        const strMsg = `${msg.user}: ${msg.text}`;
+        setMessages((prev) => [...prev, strMsg]);
       });
     }
 
@@ -38,12 +39,14 @@ export default function Home() {
       socket?.disconnect();
       socket = null;
     };
-  }, []);
+  }, [router.query]);
 
   const sendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!socket || !message.trim()) return;
-    socket.emit('message', message);
+    if (!socket || !message.trim() || !user.trim()) return;
+
+    const userMsg = { user: user, text: message }; // user + message in one constant
+    socket.emit('message', userMsg);
     setMessage('');
   };
 
@@ -51,8 +54,8 @@ export default function Home() {
     <div style={{ margin: '40px auto', maxWidth: 600 }}>
       <h1>Next.js + Socket.IO Chat</h1>
       <div style={{ border: '1px solid #ccc', padding: 10, minHeight: 200 }}>
-        {messages.map((msg, i) => (
-          <div key={i}>{msg}</div>
+        {messages.map((userMsg, i) => (
+          <div key={i}>{userMsg}</div>
         ))}
       </div>
 
