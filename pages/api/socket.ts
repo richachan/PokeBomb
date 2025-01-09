@@ -36,7 +36,7 @@ export default function handler(
       console.log('A client connected:', socket.id);
 
       socket.on('message', (msg) => {
-        io.emit('message', msg);
+        io.emit('message', {userId: socket.id, message: msg});
       });
 
       socket.on('disconnect', () => {
