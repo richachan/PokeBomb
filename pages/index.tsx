@@ -8,9 +8,7 @@ export default function UserPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim()) return;
-
-    const uniqueID = uniqueCode();
-    router.push(`/room?username=${encodeURIComponent(username)}&id=${uniqueID}`);
+    router.push(`/room?username=${encodeURIComponent(username)}`);
   };
 
   return (
