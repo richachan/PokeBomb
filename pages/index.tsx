@@ -1,62 +1,31 @@
-// pages/index.tsx
+// pages/user.tsx
 
-import React, { useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 
-let socket: Socket | null = null;
+export default function UserPage() {
+  const [username, setUsername] = useState('');
+  const router = useRouter();
 
-export default function Home() {
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<string[]>([]);
-
-  useEffect(() => {
-    // Ensure the server side is initialized
-    fetch('/api/socket').catch((err) => console.error(err));
-
-    // Connect the client socket if not already connected
-    if (!socket) {
-      socket = io({ path: '/api/socket_io' });
-
-      socket.on('connect', () => {
-        console.log('Connected:', socket?.id);
-      });
-
-      socket.on('message', (msg: string) => {
-        setMessages((prev) => [...prev, msg]);
-      });
-    }
-
-    // Cleanup on unmount
-    return () => {
-      socket?.disconnect();
-      socket = null;
-    };
-  }, []);
-
-  const sendMessage = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!socket || !message.trim()) return;
-    socket.emit('message', message);
-    setMessage('');
+    if (!username.trim()) return;
+
+    router.push(`/room?username=${encodeURIComponent(username)}`);
   };
 
   return (
-    <div style={{ margin: '40px auto', maxWidth: 600 }}>
-      <h1>Next.js + Socket.IO Chat</h1>
-      <div style={{ border: '1px solid #ccc', padding: 10, minHeight: 200 }}>
-        {messages.map((msg, i) => (
-          <div key={i}>{msg}</div>
-        ))}
-      </div>
-
-      <form onSubmit={sendMessage} style={{ marginTop: 10 }}>
+    <div style={{ maxWidth: 400, margin: '50px auto' }}>
+      <h1>Enter a Username</h1>
+      <form onSubmit={handleSubmit}>
         <input
-          style={{ width: '75%', marginRight: 10 }}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type a message..."
+          type="text"
+          placeholder="Your name"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          style={{ width: '100%', marginBottom: 10 }}
         />
-        <button type="submit">Send</button>
+        <button type="submit" style={{ width: '100%' }}>Join Chat</button>
       </form>
     </div>
   );
