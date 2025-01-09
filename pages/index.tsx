@@ -3,12 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-interface ChatMessage
-{
-  userId: string;
-  text: string;
-}
-
 let socket: Socket | null = null;
 
 export default function Home() {
