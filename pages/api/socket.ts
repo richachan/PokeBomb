@@ -19,6 +19,13 @@ type NextApiResponseServerIO = NextApiResponse & {
     };
   };
 };
+//mock data for guessing test
+const pokedex = ['bulbasaur', 'charmander', 'squirtle']
+function getPokemon() {
+  return pokedex[Math.floor(Math.random() * pokedex.length)] //returns random pokemon from pokedex list
+}
+
+let currentPoke = getPokemon()
 
 export default function handler(
   req: NextApiRequest,
