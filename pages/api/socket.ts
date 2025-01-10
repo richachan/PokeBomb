@@ -3,10 +3,6 @@ import type { Server as HTTPServer } from 'http';
 import type { Socket } from 'net';
 import { Server } from 'socket.io';
 
-/** 
- * Extend Next.js' default NextApiResponse to include 
- * a Socket.IO server instance on res.socket.server.io
- */
 type NextApiResponseServerIO = NextApiResponse & {
   socket: Socket & {
     server: HTTPServer & {
@@ -14,6 +10,13 @@ type NextApiResponseServerIO = NextApiResponse & {
     };
   };
 };
+//mock data for guessing test
+const pokedex = ['bulbasaur', 'charmander', 'squirtle']
+function getPokemon() {
+  return pokedex[Math.floor(Math.random() * pokedex.length)] //returns random pokemon from pokedex list
+}
+
+let currentPoke = getPokemon()
 
 export default function handler(
   req: NextApiRequest,
