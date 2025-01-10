@@ -7,6 +7,11 @@ import { Server } from 'socket.io';
  * Extend Next.js' default NextApiResponse to include 
  * a Socket.IO server instance on res.socket.server.io
  */
+let userMap = new Map<string,string>()
+let userList = new Array()
+let currTurn:Number
+currTurn = 0
+
 type NextApiResponseServerIO = NextApiResponse & {
   socket: Socket & {
     server: HTTPServer & {
@@ -32,11 +37,15 @@ export default function handler(
 
     io.on('connection', (socket) => {
       console.log('A client connected:', socket.id);
-
+         
       socket.on('message', (msg) => {
         io.emit('message', msg);
       });
-
+      socket.on('register', (userName) => {
+        userList.push(userName);  
+        userMap[userName] = socket.id;
+        console.log(userMap[userList[0]])
+      });
       socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
       });

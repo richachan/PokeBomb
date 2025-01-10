@@ -26,6 +26,9 @@ export default function Home() {
 
       socket.on('connect', () => {
         console.log('Connected:', socket?.id);
+        const msg = {user: username, text:" has connected"};
+        socket.emit('message', msg)
+        socket.emit('register',username)
       });
 
       socket.on('message', (msg: displayMessage) => {
