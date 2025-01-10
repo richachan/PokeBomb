@@ -55,7 +55,7 @@ export default function Home() {
 
   return (
     <div style={{ margin: '40px auto', maxWidth: 600 }}>
-      <h1>Next.js + Socket.IO Chat</h1>
+      <h1>PokeBomb!</h1>
       <div style={{ border: '1px solid #ccc', padding: 10, minHeight: 200 }}>
         {messages.map((userMsg, i) => (
           <div key={i}>{userMsg}</div>
