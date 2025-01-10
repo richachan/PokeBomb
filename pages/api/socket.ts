@@ -64,6 +64,18 @@ export default function handler(
       });
       socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
+        let index = userList.indexOf(socket.id)
+        let msg1 = {user: userMap[socket.id], text:" has disconnected "};
+        io.emit('message', msg1);
+        userList.splice(userList.indexOf(socket.id),1)
+        if(currTurn > index)currTurn--
+        else if ( currTurn == index){
+          currTurn = currTurn % userList.length
+          msg1 = {user: "It is now " + userMap[userList[currTurn]] + "'s turn to guess!", text:""};
+          io.emit('message', msg1); 
+        }
+        
+        
       });
     });
 
