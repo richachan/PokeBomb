@@ -5,7 +5,7 @@ import { Server } from 'socket.io';
 import { matchesGlob } from 'path';
 
 
-let userMap = new Map<string,string>() //username, socket.id
+let userMap = new Map<string,string>() //socket.id, username
 let userList = new Array()            //list of usernames
 let currTurn: number = 0;
 type NextApiResponseServerIO = NextApiResponse & {
@@ -68,14 +68,17 @@ export default function handler(
         let msg1 = {user: userMap[socket.id], text:" has disconnected "};
         io.emit('message', msg1);
         userList.splice(userList.indexOf(socket.id),1)
-        if(currTurn > index)currTurn--
+        userMap.delete(socket.id)
+        for(const key of userMap.keys())
+        {
+          console.log(key)
+        }
+        if(currTurn > index)currTurn--  // 3 
         else if ( currTurn == index){
           currTurn = currTurn % userList.length
           msg1 = {user: "It is now " + userMap[userList[currTurn]] + "'s turn to guess!", text:""};
           io.emit('message', msg1); 
         }
-        
-        
       });
     });
 
