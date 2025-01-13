@@ -37,7 +37,7 @@ export default function Home() {
       });
 
       socket.on('message', (msg: displayMessage) => {
-        const strMsg = `${msg.user}: ${msg.text}`;
+        const strMsg = `${msg.user} ${msg.text}`;
         setMessages((prev) => [...prev, strMsg]);
       });
     
