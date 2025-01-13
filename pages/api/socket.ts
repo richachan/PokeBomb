@@ -97,10 +97,8 @@ export default function handler(
         io.emit('message', msg1);
         userList.splice(userList.indexOf(socket.id),1)
         userMap.delete(socket.id)
-        for(const key of userMap.keys())
-        {
-          console.log(key)
-        }
+        const keysArray = Array.from(userMap.keys());
+        console.log(keysArray); 
         if(currTurn > index)currTurn--  // 3 
         else if ( currTurn == index){
           currTurn = currTurn % userList.length
