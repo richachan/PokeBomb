@@ -76,7 +76,7 @@ export default function Home() {
       {pokemon && (
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
         <h2>Current Pokémon</h2>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '150px', overflow: 'hidden'}}>
           <img src={pokemon.sprite} alt={pokemon.name} style={{ maxWidth: '150px', height: 'auto' }} />
         </div>
       </div>
