@@ -76,7 +76,7 @@ export default function Home() {
       </div>
       )}
 
-      <div style={{ border: '1px solid #ccc', padding: 10, minHeight: 200 }}>
+      <div style={{ border: '1px solid #ccc', padding: 10, height: 200, overflowY: 'auto'}}>
         {messages.map((userMsg, i) => (
           <div key={i}>{userMsg}</div>
         ))}
