@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 
@@ -15,6 +15,7 @@ export default function Home() {
   const [messages, setMessages] = useState<string[]>([]);
   const [user, setUser] = useState<string>('');
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null); // Ref for the bottom of the chatbox
 
   useEffect(() => {
 
@@ -45,6 +46,11 @@ export default function Home() {
         setPokemon({ name, sprite });
       });
     }
+
+    useEffect(() => 
+    {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
 
     // Cleanup on unmount
     return () => {
