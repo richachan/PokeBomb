@@ -16,6 +16,7 @@ type NextApiResponseServerIO = NextApiResponse & {
   };
 };
 //151 pokemon from gen 1 missing mr. mime because he has a space and period in his name
+// farfetch'd also gives faulty gif link because of formatting
 const pokedex = ["bulbasaur", "ivysaur", "venusaur", "charmander", "charmeleon", "charizard", "squirtle", "wartortle", "blastoise",
 "caterpie", "metapod", "butterfree", "weedle", "kakuna", "beedrill", "pidgey", "pidgeotto", "pidgeot",
 "rattata", "raticate", "spearow", "fearow", "ekans", "arbok", "pikachu", "raichu", "sandshrew", "sandslash",
