@@ -47,17 +47,17 @@ export default function Home() {
       });
     }
 
-    useEffect(() => 
-    {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
-
     // Cleanup on unmount
     return () => {
       socket?.disconnect();
       socket = null;
     };
   }, [router.query]);
+
+  useEffect(() => 
+    {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
 
   const sendMessage = (e: React.FormEvent) => {
     e.preventDefault();
