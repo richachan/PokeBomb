@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
+
 let socket: Socket | null = null;
 
 type displayMessage = { user: string; text: string };
@@ -67,10 +68,12 @@ export default function Home() {
 
   
       {pokemon && (
-        <div style={{ textAlign: 'center', marginBottom: 20 }}>
-          <h2>Current Pokémon</h2>
-          <img src={pokemon.sprite} alt={pokemon.name} />
+      <div style={{ textAlign: 'center', marginBottom: 20 }}>
+        <h2>Current Pokémon</h2>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <img src={pokemon.sprite} alt={pokemon.name} style={{ maxWidth: '150px', height: 'auto' }} />
         </div>
+      </div>
       )}
 
       <div style={{ border: '1px solid #ccc', padding: 10, minHeight: 200 }}>
