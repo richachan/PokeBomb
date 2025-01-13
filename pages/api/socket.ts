@@ -15,13 +15,33 @@ type NextApiResponseServerIO = NextApiResponse & {
     };
   };
 };
-//mock data for guessing test
-const pokedex = ['bulbasaur']
+//151 pokemon from gen 1 missing mr. mime because he has a space and period in his name
+const pokedex = ["bulbasaur", "ivysaur", "venusaur", "charmander", "charmeleon", "charizard", "squirtle", "wartortle", "blastoise",
+"caterpie", "metapod", "butterfree", "weedle", "kakuna", "beedrill", "pidgey", "pidgeotto", "pidgeot",
+"rattata", "raticate", "spearow", "fearow", "ekans", "arbok", "pikachu", "raichu", "sandshrew", "sandslash",
+"nidoran", "nidorina", "nidoqueen", "nidoran", "nidorino", "nidoking", "clefairy", "clefable", "vulpix", "ninetales",
+"jigglypuff", "wigglytuff", "zubat", "golbat", "oddish", "gloom", "vileplume", "paras", "parasect", "venonat", "venomoth",
+"diglett", "dugtrio", "meowth", "persian", "psyduck", "golduck", "mankey", "primeape", "growlithe", "arcanine",
+"poliwag", "poliwhirl", "poliwrath", "abra", "kadabra", "alakazam", "machop", "machoke", "machamp", "bellsprout",
+"weepinbell", "victreebel", "tentacool", "tentacruel", "geodude", "graveler", "golem", "ponyta", "rapidash", "slowpoke",
+"slowbro", "magnemite", "magneton", "farfetch'd", "doduo", "dodrio", "seel", "dewgong", "grimer", "muk", "shellder",
+"cloyster", "gastly", "haunter", "gengar", "onix", "drowzee", "hypno", "krabby", "kingler", "voltorb", "electrode",
+"exeggcute", "exeggutor", "cubone", "marowak", "hitmonlee", "hitmonchan", "lickitung", "koffing", "weezing", "rhyhorn",
+"rhydon", "chansey", "tangela", "kangaskhan", "horsea", "seadra", "goldeen", "seaking", "staryu", "starmie",
+"scyther", "jynx", "electabuzz", "magmar", "pinsir", "tauros", "magikarp", "gyarados", "lapras", "ditto", "eevee",
+"vaporeon", "jolteon", "flareon", "porygon", "omanyte", "omastar", "kabuto", "kabutops", "aerodactyl", "snorlax",
+"articuno", "zapdos", "moltres", "dratini", "dragonair", "dragonite", "mewtwo", "mew"];
+
 function getPokemon() {
   return pokedex[Math.floor(Math.random() * pokedex.length)] //returns random pokemon from pokedex list
 }
+//gets the sprite based on pokemon name from pokemonshowdown api
+function getSprite(name: string) {
+  return `https://play.pokemonshowdown.com/sprites/xyani/${name.toLowerCase()}.gif`;
+}
 
 let currentPoke = getPokemon()
+let currentSprite = getSprite(currentPoke)
 
 export default function handler(
   req: NextApiRequest,
@@ -48,6 +68,11 @@ export default function handler(
           currTurn = (currTurn + 1) % userList.length; 
           msg1 = {user: "It is now " + userMap[userList[currTurn]] + "'s turn to guess!", text:""};
           io.emit('message', msg1); 
+
+          //shuffle the pokemon and sprite and send to room.tsx (frontend)
+          currentPoke = getPokemon();
+          currentSprite = getSprite(currentPoke);
+          io.emit('pokemon', { name: currentPoke, sprite: currentSprite });
         }
         else if (socket.id == userList[currTurn]) {
   
@@ -61,6 +86,9 @@ export default function handler(
 
         console.log(userMap[socket.id] + " has joined the game with client id: " + socket.id);
         console.log("Current turn " + userList[currTurn]);
+
+        //emit for the client everytime they first join because they won't see what already connected players are seeing
+        io.emit('pokemon', { name: currentPoke, sprite: currentSprite });
       });
       socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);

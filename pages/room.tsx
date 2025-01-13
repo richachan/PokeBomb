@@ -3,7 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
+
 type displayMessage = { user: string; text: string };
+type Pokemon = { name: string; sprite: string };
 
 export default function Home() {
   const router = useRouter();
@@ -11,6 +13,7 @@ export default function Home() {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<string[]>([]);
   const [user, setUser] = useState<string>('');
+  const [pokemon, setPokemon] = useState<Pokemon | null>(null);
 
   useEffect(() => {
 
@@ -35,6 +38,11 @@ export default function Home() {
         const strMsg = `${msg.user}: ${msg.text}`;
         setMessages((prev) => [...prev, strMsg]);
       });
+    
+
+      socket.on('pokemon', ({ name, sprite }: Pokemon) => {
+        setPokemon({ name, sprite });
+      });
     }
 
     // Cleanup on unmount
@@ -56,6 +64,15 @@ export default function Home() {
   return (
     <div style={{ margin: '40px auto', maxWidth: 600 }}>
       <h1>PokeBomb!</h1>
+
+  
+      {pokemon && (
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
+          <h2>Current Pokémon</h2>
+          <img src={pokemon.sprite} alt={pokemon.name} />
+        </div>
+      )}
+
       <div style={{ border: '1px solid #ccc', padding: 10, minHeight: 200 }}>
         {messages.map((userMsg, i) => (
           <div key={i}>{userMsg}</div>
