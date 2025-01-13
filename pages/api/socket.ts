@@ -63,6 +63,10 @@ export default function handler(
       console.log('A client connected:', socket.id);
 
       socket.on('message', (msg) => {
+        if(userList.length == 0){
+          return;
+        }
+
         if(socket.id == userList[currTurn] && msg.text.toLowerCase() == currentPoke){
           let msg1 = {user: userMap[socket.id], text:" has correctly guessed " + currentPoke + "!"};
           io.emit('message', msg1);
@@ -88,6 +92,10 @@ export default function handler(
         console.log(userMap[socket.id] + " has joined the game with client id: " + socket.id);
         let registerMsg = {user: userMap[socket.id], text:" has joined the game!"};
         io.emit('message', registerMsg);
+        if (userList.length === 1) {
+          currTurn = 0;
+        }
+
         console.log("Current turn " + userList[currTurn]);
 
         //emit for the client everytime they first join because they won't see what already connected players are seeing
@@ -103,6 +111,7 @@ export default function handler(
         if (userList.length === 0) {
           // Reset the game state when no players are left
           currTurn = 0;
+          return;
         }
         const keysArray = Array.from(userMap.keys());
         console.log(keysArray); 
