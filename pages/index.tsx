@@ -13,7 +13,7 @@ export default function UserPage() {
 
   return (
     <div style={{ maxWidth: 400, margin: '50px auto' }}>
-      <h1>Enter a Username</h1>
+      <h1>Enter player name</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="text"

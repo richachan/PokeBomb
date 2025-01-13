@@ -100,6 +100,10 @@ export default function handler(
         io.emit('message', msg1);
         userList.splice(userList.indexOf(socket.id),1)
         userMap.delete(socket.id)
+        if (userList.length === 0) {
+          // Reset the game state when no players are left
+          currTurn = 0;
+        }
         const keysArray = Array.from(userMap.keys());
         console.log(keysArray); 
         if(currTurn > index)currTurn--  // 3 
