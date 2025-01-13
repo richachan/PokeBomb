@@ -61,9 +61,9 @@ export default function handler(
 
     io.on('connection', (socket) => {
       console.log('A client connected:', socket.id);
-         
+
       socket.on('message', (msg) => {
-        if(socket.id == userList[currTurn] && msg.text == currentPoke){
+        if(socket.id == userList[currTurn] && msg.text.toLowerCase() == currentPoke){
           let msg1 = {user: userMap[socket.id], text:" has correctly guessed " + currentPoke + "!"};
           io.emit('message', msg1);
           currTurn = (currTurn + 1) % userList.length; 
@@ -86,6 +86,8 @@ export default function handler(
         userMap[socket.id] = userName;       
 
         console.log(userMap[socket.id] + " has joined the game with client id: " + socket.id);
+        let registerMsg = {user: userMap[socket.id], text:" has joined the game!"};
+        io.emit('message', registerMsg);
         console.log("Current turn " + userList[currTurn]);
 
         //emit for the client everytime they first join because they won't see what already connected players are seeing
