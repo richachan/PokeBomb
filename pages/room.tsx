@@ -86,6 +86,7 @@ export default function Home() {
         {messages.map((userMsg, i) => (
           <div key={i}>{userMsg}</div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
 
       <form onSubmit={sendMessage} style={{ marginTop: 10 }}>
