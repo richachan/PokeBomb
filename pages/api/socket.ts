@@ -257,6 +257,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponseServerI
 
         //emit for the client everytime they first join because they won't see what already connected players are seeing
         io.emit('pokemon', { name: currentPoke, sprite: currentSprite,guessed:false });
+
+        //emit what generations are currently selected whenever a client first joins
+        io.emit('updateGenerations', currentGenerations);
       });
 
       socket.on('updateGenerations', (gens: number[]) =>

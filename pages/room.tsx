@@ -41,6 +41,7 @@ export default function Home() {
         const strMsg = `${msg.user} ${msg.text}`;
         setMessages((prev) => [...prev, strMsg]);
       });
+
       socket.on('setTimer', (num) => {
         document.getElementById("timer").innerHTML = num.toString();
       });
@@ -57,6 +58,18 @@ export default function Home() {
       socket = null;
     };
   }, [router.query]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('updateGenerations', (gens: number[]) => {
+        setSelectedGenerations(gens); // Update local state when the server broadcasts generations
+      });
+    }
+  
+    return () => {
+      socket?.off('updateGenerations');
+    };
+  }, []);
 
   useEffect(() => 
     {
