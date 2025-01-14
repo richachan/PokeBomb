@@ -103,7 +103,7 @@ export default function Home() {
       )}
 
       <div id = "timer" style={{display: 'flex', justifyContent: 'center',alignItems: 'center'}}>
-          PLACEHOLDER
+          Waiting for game to start...
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10, marginBottom: 20 }}>
