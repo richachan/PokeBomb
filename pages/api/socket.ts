@@ -207,7 +207,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponseServerI
           currTurn = (currTurn + 1) % userList.length; 
           msg1 = {user: "It is now " + userMap[userList[currTurn]] + "'s turn to guess!", text:""};
           io.emit('message', msg1);
-          clearInterval(timerId); 
+          for(var id of timerList)clearInterval(id);
 
           //shuffle the pokemon and sprite and send to room.tsx (frontend)
           currentPoke = getPokemon();
@@ -242,7 +242,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponseServerI
         timerId = setInterval(() => { 
           count--;
           if(count == 0){
-            clearInterval(timerId)
+            for(var id of timerList)clearInterval(id);
             let msg1 = {user: userMap[socket.id], text:" has failed to guess " + currentPoke + "!"};
             io.emit('message', msg1);
             currTurn = (currTurn + 1) % userList.length; 
