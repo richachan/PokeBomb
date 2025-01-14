@@ -6,7 +6,7 @@ import { io, Socket } from 'socket.io-client';
 let socket: Socket | null = null;
 
 type displayMessage = { user: string; text: string };
-type Pokemon = { name: string; sprite: string };
+type Pokemon = { name: string; sprite: string ;guessed:boolean};
 
 export default function Home() {
   const router = useRouter();
@@ -41,12 +41,12 @@ export default function Home() {
         setMessages((prev) => [...prev, strMsg]);
       });
       socket.on('setTimer', (num) => {
-          document.getElementById("timer").innerHTML = num.toString();
+        document.getElementById("timer").innerHTML = num.toString();
       });
 
-      socket.on('pokemon', ({ name, sprite }: Pokemon) => {
-        setPokemon({ name, sprite });
-        socket.emit('newTimer');
+      socket.on('pokemon', ({ name, sprite ,guessed}: Pokemon) => {
+        if(guessed)socket.emit('newTimer');
+        setPokemon({ name, sprite ,guessed});
       });
     }
 

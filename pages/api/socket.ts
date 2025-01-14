@@ -9,6 +9,7 @@ let userMap = new Map<string,string>() //socket.id, username
 let userList = new Array()            //list of usernames
 let currTurn: number = 0;
 let timerId;
+let timerList = new Array();
 type NextApiResponseServerIO = NextApiResponse & {
   socket: Socket & {
     server: HTTPServer & {
@@ -211,7 +212,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponseServerI
           //shuffle the pokemon and sprite and send to room.tsx (frontend)
           currentPoke = getPokemon();
           currentSprite = getSprite(currentPoke);
-          io.emit('pokemon', { name: currentPoke, sprite: currentSprite });
+          io.emit('pokemon', { name: currentPoke, sprite: currentSprite, guessed:true});
         }
         else if (socket.id == userList[currTurn]) {
   
@@ -226,14 +227,14 @@ export default function handler(req: NextApiRequest, res: NextApiResponseServerI
         console.log(userMap[socket.id] + " has joined the game with client id: " + socket.id);
         let registerMsg = {user: userMap[socket.id], text:" has joined the game!"};
         io.emit('message', registerMsg);
-        if (userList.length === 1) {
+        if (userList.length == 1) {
           currTurn = 0;
         }
 
         console.log("Current turn " + userList[currTurn]);
 
         //emit for the client everytime they first join because they won't see what already connected players are seeing
-        io.emit('pokemon', { name: currentPoke, sprite: currentSprite });
+        io.emit('pokemon', { name: currentPoke, sprite: currentSprite,guessed:false });
       });
       socket.on('newTimer', () =>{
         let count = 15;
@@ -251,11 +252,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponseServerI
             //shuffle the pokemon and sprite and send to room.tsx (frontend)
             currentPoke = getPokemon();
             currentSprite = getSprite(currentPoke);
-            io.emit('pokemon', { name: currentPoke, sprite: currentSprite });
+            io.emit('pokemon', { name: currentPoke, sprite: currentSprite ,guessed: true});
           }
           io.emit('setTimer',count);
         }
         , 1000);
+        timerList.push(timerId);
       });
       socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
@@ -276,6 +278,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponseServerI
           currTurn = currTurn % userList.length
           msg1 = {user: "It is now " + userMap[userList[currTurn]] + "'s turn to guess!", text:""};
           io.emit('message', msg1); 
+          for(var id of timerList)clearInterval(id);
+          io.emit('pokemon', { name: currentPoke, sprite: currentSprite ,guessed: true});
         }
       });
     });
