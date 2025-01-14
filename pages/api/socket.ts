@@ -152,16 +152,17 @@ const gen9pokedex = ["sprigatito", "floragato", "meowscarada", "fuecoco", "croca
   "revavroom", "orthworm", "greavard", "houndstone", "cetoddle", "cetitan", "veluza",
   "dondozo", "tatsugiri", "farigiraf", "dudunsparce"]
 
-function chooseRandomGeneration(updatedGenerations: number[]) 
+let currentGenerations: number[] = []
+function chooseRandomGeneration() 
 {
-  let randomGeneration
-  if(updatedGenerations.length === 0)
+  let randomGeneration: number
+  if(currentGenerations.length === 0)
   {
     randomGeneration = Math.floor(Math.random() * 9) + 1;
   }
   else
   {
-    randomGeneration = updatedGenerations[Math.floor(Math.random() * updatedGenerations.length)];
+    randomGeneration = currentGenerations[Math.floor(Math.random() * currentGenerations.length)];
   }
 
   switch(randomGeneration)
@@ -179,10 +180,12 @@ function chooseRandomGeneration(updatedGenerations: number[])
   }
 }
 
-function getPokemon() 
+
+function getPokemon()
 {
-  const getPokedex = chooseRandomGeneration
-  return getPokedex[Math.floor(Math.random() * getPokedex.length)] //returns random pokemon from pokedex list
+  const getPokedex = chooseRandomGeneration();
+  const randomIndex = Math.floor(Math.random() * getPokedex.length);
+  return getPokedex[randomIndex]; //returns random pokemon from pokedex list
 }
 
 //gets the sprite based on pokemon name from pokemonshowdown api
@@ -234,6 +237,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponseServerI
           io.emit('message', msg2);
         }
       });
+
       socket.on('register', (userName) => {
         userList.push(socket.id);  
         userMap[socket.id] = userName;       
@@ -250,6 +254,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponseServerI
         //emit for the client everytime they first join because they won't see what already connected players are seeing
         io.emit('pokemon', { name: currentPoke, sprite: currentSprite,guessed:false });
       });
+
+      socket.on('updateGenerations', (gens: number[]) =>
+      {
+        currentGenerations = gens
+      });
+
       socket.on('newTimer', () =>{
         let count = 15;
         io.emit('setTimer',count);
@@ -273,6 +283,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponseServerI
         , 1000);
         timerList.push(timerId);
       });
+
       socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
         let index = userList.indexOf(socket.id)
