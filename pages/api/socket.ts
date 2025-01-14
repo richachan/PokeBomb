@@ -18,22 +18,6 @@ type NextApiResponseServerIO = NextApiResponse & {
   };
 };
 
-const pokedex = ["bulbasaur", "ivysaur", "venusaur", "charmander", "charmeleon", "charizard", "squirtle", "wartortle", "blastoise",
-"caterpie", "metapod", "butterfree", "weedle", "kakuna", "beedrill", "pidgey", "pidgeotto", "pidgeot",
-"rattata", "raticate", "spearow", "fearow", "ekans", "arbok", "pikachu", "raichu", "sandshrew", "sandslash",
-"nidoran", "nidorina", "nidoqueen", "nidoran", "nidorino", "nidoking", "clefairy", "clefable", "vulpix", "ninetales",
-"jigglypuff", "wigglytuff", "zubat", "golbat", "oddish", "gloom", "vileplume", "paras", "parasect", "venonat", "venomoth",
-"diglett", "dugtrio", "meowth", "persian", "psyduck", "golduck", "mankey", "primeape", "growlithe", "arcanine",
-"poliwag", "poliwhirl", "poliwrath", "abra", "kadabra", "alakazam", "machop", "machoke", "machamp", "bellsprout",
-"weepinbell", "victreebel", "tentacool", "tentacruel", "geodude", "graveler", "golem", "ponyta", "rapidash", "slowpoke",
-"slowbro", "magnemite", "magneton", "farfetchd", "doduo", "dodrio", "seel", "dewgong", "grimer", "muk", "shellder",
-"cloyster", "gastly", "haunter", "gengar", "onix", "drowzee", "hypno", "krabby", "kingler", "voltorb", "electrode",
-"exeggcute", "exeggutor", "cubone", "marowak", "hitmonlee", "hitmonchan", "lickitung", "koffing", "weezing", "rhyhorn",
-"rhydon", "chansey", "tangela", "kangaskhan", "horsea", "seadra", "goldeen", "seaking", "staryu", "starmie", "mrmime",
-"scyther", "jynx", "electabuzz", "magmar", "pinsir", "tauros", "magikarp", "gyarados", "lapras", "ditto", "eevee",
-"vaporeon", "jolteon", "flareon", "porygon", "omanyte", "omastar", "kabuto", "kabutops", "aerodactyl", "snorlax",
-"articuno", "zapdos", "moltres", "dratini", "dragonair", "dragonite", "mewtwo", "mew"];
-
 // make sure to add conditionals for user answers on mr. mime and farfetch'd
 // the correct answer should be based on the pokemon's offical name, so the punctuation should be included
 // i.e "mr. mime" is correct, but "Mr Mime" would not be
@@ -168,12 +152,42 @@ const gen9pokedex = ["sprigatito", "floragato", "meowscarada", "fuecoco", "croca
   "revavroom", "orthworm", "greavard", "houndstone", "cetoddle", "cetitan", "veluza",
   "dondozo", "tatsugiri", "farigiraf", "dudunsparce"]
 
-function getPokemon() {
-  return pokedex[Math.floor(Math.random() * pokedex.length)] //returns random pokemon from pokedex list
+function chooseRandomGeneration(updatedGenerations: number[]) 
+{
+  let randomGeneration
+  if(updatedGenerations.length === 0)
+  {
+    randomGeneration = Math.floor(Math.random() * 9) + 1;
+  }
+  else
+  {
+    randomGeneration = updatedGenerations[Math.floor(Math.random() * updatedGenerations.length)];
+  }
+
+  switch(randomGeneration)
+  {
+    case 1:{return gen1pokedex;}
+    case 2:{return gen2pokedex;}
+    case 3:{return gen3pokedex;}
+    case 4:{return gen4pokedex;}
+    case 5:{return gen5pokedex;}
+    case 6:{return gen6pokedex;}
+    case 7:{return gen7pokedex;}
+    case 8:{return gen8pokedex;}
+    case 9:{return gen9pokedex;}
+    default: {return gen1pokedex;}
+  }
+}
+
+function getPokemon() 
+{
+  const getPokedex = chooseRandomGeneration
+  return getPokedex[Math.floor(Math.random() * getPokedex.length)] //returns random pokemon from pokedex list
 }
 
 //gets the sprite based on pokemon name from pokemonshowdown api
-function getSprite(name: string) {
+function getSprite(name: string) 
+{
   return `https://play.pokemonshowdown.com/sprites/xyani/${name.toLowerCase()}.gif`;
 }
 
@@ -214,8 +228,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponseServerI
           currentSprite = getSprite(currentPoke);
           io.emit('pokemon', { name: currentPoke, sprite: currentSprite, guessed:true});
         }
-        else if (socket.id == userList[currTurn]) {
-  
+        else if (socket.id == userList[currTurn]) 
+        {
           const msg2 = {user: userMap[socket.id], text: " wrongly guessed " + msg.text};
           io.emit('message', msg2);
         }
