@@ -8,6 +8,7 @@ import { matchesGlob } from 'path';
 let userMap = new Map<string,string>() //socket.id, username
 let userList = new Array()            //list of usernames
 let currTurn: number = 0;
+let timerId;
 type NextApiResponseServerIO = NextApiResponse & {
   socket: Socket & {
     server: HTTPServer & {
@@ -72,7 +73,8 @@ export default function handler(
           io.emit('message', msg1);
           currTurn = (currTurn + 1) % userList.length; 
           msg1 = {user: "It is now " + userMap[userList[currTurn]] + "'s turn to guess!", text:""};
-          io.emit('message', msg1); 
+          io.emit('message', msg1);
+          clearInterval(timerId); 
 
           //shuffle the pokemon and sprite and send to room.tsx (frontend)
           currentPoke = getPokemon();
@@ -104,7 +106,7 @@ export default function handler(
       socket.on('newTimer', () =>{
         let count = 15;
         io.emit('setTimer',count);
-        let timerId = setInterval(() => { 
+        timerId = setInterval(() => { 
           count--;
           if(count == 0){
             clearInterval(timerId)
