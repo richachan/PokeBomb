@@ -18,6 +18,9 @@ type NextApiResponseServerIO = NextApiResponse & {
   };
 };
 
+//NOTES 
+//implement: when the room announces the pokemon name that was unguessed, make it have correct punctuation
+
 // make sure to add conditionals for user answers on mr. mime and farfetch'd
 // the correct answer should be based on the pokemon's offical name, so the punctuation should be included
 // i.e "mr. mime" is correct, but "Mr Mime" would not be
@@ -153,6 +156,7 @@ const gen9pokedex = ["sprigatito", "floragato", "meowscarada", "fuecoco", "croca
   "dondozo", "tatsugiri", "farigiraf", "dudunsparce"]
 
 let currentGenerations: number[] = []
+
 function chooseRandomGeneration() 
 {
   let randomGeneration: number
@@ -233,7 +237,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponseServerI
         }
         else if (socket.id == userList[currTurn]) 
         {
-          const msg2 = {user: userMap[socket.id], text: " wrongly guessed " + msg.text};
+          const msg2 = {user: userMap[socket.id], text: " incorrectly guessed " + msg.text};
           io.emit('message', msg2);
         }
       });
