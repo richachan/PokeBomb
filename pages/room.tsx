@@ -15,6 +15,7 @@ export default function Home() {
   const [messages, setMessages] = useState<string[]>([]);
   const [user, setUser] = useState<string>('');
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
+  const [selectedGenerations, setSelectedGenerations] = useState<number[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null); // Ref for the bottom of the chatbox
 
   useEffect(() => {
@@ -40,6 +41,7 @@ export default function Home() {
         const strMsg = `${msg.user} ${msg.text}`;
         setMessages((prev) => [...prev, strMsg]);
       });
+
       socket.on('setTimer', (num) => {
         document.getElementById("timer").innerHTML = num.toString();
       });
@@ -57,6 +59,18 @@ export default function Home() {
     };
   }, [router.query]);
 
+  useEffect(() => {
+    if (socket) {
+      socket.on('updateGenerations', (gens: number[]) => {
+        setSelectedGenerations(gens); // Update local state when the server broadcasts generations
+      });
+    }
+  
+    return () => {
+      socket?.off('updateGenerations');
+    };
+  }, []);
+
   useEffect(() => 
     {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -71,11 +85,27 @@ export default function Home() {
     setMessage('');
   };
 
+  const toggleGeneration = (generation: number) =>
+  {
+    let updatedGenerations: number[]
+
+    if (selectedGenerations.includes(generation)) 
+    {
+      updatedGenerations = selectedGenerations.filter((gen) => gen !== generation);
+    }
+    else 
+    {
+      updatedGenerations = [...selectedGenerations, generation];
+    }
+
+    setSelectedGenerations(updatedGenerations);
+    socket?.emit('updateGenerations', updatedGenerations);
+  }
+
   return (
     <div style={{ margin: '40px auto', maxWidth: 600 }}>
       <h1>PokeBomb!</h1>
-      
-  
+
       {pokemon && (
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
         <h2>Current Pokémon</h2>
@@ -84,9 +114,25 @@ export default function Home() {
         </div>
       </div>
       )}
+
       <div id = "timer" style={{display: 'flex', justifyContent: 'center',alignItems: 'center'}}>
-          PLACEHOLDER
+          Waiting for game to start...
       </div>
+
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10, marginBottom: 20 }}>
+      {Array.from({ length: 9 }, (_, i) => i + 1).map((gen) => (
+        <label key={gen} style={{ margin: '0 10px', textAlign: 'center' }}>
+          <input
+            type="checkbox"
+            checked={selectedGenerations.includes(gen)}
+            onChange={() => toggleGeneration(gen)}
+            style={{ marginRight: 5 }}
+          />
+          Gen {gen}
+        </label>
+      ))}
+      </div>
+
       <div style={{ border: '1px solid #ccc', padding: 10, height: 200, overflowY: 'auto'}}>
         {messages.map((userMsg, i) => (
           <div key={i}>{userMsg}</div>
