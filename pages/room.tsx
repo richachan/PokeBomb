@@ -40,10 +40,13 @@ export default function Home() {
         const strMsg = `${msg.user} ${msg.text}`;
         setMessages((prev) => [...prev, strMsg]);
       });
-    
+      socket.on('setTimer', (num) => {
+          document.getElementById("timer").innerHTML = num.toString();
+      });
 
       socket.on('pokemon', ({ name, sprite }: Pokemon) => {
         setPokemon({ name, sprite });
+        socket.emit('newTimer');
       });
     }
 
@@ -71,7 +74,7 @@ export default function Home() {
   return (
     <div style={{ margin: '40px auto', maxWidth: 600 }}>
       <h1>PokeBomb!</h1>
-
+      
   
       {pokemon && (
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
@@ -81,7 +84,9 @@ export default function Home() {
         </div>
       </div>
       )}
-
+      <div id = "timer" style={{display: 'flex', justifyContent: 'center',alignItems: 'center'}}>
+          PLACEHOLDER
+      </div>
       <div style={{ border: '1px solid #ccc', padding: 10, height: 200, overflowY: 'auto'}}>
         {messages.map((userMsg, i) => (
           <div key={i}>{userMsg}</div>
@@ -99,5 +104,5 @@ export default function Home() {
         <button type="submit">Send</button>
       </form>
     </div>
-  );
+  );  
 }

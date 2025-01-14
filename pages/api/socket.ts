@@ -101,6 +101,28 @@ export default function handler(
         //emit for the client everytime they first join because they won't see what already connected players are seeing
         io.emit('pokemon', { name: currentPoke, sprite: currentSprite });
       });
+      socket.on('newTimer', () =>{
+        let count = 15;
+        io.emit('setTimer',count);
+        let timerId = setInterval(() => { 
+          count--;
+          if(count == 0){
+            clearInterval(timerId)
+            let msg1 = {user: userMap[socket.id], text:" has failed to guess " + currentPoke + "!"};
+            io.emit('message', msg1);
+            currTurn = (currTurn + 1) % userList.length; 
+            msg1 = {user: "It is now " + userMap[userList[currTurn]] + "'s turn to guess!", text:""};
+            io.emit('message', msg1); 
+
+            //shuffle the pokemon and sprite and send to room.tsx (frontend)
+            currentPoke = getPokemon();
+            currentSprite = getSprite(currentPoke);
+            io.emit('pokemon', { name: currentPoke, sprite: currentSprite });
+          }
+          io.emit('setTimer',count);
+        }
+        , 1000);
+      });
       socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
         let index = userList.indexOf(socket.id)
