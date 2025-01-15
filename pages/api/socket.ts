@@ -260,8 +260,26 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
   
             //Get next Pokemon
             currentPoke = getPokemon();
+            if(currentPoke === "Mrmime") {currentPokeAnswer = "Mr. Mime"}
+            else if(currentPoke === "Farfetchd") {currentPokeAnswer = "Farfetch'd"}
+            else if(currentPoke === "Porygon2") {currentPokeAnswer = "Porygon-2"}
+            else if(currentPoke === "Hooh") {currentPokeAnswer = "Ho-oh"}
+            else if(currentPoke === "PorygonZ") {currentPokeAnswer = "Porygon-Z"}
+            else if(currentPoke === "Mimejr") {currentPokeAnswer = "Mime Jr."}
+            else if(currentPoke === "Flabébé") {currentPokeAnswer = "Flabebe"}
+            else if(currentPoke === "Tapulele") {currentPokeAnswer = "Tapu Lele"}
+            else if(currentPoke === "Tapukoko") {currentPokeAnswer = "Tapu Koko"}
+            else if(currentPoke === "Tapubulu") {currentPokeAnswer = "Tapu Bulu"}
+            else if(currentPoke === "Tapufini") {currentPokeAnswer = "Tapu Fini"}
+            else if(currentPoke === "Typenull") {currentPokeAnswer = "Type: Null"}
+            else if(currentPoke === "Jangmoo") {currentPokeAnswer = "Jangmo-o"}
+            else if(currentPoke === "Hakamoo") {currentPokeAnswer = "Hakamo-o"}
+            else if(currentPoke === "Kommoo") {currentPokeAnswer = "Kommo-o"}
+            else if(currentPoke === "Sirfecthd") {currentPokeAnswer = "Sirfetch'd"} 
+            else if(currentPoke === "Mrrime") {currentPokeAnswer = "Mr. Rime"}
+            else{currentPokeAnswer = currentPoke}
             currentSprite = getSprite(currentPoke);
-            io.emit('pokemon', { name: currentPoke, sprite: currentSprite, guessed: true });
+            io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
           } 
           else if (socket.id === userList[currTurn]) {
             //Wrong guess
@@ -299,7 +317,7 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
             currTurn
           });
   
-          io.emit('pokemon', { name: currentPoke, sprite: currentSprite, guessed: false });
+          io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: false });
           io.emit('updateGenerations', currentGenerations);
         });
 
@@ -340,7 +358,25 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
               //Shuffle to new Pokémon
               currentPoke = getPokemon();
               currentSprite = getSprite(currentPoke);
-              io.emit('pokemon', { name: currentPoke, sprite: currentSprite, guessed: true });
+              if(currentPoke === "Mrmime") {currentPokeAnswer = "Mr. Mime"}
+              else if(currentPoke === "Farfetchd") {currentPokeAnswer = "Farfetch'd"}
+              else if(currentPoke === "Porygon2") {currentPokeAnswer = "Porygon-2"}
+              else if(currentPoke === "Hooh") {currentPokeAnswer = "Ho-oh"}
+              else if(currentPoke === "PorygonZ") {currentPokeAnswer = "Porygon-Z"}
+              else if(currentPoke === "Mimejr") {currentPokeAnswer = "Mime Jr."}
+              else if(currentPoke === "Flabébé") {currentPokeAnswer = "Flabebe"}
+              else if(currentPoke === "Tapulele") {currentPokeAnswer = "Tapu Lele"}
+              else if(currentPoke === "Tapukoko") {currentPokeAnswer = "Tapu Koko"}
+              else if(currentPoke === "Tapubulu") {currentPokeAnswer = "Tapu Bulu"}
+              else if(currentPoke === "Tapufini") {currentPokeAnswer = "Tapu Fini"}
+              else if(currentPoke === "Typenull") {currentPokeAnswer = "Type: Null"}
+              else if(currentPoke === "Jangmoo") {currentPokeAnswer = "Jangmo-o"}
+              else if(currentPoke === "Hakamoo") {currentPokeAnswer = "Hakamo-o"}
+              else if(currentPoke === "Kommoo") {currentPokeAnswer = "Kommo-o"}
+              else if(currentPoke === "Sirfecthd") {currentPokeAnswer = "Sirfetch'd"} 
+              else if(currentPoke === "Mrrime") {currentPokeAnswer = "Mr. Rime"}
+              else{currentPokeAnswer = currentPoke}
+              io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
             }
   
             io.emit('setTimer', count);
@@ -395,7 +431,7 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
             for (const id of timerList) {
               clearInterval(id);
             }
-            io.emit('pokemon', { name: currentPoke, sprite: currentSprite, guessed: true });
+            io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
           }
   
           io.emit('players', {
