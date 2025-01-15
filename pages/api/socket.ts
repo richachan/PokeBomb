@@ -10,6 +10,9 @@ let userList = new Array()            //list of socket ids
 let currTurn: number = 0;
 let timerId;
 let timerList = new Array();
+let currentPoke: string;
+let currentPokeAnswer: string;
+let currentSprite: string;
 type NextApiResponseServerIO = NextApiResponse & {
   socket: Socket & {
     server: HTTPServer & {
@@ -191,30 +194,32 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
     return `https://play.pokemonshowdown.com/sprites/xyani/${name.toLowerCase()}.gif`;
   }
   
-  //Shuffle the initial Pokémon
-  let currentPoke = getPokemon();
-  let currentPokeAnswer
-
-  if(currentPoke === "Mrmime") {currentPokeAnswer = "Mr. Mime"}
-  else if(currentPoke === "Farfetchd") {currentPokeAnswer = "Farfetch'd"}
-  else if(currentPoke === "Porygon2") {currentPokeAnswer = "Porygon-2"}
-  else if(currentPoke === "Hooh") {currentPokeAnswer = "Ho-oh"}
-  else if(currentPoke === "PorygonZ") {currentPokeAnswer = "Porygon-Z"}
-  else if(currentPoke === "Mimejr") {currentPokeAnswer = "Mime Jr."}
-  else if(currentPoke === "Flabébé") {currentPokeAnswer = "Flabebe"}
-  else if(currentPoke === "Tapulele") {currentPokeAnswer = "Tapu Lele"}
-  else if(currentPoke === "Tapukoko") {currentPokeAnswer = "Tapu Koko"}
-  else if(currentPoke === "Tapubulu") {currentPokeAnswer = "Tapu Bulu"}
-  else if(currentPoke === "Tapufini") {currentPokeAnswer = "Tapu Fini"}
-  else if(currentPoke === "Typenull") {currentPokeAnswer = "Type: Null"}
-  else if(currentPoke === "Jangmoo") {currentPokeAnswer = "Jangmo-o"}
-  else if(currentPoke === "Hakamoo") {currentPokeAnswer = "Hakamo-o"}
-  else if(currentPoke === "Kommoo") {currentPokeAnswer = "Kommo-o"}
-  else if(currentPoke === "Sirfecthd") {currentPokeAnswer = "Sirfetch'd"} 
-  else if(currentPoke === "Mrrime") {currentPokeAnswer = "Mr. Rime"}
-  else{currentPokeAnswer = currentPoke}
-
-  let currentSprite = getSprite(currentPoke);
+  //shuffle the pokemon and return a random one
+  function shufflePokemon()
+  {
+    currentPoke = getPokemon();
+    currentSprite = getSprite(currentPoke);
+  
+    // Handle special cases for Pokémon with punctuation or specific names
+    if (currentPoke === "Mrmime") currentPokeAnswer = "Mr. Mime";
+    else if (currentPoke === "Farfetchd") currentPokeAnswer = "Farfetch'd";
+    else if (currentPoke === "Porygon2") currentPokeAnswer = "Porygon-2";
+    else if (currentPoke === "Hooh") currentPokeAnswer = "Ho-oh";
+    else if (currentPoke === "PorygonZ") currentPokeAnswer = "Porygon-Z";
+    else if (currentPoke === "Mimejr") currentPokeAnswer = "Mime Jr.";
+    else if (currentPoke === "Flabébé") currentPokeAnswer = "Flabebe";
+    else if (currentPoke === "Tapulele") currentPokeAnswer = "Tapu Lele";
+    else if (currentPoke === "Tapukoko") currentPokeAnswer = "Tapu Koko";
+    else if (currentPoke === "Tapubulu") currentPokeAnswer = "Tapu Bulu";
+    else if (currentPoke === "Tapufini") currentPokeAnswer = "Tapu Fini";
+    else if (currentPoke === "Typenull") currentPokeAnswer = "Type: Null";
+    else if (currentPoke === "Jangmoo") currentPokeAnswer = "Jangmo-o";
+    else if (currentPoke === "Hakamoo") currentPokeAnswer = "Hakamo-o";
+    else if (currentPoke === "Kommoo") currentPokeAnswer = "Kommo-o";
+    else if (currentPoke === "Sirfetchd") currentPokeAnswer = "Sirfetch'd";
+    else if (currentPoke === "Mrrime") currentPokeAnswer = "Mr. Rime";
+    else currentPokeAnswer = currentPoke;
+  }
   
   export default function handler(req: NextApiRequest, res: NextApiResponseServerIO) {
     if (!res.socket.server.io) {
@@ -259,8 +264,7 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
             }
   
             //Get next Pokemon
-            currentPoke = getPokemon();
-            currentSprite = getSprite(currentPoke);
+            shufflePokemon();
             io.emit('pokemon', { name: currentPoke, sprite: currentSprite, guessed: true });
           } 
           else if (socket.id === userList[currTurn]) {
