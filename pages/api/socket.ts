@@ -194,6 +194,13 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
   
   //Shuffle the initial Pokémon
   let currentPoke = getPokemon();
+  let currentPokeAnswer
+
+  if(currentPoke === "Mrmime")
+  {
+    currentPokeAnswer === "Mr. Mime"
+  }
+
   let currentSprite = getSprite(currentPoke);
   
   export default function handler(req: NextApiRequest, res: NextApiResponseServerIO) {
@@ -214,7 +221,7 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
           if (userList.length === 0) return;
   
           //Compare guess
-          if (socket.id === userList[currTurn] && msg.text.toLowerCase() === currentPoke) {
+          if (socket.id === userList[currTurn] && msg.text.toLowerCase() === currentPoke.toLowerCase()) {
             let msg1 = {
               user: userMap.get(socket.id),  // Using .get(...) for the Map
               text: " has correctly guessed " + currentPoke + "!"
