@@ -265,6 +265,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponseServerI
       socket.on('updateGenerations', (gens: number[]) =>
       {
         currentGenerations = gens
+        io.emit('updateGenerations', currentGenerations)
       });
 
       socket.on('newTimer', () =>{
