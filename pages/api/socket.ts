@@ -150,7 +150,7 @@ const gen8pokedex = ["grookey", "thwackey", "rillaboom", "scorbunny", "raboot", 
 // make sure to add conditionals for user answers on palafin-hero
 const gen9pokedex = ["sprigatito", "floragato", "meowscarada", "fuecoco", "crocalor", "skeledirge", "quaxly", 
   "quaxwell", "quaquaval", "lechonk", "oinkologne", "tarountula", "spidops", "nymble", "lokix", "tandemaus", 
-  "maushold", "smoliv", "dolliv", "arboliva", "tadbulb", "bellibolt", "klawf", "capsakid", "scovillain", "rellor", 
+  "maushold", "smoliv", "dolliv", "arboliva", "tadbulb", "bellibolt", "capsakid", "scovillain", "rellor", 
   "rabsca", "flittle", "espathra", "wiglett", "wugtrio", "finizen", "palafin", "palafin-hero", "varoom", 
   "revavroom", "orthworm", "greavard", "houndstone", "cetoddle", "cetitan", "veluza",
   "dondozo", "tatsugiri", "farigiraf", "dudunsparce"]
