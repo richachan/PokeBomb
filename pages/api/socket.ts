@@ -191,7 +191,6 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
   function getSprite(name: string) {
     return `https://play.pokemonshowdown.com/sprites/xyani/${name.toLowerCase()}.gif`;
   }
-<<<<<<< HEAD
   
   //Shuffle the initial Pokémon
   let currentPoke = getPokemon();
@@ -206,66 +205,6 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
         cors: {
           origin: '*',
         },
-=======
-}
-
-
-function getPokemon()
-{
-  const getPokedex = chooseRandomGeneration();
-  const randomIndex = Math.floor(Math.random() * getPokedex.length);
-  return getPokedex[randomIndex]; //returns random pokemon from pokedex list
-}
-
-//gets the sprite based on pokemon name from pokemonshowdown api
-function getSprite(name: string) 
-{
-  return `https://play.pokemonshowdown.com/sprites/xyani/${name.toLowerCase()}.gif`;
-}
-
-let currentPoke = getPokemon()
-let currentSprite = getSprite(currentPoke)
-
-export default function handler(req: NextApiRequest, res: NextApiResponseServerIO) 
-{
-  // If Socket.IO server is not set up yet, set it up
-  if (!res.socket.server.io) {
-    console.log('Initializing new Socket.IO server...');
-    
-    const io = new Server(res.socket.server, {
-      path: '/api/socket_io', // optional path
-      cors: {
-        origin: '*',
-      },
-    });
-
-    io.on('connection', (socket) => {
-      console.log('A client connected:', socket.id);
-
-      socket.on('message', (msg) => {
-        if(userList.length == 0){
-          return;
-        }
-
-        if(socket.id == userList[currTurn] && msg.text.toLowerCase() == currentPoke.toLowerCase()){
-          let msg1 = {user: userMap[socket.id], text:" has correctly guessed " + currentPoke + "!"};
-          io.emit('message', msg1);
-          currTurn = (currTurn + 1) % userList.length; 
-          msg1 = {user: "It is now " + userMap[userList[currTurn]] + "'s turn to guess!", text:""};
-          io.emit('message', msg1);
-          for(var id of timerList)clearInterval(id);
-
-          //shuffle the pokemon and sprite and send to room.tsx (frontend)
-          currentPoke = getPokemon();
-          currentSprite = getSprite(currentPoke);
-          io.emit('pokemon', { name: currentPoke, sprite: currentSprite, guessed:true});
-        }
-        else if (socket.id == userList[currTurn]) 
-        {
-          const msg2 = {user: userMap[socket.id], text: " incorrectly guessed " + msg.text};
-          io.emit('message', msg2);
-        }
->>>>>>> 7d6b454c2991813b6c732c67f521a4c2e2952845
       });
   
       io.on('connection', (socket) => {
