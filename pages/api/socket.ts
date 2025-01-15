@@ -52,7 +52,6 @@ const gen2pokedex = ["Chikorita", "Bayleef", "Meganium", "Cyndaquil", "Quilava",
  "Porygon2", "Stantler", "Smeargle", "Tyrogue", "Hitmontop", "Smoochum", "Elekid", "Magby", "Miltank", "Blissey",
  "Raikou", "Entei", "Suicune", "Larvitar", "Pupitar", "Tyranitar", "Lugia", "Hooh", "Celebi"]
 
-// make sure to add conditionals for user answers on porygon-2
 const gen3pokedex = ["Treecko", "Grovyle", "Sceptile", "Torchic", "Combusken", "Blaziken", "Mudkip", "Marshtomp", "Swampert", 
   "Poochyena", "Mightyena", "Zigzagoon", "Linoone", "Wurmple", "Silcoon", "Beautifly", "Cascoon", "Dustox", 
   "Lotad", "Lombre", "Ludicolo", "Seedot", "Nuzleaf", "Shiftry", "Taillow", "Swellow", "Wingull", "Pelipper", 
@@ -104,7 +103,7 @@ const gen5pokedex = ["Victini", "Snivy", "Servine", "Serperior", "Tepig", "Pigni
 // make sure to add conditionals for user answers on flabébé
 const gen6pokedex = ["Chespin", "Quilladin", "Chesnaught", "Fennekin", "Braixen", "Delphox", "Froakie", "Frogadier", "Greninja", 
   "Bunnelby", "Diggersby", "Fletchling", "Fletchinder", "Talonflame", "Scatterbug", "Spewpa", "Vivillon", 
-  "Litleo", "Pyroar", "Flabebe", "Floette", "Florges", "Skiddo", "Gogoat", "Pancham", "Pangoro", "Furfrou", 
+  "Litleo", "Pyroar", "Flabébé", "Floette", "Florges", "Skiddo", "Gogoat", "Pancham", "Pangoro", "Furfrou", 
   "Espurr", "Meowstic", "Honedge", "Doublade", "Aegislash", "Spritzee", "Aromatisse", "Swirlix", "Slurpuff", 
   "Inkay", "Malamar", "Binacle", "Barbaracle", "Skrelp", "Dragalge", "Clauncher", "Clawitzer", "Helioptile", 
   "Heliolisk", "Tyrunt", "Tyrantrum", "Amaura", "Aurorus", "Sylveon", "Hawlucha", "Dedenne", "Carbink", 
@@ -196,10 +195,24 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
   let currentPoke = getPokemon();
   let currentPokeAnswer
 
-  if(currentPoke === "Mrmime")
-  {
-    currentPokeAnswer === "Mr. Mime"
-  }
+  if(currentPoke === "Mrmime") {currentPokeAnswer = "Mr. Mime"}
+  else if(currentPoke === "Farfetchd") {currentPokeAnswer = "Farfetch'd"}
+  else if(currentPoke === "Porygon2") {currentPokeAnswer = "Porygon-2"}
+  else if(currentPoke === "Hooh") {currentPokeAnswer = "Ho-oh"}
+  else if(currentPoke === "PorygonZ") {currentPokeAnswer = "Porygon-Z"}
+  else if(currentPoke === "Mimejr") {currentPokeAnswer = "Mime Jr."}
+  else if(currentPoke === "Flabébé") {currentPokeAnswer = "Flabebe"}
+  else if(currentPoke === "Tapulele") {currentPokeAnswer = "Tapu Lele"}
+  else if(currentPoke === "Tapukoko") {currentPokeAnswer = "Tapu Koko"}
+  else if(currentPoke === "Tapubulu") {currentPokeAnswer = "Tapu Bulu"}
+  else if(currentPoke === "Tapufini") {currentPokeAnswer = "Tapu Fini"}
+  else if(currentPoke === "Typenull") {currentPokeAnswer = "Type: Null"}
+  else if(currentPoke === "Jangmoo") {currentPokeAnswer = "Jangmo-o"}
+  else if(currentPoke === "Hakamoo") {currentPokeAnswer = "Hakamo-o"}
+  else if(currentPoke === "Kommoo") {currentPokeAnswer = "Kommo-o"}
+  else if(currentPoke === "Sirfecthd") {currentPokeAnswer = "Sirfetch'd"} 
+  else if(currentPoke === "Mrrime") {currentPokeAnswer = "Mr. Rime"}
+  else{currentPokeAnswer = currentPoke}
 
   let currentSprite = getSprite(currentPoke);
   
@@ -221,10 +234,10 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
           if (userList.length === 0) return;
   
           //Compare guess
-          if (socket.id === userList[currTurn] && msg.text.toLowerCase() === currentPoke.toLowerCase()) {
+          if (socket.id === userList[currTurn] && msg.text.toLowerCase() === currentPokeAnswer.toLowerCase()) {
             let msg1 = {
-              user: userMap.get(socket.id), 
-              text: " has correctly guessed " + currentPoke + "!"
+              user: userMap.get(socket.id),  // Using .get(...) for the Map
+              text: " has correctly guessed " + currentPokeAnswer + "!"
             };
             io.emit('message', msg1);
   
@@ -308,7 +321,7 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
               }
               let msg1 = {
                 user: userMap.get(socket.id),
-                text: " has failed to guess " + currentPoke + "!"
+                text: " has failed to guess " + currentPokeAnswer + "!"
               };
               io.emit('message', msg1);
   
