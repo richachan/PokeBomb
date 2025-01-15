@@ -121,7 +121,7 @@ const gen7pokedex = ["Rowlet", "Dartrix", "Decidueye", "Litten", "Torracat", "In
   "Turtonator", "Togedemaru", "Mimikyu", "Bruxish", "Drampa", "Dhelmise", "Jangmoo", "Hakamoo", "Kommoo", 
   "Tapukoko", "Tapulele", "Tapubulu", "Tapufini", "Cosmog", "Cosmoem", "Solgaleo", "Lunala", "Nihilego", 
   "Buzzwole", "Pheromosa", "Xurkitree", "Celesteela", "Kartana", "Guzzlord", "Necrozma", "Magearna", 
-  "Marshadow", "Poipole", "Naganadel", "Stakataka", "Blacephalon", "Zeraora", "Meltan", "Melmetal"] ​
+  "Marshadow", "Poipole", "Naganadel", "Stakataka", "Blacephalon", "Zeraora", "Meltan", "Melmetal"] 
   
 
 // make sure to add conditionals for user answers on sirfetch'd, mr. rime
