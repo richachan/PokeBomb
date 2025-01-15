@@ -17,6 +17,8 @@ export default function Home() {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const [selectedGenerations, setSelectedGenerations] = useState<number[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null); // Ref for the bottom of the chatbox
+  const [userMap, setUserMap] = useState<{ [socketId: string]: string }>({});
+  const [currTurn, setCurrTurn] = useState<number>(0);
 
   useEffect(() => {
 
@@ -44,6 +46,11 @@ export default function Home() {
 
       socket.on('setTimer', (num) => {
         document.getElementById("timer").innerHTML = num.toString();
+      });
+
+      socket.on('players', (data: { userMap: { [id: string]: string }; currTurn: number }) => {
+        setUserMap(data.userMap);
+        setCurrTurn(data.currTurn);
       });
 
       socket.on('pokemon', ({ name, sprite ,guessed}: Pokemon) => {
@@ -101,6 +108,8 @@ export default function Home() {
     setSelectedGenerations(updatedGenerations);
     socket?.emit('updateGenerations', updatedGenerations);
   }
+  //for current players and turns
+  const playerEntries = Object.entries(userMap);
 
   return (
     <div style={{ margin: '40px auto', maxWidth: 600 }}>
@@ -149,6 +158,15 @@ export default function Home() {
         />
         <button type="submit">Send</button>
       </form>
+      <hr />
+      <h2>Current Players:</h2>
+      {playerEntries.length === 0 && <p>It's quiet in here</p>}
+      {playerEntries.map(([socketId, username], index) => (
+        <div key={socketId} style={{ margin: '4px 0' }}>
+          {username}
+          {index === currTurn && <span style={{ color: 'red', marginLeft: 8 }}>(Current turn)</span>}
+        </div>
+      ))}
     </div>
   );  
 }

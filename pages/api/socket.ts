@@ -6,7 +6,7 @@ import { matchesGlob } from 'path';
 
 
 let userMap = new Map<string,string>() //socket.id, username
-let userList = new Array()            //list of usernames
+let userList = new Array()            //list of socket ids
 let currTurn: number = 0;
 let timerId;
 let timerList = new Array();
@@ -155,174 +155,215 @@ const gen9pokedex = ["sprigatito", "floragato", "meowscarada", "fuecoco", "croca
   "revavroom", "orthworm", "greavard", "houndstone", "cetoddle", "cetitan", "veluza",
   "dondozo", "tatsugiri", "farigiraf", "dudunsparce"]
 
-let currentGenerations: number[] = []
+  let currentGenerations: number[] = [];
 
-function chooseRandomGeneration() 
-{
-  let randomGeneration: number
-  if(currentGenerations.length === 0)
-  {
-    randomGeneration = Math.floor(Math.random() * 9) + 1;
+  function chooseRandomGeneration() {
+    let randomGeneration: number;
+    if (currentGenerations.length === 0) {
+      // If no gens chosen, pick from 1 to 9
+      randomGeneration = Math.floor(Math.random() * 9) + 1;
+    } else {
+      // Otherwise pick from whichever gens are selected
+      randomGeneration = currentGenerations[Math.floor(Math.random() * currentGenerations.length)];
+    }
+  
+    switch (randomGeneration) {
+      case 1: return gen1pokedex;
+      case 2: return gen2pokedex;
+      case 3: return gen3pokedex;
+      case 4: return gen4pokedex;
+      case 5: return gen5pokedex;
+      case 6: return gen6pokedex;
+      case 7: return gen7pokedex;
+      case 8: return gen8pokedex;
+      case 9: return gen9pokedex;
+      default: return gen1pokedex;
+    }
   }
-  else
-  {
-    randomGeneration = currentGenerations[Math.floor(Math.random() * currentGenerations.length)];
+  
+  function getPokemon() {
+    const getPokedex = chooseRandomGeneration();
+    const randomIndex = Math.floor(Math.random() * getPokedex.length);
+    return getPokedex[randomIndex];
   }
-
-  switch(randomGeneration)
-  {
-    case 1:{return gen1pokedex;}
-    case 2:{return gen2pokedex;}
-    case 3:{return gen3pokedex;}
-    case 4:{return gen4pokedex;}
-    case 5:{return gen5pokedex;}
-    case 6:{return gen6pokedex;}
-    case 7:{return gen7pokedex;}
-    case 8:{return gen8pokedex;}
-    case 9:{return gen9pokedex;}
-    default: {return gen1pokedex;}
+  
+  function getSprite(name: string) {
+    return `https://play.pokemonshowdown.com/sprites/xyani/${name.toLowerCase()}.gif`;
   }
-}
-
-
-function getPokemon()
-{
-  const getPokedex = chooseRandomGeneration();
-  const randomIndex = Math.floor(Math.random() * getPokedex.length);
-  return getPokedex[randomIndex]; //returns random pokemon from pokedex list
-}
-
-//gets the sprite based on pokemon name from pokemonshowdown api
-function getSprite(name: string) 
-{
-  return `https://play.pokemonshowdown.com/sprites/xyani/${name.toLowerCase()}.gif`;
-}
-
-let currentPoke = getPokemon()
-let currentSprite = getSprite(currentPoke)
-
-export default function handler(req: NextApiRequest, res: NextApiResponseServerIO) 
-{
-  // If Socket.IO server is not set up yet, set it up
-  if (!res.socket.server.io) {
-    console.log('Initializing new Socket.IO server...');
-    
-    const io = new Server(res.socket.server, {
-      path: '/api/socket_io', // optional path
-      cors: {
-        origin: '*',
-      },
-    });
-
-    io.on('connection', (socket) => {
-      console.log('A client connected:', socket.id);
-
-      socket.on('message', (msg) => {
-        if(userList.length == 0){
-          return;
-        }
-
-        if(socket.id == userList[currTurn] && msg.text.toLowerCase() == currentPoke){
-          let msg1 = {user: userMap[socket.id], text:" has correctly guessed " + currentPoke + "!"};
-          io.emit('message', msg1);
-          currTurn = (currTurn + 1) % userList.length; 
-          msg1 = {user: "It is now " + userMap[userList[currTurn]] + "'s turn to guess!", text:""};
-          io.emit('message', msg1);
-          for(var id of timerList)clearInterval(id);
-
-          //shuffle the pokemon and sprite and send to room.tsx (frontend)
-          currentPoke = getPokemon();
-          currentSprite = getSprite(currentPoke);
-          io.emit('pokemon', { name: currentPoke, sprite: currentSprite, guessed:true});
-        }
-        else if (socket.id == userList[currTurn]) 
-        {
-          const msg2 = {user: userMap[socket.id], text: " incorrectly guessed " + msg.text};
-          io.emit('message', msg2);
-        }
+  
+  //Shuffle the initial Pokémon
+  let currentPoke = getPokemon();
+  let currentSprite = getSprite(currentPoke);
+  
+  export default function handler(req: NextApiRequest, res: NextApiResponseServerIO) {
+    if (!res.socket.server.io) {
+      console.log('Initializing new Socket.IO server...');
+      
+      const io = new Server(res.socket.server, {
+        path: '/api/socket_io',
+        cors: {
+          origin: '*',
+        },
       });
+  
+      io.on('connection', (socket) => {
+        console.log('A client connected:', socket.id);
 
-      socket.on('register', (userName) => {
-        userList.push(socket.id);  
-        userMap[socket.id] = userName;       
-
-        console.log(userMap[socket.id] + " has joined the game with client id: " + socket.id);
-        let registerMsg = {user: userMap[socket.id], text:" has joined the game!"};
-        io.emit('message', registerMsg);
-        if (userList.length == 1) {
-          currTurn = 0;
-        }
-
-        console.log("Current turn " + userList[currTurn]);
-
-        //emit for the client everytime they first join because they won't see what already connected players are seeing
-        io.emit('pokemon', { name: currentPoke, sprite: currentSprite,guessed:false });
-
-        //emit what generations are currently selected whenever a client first joins
-        io.emit('updateGenerations', currentGenerations);
-      });
-
-      socket.on('updateGenerations', (gens: number[]) =>
-      {
-        currentGenerations = gens
-        io.emit('updateGenerations', currentGenerations)
-      });
-
-      socket.on('newTimer', () =>{
-        let count = 15;
-        io.emit('setTimer',count);
-        timerId = setInterval(() => { 
-          count--;
-          if(count == 0){
-            for(var id of timerList)clearInterval(id);
-            let msg1 = {user: userMap[socket.id], text:" has failed to guess " + currentPoke + "!"};
+        socket.on('message', (msg) => {
+          if (userList.length === 0) return;
+  
+          //Compare guess
+          if (socket.id === userList[currTurn] && msg.text.toLowerCase() === currentPoke) {
+            let msg1 = {
+              user: userMap.get(socket.id),  // Using .get(...) for the Map
+              text: " has correctly guessed " + currentPoke + "!"
+            };
             io.emit('message', msg1);
-            currTurn = (currTurn + 1) % userList.length; 
-            msg1 = {user: "It is now " + userMap[userList[currTurn]] + "'s turn to guess!", text:""};
-            io.emit('message', msg1); 
-
-            //shuffle the pokemon and sprite and send to room.tsx (frontend)
+  
+            //Advance turn
+            currTurn = (currTurn + 1) % userList.length;
+            msg1 = {
+              user: "It is now " + userMap.get(userList[currTurn]) + "'s turn to guess!",
+              text: ""
+            };
+            io.emit('message', msg1);
+  
+            //Clear timers
+            for (const id of timerList) {
+              clearInterval(id);
+            }
+  
+            //Get next Pokemon
             currentPoke = getPokemon();
             currentSprite = getSprite(currentPoke);
-            io.emit('pokemon', { name: currentPoke, sprite: currentSprite ,guessed: true});
+            io.emit('pokemon', { name: currentPoke, sprite: currentSprite, guessed: true });
+          } 
+          else if (socket.id === userList[currTurn]) {
+            //Wrong guess
+            const msg2 = {
+              user: userMap.get(socket.id), 
+              text: " incorrectly guessed " + msg.text
+            };
+            io.emit('message', msg2);
           }
-          io.emit('setTimer',count);
-        }
-        , 1000);
-        timerList.push(timerId);
-      });
+        });
+ 
+        socket.on('register', (userName) => {
+          userList.push(socket.id);
+          userMap.set(socket.id, userName);
+  
+          console.log(userMap.get(socket.id) + " has joined the game with client id: " + socket.id);
+          let registerMsg = {
+            user: userMap.get(socket.id),
+            text: " has joined the game!"
+          };
+          io.emit('message', registerMsg);
 
-      socket.on('disconnect', () => {
-        console.log('Client disconnected:', socket.id);
-        let index = userList.indexOf(socket.id)
-        let msg1 = {user: userMap[socket.id], text:" has disconnected "};
-        io.emit('message', msg1);
-        userList.splice(userList.indexOf(socket.id),1)
-        userMap.delete(socket.id)
-        if (userList.length === 0) {
-          // Reset the game state when no players are left
-          currTurn = 0;
-          return;
-        }
-        const keysArray = Array.from(userMap.keys());
-        console.log(keysArray); 
-        if(currTurn > index)currTurn--  // 3 
-        else if ( currTurn == index){
-          currTurn = currTurn % userList.length
-          msg1 = {user: "It is now " + userMap[userList[currTurn]] + "'s turn to guess!", text:""};
-          io.emit('message', msg1); 
-          for(var id of timerList)clearInterval(id);
-          io.emit('pokemon', { name: currentPoke, sprite: currentSprite ,guessed: true});
-        }
-      });
-    });
+          if (userList.length === 1) {
+            currTurn = 0;
+          }
+  
+          console.log("Current turn socket ID: " + userList[currTurn]);
+  
+          io.emit('players', {
+            userMap: Object.fromEntries(userMap),
+            currTurn
+          });
+  
+          io.emit('pokemon', { name: currentPoke, sprite: currentSprite, guessed: false });
+          io.emit('updateGenerations', currentGenerations);
+        });
 
-    // Attach the Socket.IO server to the Next.js socket server
-    res.socket.server.io = io;
-  } else {
-    console.log('Socket.IO server already running');
+        socket.on('updateGenerations', (gens: number[]) => {
+          currentGenerations = gens;
+          io.emit('updateGenerations', currentGenerations);
+        });
+  
+        socket.on('newTimer', () => {
+          let count = 15;
+          io.emit('setTimer', count);
+  
+          timerId = setInterval(() => {
+            count--;
+            if (count === 0) {
+              //Time ran out
+              for (const id of timerList) {
+                clearInterval(id);
+              }
+              let msg1 = {
+                user: userMap.get(socket.id),
+                text: " has failed to guess " + currentPoke + "!"
+              };
+              io.emit('message', msg1);
+  
+              //Advance turn
+              currTurn = (currTurn + 1) % userList.length;
+              msg1 = {
+                user: "It is now " + userMap.get(userList[currTurn]) + "'s turn to guess!",
+                text: ""
+              };
+              io.emit('message', msg1);
+  
+              //Shuffle to new Pokémon
+              currentPoke = getPokemon();
+              currentSprite = getSprite(currentPoke);
+              io.emit('pokemon', { name: currentPoke, sprite: currentSprite, guessed: true });
+            }
+  
+            io.emit('setTimer', count);
+          }, 1000);
+  
+          timerList.push(timerId);
+        });
+  
+        socket.on('disconnect', () => {
+          console.log('Client disconnected:', socket.id);
+          let index = userList.indexOf(socket.id);
+  
+          let msg1 = {
+            user: userMap.get(socket.id),
+            text: " has disconnected "
+          };
+          io.emit('message', msg1);
+  
+          userList.splice(index, 1);
+          userMap.delete(socket.id);
+  
+          if (userList.length === 0) {
+            //Reset if no players left
+            currTurn = 0;
+            return;
+          }
+  
+          if (currTurn > index) {
+            currTurn--;
+          }
+          else if (currTurn === index) {
+            currTurn = currTurn % userList.length;
+            msg1 = {
+              user: "It is now " + userMap.get(userList[currTurn]) + "'s turn to guess!",
+              text: ""
+            };
+            io.emit('message', msg1);
+  
+            //Clear old timers
+            for (const id of timerList) {
+              clearInterval(id);
+            }
+            io.emit('pokemon', { name: currentPoke, sprite: currentSprite, guessed: true });
+          }
+  
+          io.emit('players', {
+            userMap: Object.fromEntries(userMap),
+            currTurn
+          });
+        });
+      });
+  
+      res.socket.server.io = io;
+    } else {
+      console.log('Socket.IO server already running');
+    }
+  
+    res.end();
   }
-
-  // We must end the response so Next.js can finish the API route
-  res.end();
-}
