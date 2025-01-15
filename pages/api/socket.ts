@@ -21,9 +21,9 @@ type NextApiResponseServerIO = NextApiResponse & {
 //NOTES 
 //implement: when the room announces the pokemon name that was unguessed, make it have correct punctuation
 
-// make sure to add conditionals for user answers on mr. mime and farfetch'd
-// the correct answer should be based on the pokemon's offical name, so the punctuation should be included
-// i.e "mr. mime" is correct, but "Mr Mime" would not be
+//make sure to add conditionals for user answers on mr. mime and farfetch'd
+//the correct answer should be based on the pokemon's offical name, so the punctuation should be included
+//i.e "mr. mime" is correct, but "Mr Mime" would not be
 const gen1pokedex = ["Bulbasaur", "Ivysaur", "Venusaur", "Charmander", "Charmeleon", "Charizard", "Squirtle", "Wartortle", "Blastoise", 
   "Caterpie", "Metapod", "Butterfree", "Weedle", "Kakuna", "Beedrill", "Pidgey", "Pidgeotto", "Pidgeot", 
   "Rattata", "Raticate", "Spearow", "Fearow", "Ekans", "Arbok", "Pikachu", "Raichu", "Sandshrew", "Sandslash", 
@@ -148,7 +148,7 @@ const gen8pokedex = ["Grookey", "Thwackey", "Rillaboom", "Scorbunny", "Raboot", 
 //fezandipiti, ogerpon, archaludon, hydrapple, gouging fire, raging bolt, iron boulder, iron crown, 
 //iron crown, terapagos, pecharunt
 
-// make sure to add conditionals for user answers on palafin-hero
+//make sure to add conditionals for user answers on palafin-hero
 const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Crocalor", "Skeledirge", "Quaxly",
   "Quaxwell", "Quaquaval", "Lechonk", "Oinkologne", "Tarountula", "Spidops", "Nymble", "Lokix", "Tandemaus", 
  "Maushold", "Smoliv", "Dolliv", "Arboliva", "Tadbulb", "Bellibolt", "Capsakid", "Scovillain", "Rellor",
@@ -161,10 +161,10 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
   function chooseRandomGeneration() {
     let randomGeneration: number;
     if (currentGenerations.length === 0) {
-      // If no gens chosen, pick from 1 to 9
+      //If no gens chosen, pick from 1 to 9
       randomGeneration = Math.floor(Math.random() * 9) + 1;
     } else {
-      // Otherwise pick from whichever gens are selected
+      //Otherwise pick from whichever gens are selected
       randomGeneration = currentGenerations[Math.floor(Math.random() * currentGenerations.length)];
     }
   
@@ -216,7 +216,7 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
           //Compare guess
           if (socket.id === userList[currTurn] && msg.text.toLowerCase() === currentPoke) {
             let msg1 = {
-              user: userMap.get(socket.id),  // Using .get(...) for the Map
+              user: userMap.get(socket.id), 
               text: " has correctly guessed " + currentPoke + "!"
             };
             io.emit('message', msg1);
