@@ -230,6 +230,10 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
   
             //Advance turn
             currTurn = (currTurn + 1) % userList.length;
+            io.emit('players', {
+              userMap: Object.fromEntries(userMap),
+              currTurn,
+            });
             msg1 = {
               user: "It is now " + userMap.get(userList[currTurn]) + "'s turn to guess!",
               text: ""
@@ -269,6 +273,10 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
 
           if (userList.length === 1) {
             currTurn = 0;
+            io.emit('players', {
+              userMap: Object.fromEntries(userMap),
+              currTurn,
+            });
           }
   
           console.log("Current turn socket ID: " + userList[currTurn]);
@@ -306,6 +314,10 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
   
               //Advance turn
               currTurn = (currTurn + 1) % userList.length;
+              io.emit('players', {
+                userMap: Object.fromEntries(userMap),
+                currTurn,
+              });
               msg1 = {
                 user: "It is now " + userMap.get(userList[currTurn]) + "'s turn to guess!",
                 text: ""
@@ -340,14 +352,26 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
           if (userList.length === 0) {
             //Reset if no players left
             currTurn = 0;
+            io.emit('players', {
+              userMap: Object.fromEntries(userMap),
+              currTurn,
+            });
             return;
           }
   
           if (currTurn > index) {
             currTurn--;
+            io.emit('players', {
+              userMap: Object.fromEntries(userMap),
+              currTurn,
+            });
           }
           else if (currTurn === index) {
             currTurn = currTurn % userList.length;
+            io.emit('players', {
+              userMap: Object.fromEntries(userMap),
+              currTurn,
+            });
             msg1 = {
               user: "It is now " + userMap.get(userList[currTurn]) + "'s turn to guess!",
               text: ""

@@ -113,16 +113,36 @@ export default function Home() {
 
   return (
     <div style={{ margin: '40px auto', maxWidth: 600 }}>
-      <h1>PokeBomb!</h1>
+      <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'left', height: '0px', overflow: 'hidden'}}></div>
+        <img src={"https://static1.textcraft.net/data1/8/a/8ae4b06eda09c6b510322a429a0002e8603e577ada39a3ee5e6b4b0d3255bfef95601890afd80709da39a3ee5e6b4b0d3255bfef95601890afd80709e997837b44e4cf02f63ab47b56cf530e.png"} style={{ maxWidth: '150px', height: 'auto' }} />
+      
+        {pokemon && (
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column',  // Column to stack "Current Pokémon" text above sprite
+      alignItems: 'center',     // Center horizontally
+      justifyContent: 'center',
+      height: '150px',
+      overflow: 'hidden'
+    }}
+  >
+    {/* "Current Pokémon" text image on top */}
+    <img
+      src="https://static1.textcraft.net/data1/0/8/088fb1a4ab057f4fcf7d487006499060c7fe5773b4406740fe66ac2775cc67d5ddd62a2bdd679926da39a3ee5e6b4b0d3255bfef95601890afd80709d673484cdc7c3e7a5c077b25163a9716.png"
+      style={{ maxWidth: '150px', height: 'auto', marginBottom: '10px' }}
+      alt="Current Pokémon Title"
+    />
 
-      {pokemon && (
-      <div style={{ textAlign: 'center', marginBottom: 20 }}>
-        <h2>Current Pokémon</h2>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '150px', overflow: 'hidden'}}>
-          <img src={pokemon.sprite} alt={pokemon.name} style={{ maxWidth: '150px', height: 'auto' }} />
-        </div>
-      </div>
-      )}
+    {/* Actual Pokémon sprite below */}
+    <img
+      src={pokemon.sprite}
+      alt={pokemon.name}
+      style={{ maxWidth: '150px', height: 'auto' }}
+    />
+  </div>
+)}
+
 
       <div id = "timer" style={{display: 'flex', justifyContent: 'center',alignItems: 'center'}}>
           Waiting for game to start...
@@ -159,12 +179,12 @@ export default function Home() {
         <button type="submit">Send</button>
       </form>
       <hr />
-      <h2>Current Players:</h2>
+      <h2>Playing:</h2>
       {playerEntries.length === 0 && <p>It's quiet in here</p>}
       {playerEntries.map(([socketId, username], index) => (
         <div key={socketId} style={{ margin: '4px 0' }}>
           {username}
-          {index === currTurn && <span style={{ color: 'red', marginLeft: 8 }}>(Current turn)</span>}
+          {index === currTurn && <strong style={{ color: 'yellow', marginLeft: 8 }}>← Current turn</strong>}
         </div>
       ))}
     </div>
