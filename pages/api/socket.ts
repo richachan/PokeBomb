@@ -387,9 +387,12 @@ function chooseRandomGeneration()
                 clearInterval(id);
               }
               let msg1 = {
-                user: userMap.get(socket.id),
+                user: userMap.get(userList[currTurn]),
                 text: " has failed to guess " + currentPokeAnswer + "!"
               };
+              loseLife(userList[currTurn], io);
+              //check status of game before announcing next turn
+              if(checkGame(io)) return;
               io.emit('message', msg1);
   
               //Advance turn
