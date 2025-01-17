@@ -6,11 +6,13 @@ import { matchesGlob } from 'path';
 
 
 let userMap = new Map<string,string>() //socket.id, username
+let liveMap = new Map<string,number>() //socket.id, lives
 let userList = new Array()            //list of socket ids
 let currTurn: number = 0;
 let timerId;
 let timerList = new Array();
 let currentGenerations: number[] = [];
+
 type NextApiResponseServerIO = NextApiResponse & {
   socket: Socket & {
     server: HTTPServer & {
@@ -144,6 +146,66 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
  "Revavroom", "Orthworm", "Greavard", "Houndstone", "Cetoddle", "Cetitan", "Veluza",
   "Dondozo", "Tatsugiri", "Farigiraf", "Dudunsparce"]
 
+//only return players with lives left
+function activePlayers() {
+  return userList.filter((id) => (liveMap.get(id) ?? 0 > 0)); 
+}
+
+function checkGame(io: Server) {
+  const active = activePlayers();
+  if (active.length === 1) {
+    //one player left and wins
+    const winnerId = active[0];
+    const winnerName = userMap.get(winnerId);
+    io.emit('message', { user: winnerName, text: " is the winner!" });
+    //new game! everyone has 3 lives again
+    userList.forEach((id) => { liveMap.set(id, 3); });
+    
+    io.emit('players', {
+      userMap: Object.fromEntries(userMap),
+      currTurn,
+      lives: Object.fromEntries(liveMap),
+    });
+    return true;
+  }
+  else if (active.length === 0 && userList.length > 0) {
+    //no players left
+    io.emit('message', { user: 'No one', text: " has won. Restarting..." });
+    userList.forEach((id) => { liveMap.set(id, 3); });
+    currTurn = 0
+    io.emit('players', {
+      userMap: Object.fromEntries(userMap),
+      currTurn,
+      lives: Object.fromEntries(liveMap),
+    });
+    return true;
+  }
+  while ((liveMap.get(userList[currTurn]) ?? 0) <= 0) {
+    currTurn = (currTurn + 1) % userList.length;
+  }
+  io.emit('players', {
+    userMap: Object.fromEntries(userMap),
+    currTurn,
+    lives: Object.fromEntries(liveMap),
+  });
+  return false;
+}
+
+function loseLife(socketId: string, io: Server) {
+  let old = liveMap.get(socketId) ?? 0;
+  liveMap.set(socketId, old - 1); //decrement lives
+  //don't forget to emit!
+  io.emit('players', {
+    userMap: Object.fromEntries(userMap),
+    currTurn,
+    lives: Object.fromEntries(liveMap),
+  });
+
+}
+
+//if there are 2 or more players active ensure the current turn is a valid player, otherwise skip over them
+
+
 function chooseRandomGeneration() 
 {
     let randomGeneration: number;
@@ -186,7 +248,7 @@ function chooseRandomGeneration()
   }
   
   //Shuffle the initial Pokémon
-  let currentPoke = getPokemon();
+  let currentPoke: string;
   let currentPokeAnswer;
 
   function checkPokemonName()
@@ -245,7 +307,10 @@ function chooseRandomGeneration()
             io.emit('players', {
               userMap: Object.fromEntries(userMap),
               currTurn,
+              lives: Object.fromEntries(liveMap),
             });
+            //check status of game before announcing next turn
+            if (checkGame(io)) return;
             msg1 = {
               user: "It is now " + userMap.get(userList[currTurn]) + "'s turn to guess!",
               text: ""
@@ -275,7 +340,8 @@ function chooseRandomGeneration()
         socket.on('register', (userName) => {
           userList.push(socket.id);
           userMap.set(socket.id, userName);
-  
+          liveMap.set(socket.id, 3);
+
           console.log(userMap.get(socket.id) + " has joined the game with client id: " + socket.id);
           let registerMsg = {
             user: userMap.get(socket.id),
@@ -288,6 +354,7 @@ function chooseRandomGeneration()
             io.emit('players', {
               userMap: Object.fromEntries(userMap),
               currTurn,
+              lives: Object.fromEntries(liveMap),
             });
           }
   
@@ -295,7 +362,8 @@ function chooseRandomGeneration()
   
           io.emit('players', {
             userMap: Object.fromEntries(userMap),
-            currTurn
+            currTurn,
+            lives: Object.fromEntries(liveMap),
           });
   
           io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: false });
@@ -329,6 +397,7 @@ function chooseRandomGeneration()
               io.emit('players', {
                 userMap: Object.fromEntries(userMap),
                 currTurn,
+                lives: Object.fromEntries(liveMap),
               });
               msg1 = {
                 user: "It is now " + userMap.get(userList[currTurn]) + "'s turn to guess!",
@@ -378,6 +447,7 @@ function chooseRandomGeneration()
   
           userList.splice(index, 1);
           userMap.delete(socket.id);
+          liveMap.delete(socket.id);
   
           if (userList.length === 0) {
             //Reset if no players left
@@ -385,6 +455,7 @@ function chooseRandomGeneration()
             io.emit('players', {
               userMap: Object.fromEntries(userMap),
               currTurn,
+              lives: Object.fromEntries(liveMap),
             });
             return;
           }
@@ -394,6 +465,7 @@ function chooseRandomGeneration()
             io.emit('players', {
               userMap: Object.fromEntries(userMap),
               currTurn,
+              lives: Object.fromEntries(liveMap),
             });
           }
           else if (currTurn === index) {
@@ -401,6 +473,7 @@ function chooseRandomGeneration()
             io.emit('players', {
               userMap: Object.fromEntries(userMap),
               currTurn,
+              lives: Object.fromEntries(liveMap),
             });
             msg1 = {
               user: "It is now " + userMap.get(userList[currTurn]) + "'s turn to guess!",
@@ -417,7 +490,8 @@ function chooseRandomGeneration()
   
           io.emit('players', {
             userMap: Object.fromEntries(userMap),
-            currTurn
+            currTurn,
+            lives: Object.fromEntries(liveMap),
           });
         });
       });
