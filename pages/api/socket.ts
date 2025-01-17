@@ -147,7 +147,8 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
   "Dondozo", "Tatsugiri", "Farigiraf", "Dudunsparce"]
 
 //only return players with lives left
-function activePlayers() {
+function activePlayers() 
+{
   return userList.filter((id) => (liveMap.get(id) ?? 0 > 0)); 
 }
 
@@ -234,6 +235,12 @@ function chooseRandomGeneration()
   
   function getPokemon() 
   {
+    const missingNo = Math.floor(Math.random() * 5000);
+    if(missingNo != 152)
+    {
+      return "MissingNo."
+    }
+    
     const getPokedex = chooseRandomGeneration();
     const randomIndex = Math.floor(Math.random() * getPokedex.length);
     return getPokedex[randomIndex];
@@ -241,6 +248,10 @@ function chooseRandomGeneration()
   
   function getSprite(name: string) 
   {
+    if(name === "MissingNo.")
+    {
+      return '/MissingNo.gif'
+    }
     return `https://play.pokemonshowdown.com/sprites/xyani/${name.toLowerCase()}.gif`;
   }
   
@@ -268,6 +279,7 @@ function chooseRandomGeneration()
     else if(currentPoke === "Kommoo") {currentPokeAnswer = "Kommo-o"}
     else if(currentPoke === "Sirfecthd") {currentPokeAnswer = "Sirfetch'd"} 
     else if(currentPoke === "Mrrime") {currentPokeAnswer = "Mr. Rime"}
+    else if(currentPoke === "MissingNo.") {currentPokeAnswer = "MissingNo."}
     else{currentPokeAnswer = currentPoke}
   }
 
