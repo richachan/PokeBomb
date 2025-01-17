@@ -114,7 +114,7 @@ export default function Home() {
   return (
     <div style={{ margin: '40px auto', maxWidth: 600 }}>
       <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'left', height: '0px', overflow: 'hidden'}}></div>
-        <img src={"https://static1.textcraft.net/data1/8/a/8ae4b06eda09c6b510322a429a0002e8603e577ada39a3ee5e6b4b0d3255bfef95601890afd80709da39a3ee5e6b4b0d3255bfef95601890afd80709e997837b44e4cf02f63ab47b56cf530e.png"} style={{ maxWidth: '150px', height: 'auto' }} />
+        <img src={"/pokebomb_logo.png"} style={{ maxWidth: '150px', height: 'auto' }} />
       
         {pokemon && (
   <div
@@ -124,29 +124,45 @@ export default function Home() {
       alignItems: 'center',     // Center horizontally
       justifyContent: 'center',
       height: '150px',
-      overflow: 'hidden'
+      marginTop: '-40px',
+      overflow: 'hidden',
+      position: 'relative',
+      zIndex: 1
     }}
   >
     {/* "Current Pokémon" text image on top */}
     <img
-      src="https://static1.textcraft.net/data1/0/8/088fb1a4ab057f4fcf7d487006499060c7fe5773b4406740fe66ac2775cc67d5ddd62a2bdd679926da39a3ee5e6b4b0d3255bfef95601890afd80709d673484cdc7c3e7a5c077b25163a9716.png"
-      style={{ maxWidth: '150px', height: 'auto', marginBottom: '10px' }}
+      src="/current_pokemon.png"
+      style={{ width: '180px', height: 'auto', marginBottom: '0px' }}
       alt="Current Pokémon Title"
-    />
-
-    {/* Actual Pokémon sprite below */}
-    <img
-      src={pokemon.sprite}
-      alt={pokemon.name}
-      style={{ maxWidth: '150px', height: 'auto' }}
     />
   </div>
 )}
+  {pokemon && (
+  <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',     // Center horizontally
+        justifyContent: 'center',
+        height: '165px',
+        marginTop: '-60px',
+        overflow: 'hidden',
+        position: 'relative',
+        zIndex: 2
+      }}
+    >
+      {/* Actual Pokémon sprite below */}
+      <img
+        src={pokemon.sprite}
+        alt={pokemon.name}
+        style={{width: 'auto', height: 'auto'}}
+      />
+    </div>
+  )}
 
-
-      <div id = "timer" style={{display: 'flex', justifyContent: 'center',alignItems: 'center'}}>
-          Waiting for game to start...
-      </div>
+    <div id = "timer" style={{display: 'flex', justifyContent: 'center',alignItems: 'center'}}>
+      Waiting for game to start...
+    </div>
 
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10, marginBottom: 20 }}>
       {Array.from({ length: 9 }, (_, i) => i + 1).map((gen) => (
