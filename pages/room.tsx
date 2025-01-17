@@ -19,6 +19,8 @@ export default function Home() {
   const messagesEndRef = useRef<HTMLDivElement>(null); // Ref for the bottom of the chatbox
   const [userMap, setUserMap] = useState<{ [socketId: string]: string }>({});
   const [currTurn, setCurrTurn] = useState<number>(0);
+  const [lives, setLives] = useState<{ [socketId: string]: number }>({});
+
 
   useEffect(() => {
 
@@ -48,9 +50,10 @@ export default function Home() {
         document.getElementById("timer").innerHTML = num.toString();
       });
 
-      socket.on('players', (data: { userMap: { [id: string]: string }; currTurn: number }) => {
+      socket.on('players', (data: { userMap: { [id: string]: string }; currTurn: number; lives: { [id: string]: number }}) => {
         setUserMap(data.userMap);
         setCurrTurn(data.currTurn);
+        setLives(data.lives);
       });
 
       socket.on('pokemon', ({ name, sprite ,guessed}: Pokemon) => {
@@ -199,7 +202,7 @@ export default function Home() {
       {playerEntries.length === 0 && <p>It's quiet in here</p>}
       {playerEntries.map(([socketId, username], index) => (
         <div key={socketId} style={{ margin: '4px 0' }}>
-          {username}
+          {username} {lives[socketId]}
           {index === currTurn && <strong style={{ color: 'yellow', marginLeft: 8 }}>← Current turn</strong>}
         </div>
       ))}
