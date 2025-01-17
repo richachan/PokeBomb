@@ -186,7 +186,7 @@ function chooseRandomGeneration()
   }
   
   //Shuffle the initial Pokémon
-  let currentPoke: string;
+  let currentPoke = getPokemon();
   let currentPokeAnswer;
 
   function checkPokemonName()
