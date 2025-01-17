@@ -10,6 +10,7 @@ let userList = new Array()            //list of socket ids
 let currTurn: number = 0;
 let timerId;
 let timerList = new Array();
+let currentGenerations: number[] = [];
 type NextApiResponseServerIO = NextApiResponse & {
   socket: Socket & {
     server: HTTPServer & {
@@ -18,12 +19,6 @@ type NextApiResponseServerIO = NextApiResponse & {
   };
 };
 
-//NOTES 
-//implement: when the room announces the pokemon name that was unguessed, make it have correct punctuation
-
-//make sure to add conditionals for user answers on mr. mime and farfetch'd
-//the correct answer should be based on the pokemon's offical name, so the punctuation should be included
-//i.e "mr. mime" is correct, but "Mr Mime" would not be
 const gen1pokedex = ["Bulbasaur", "Ivysaur", "Venusaur", "Charmander", "Charmeleon", "Charizard", "Squirtle", "Wartortle", "Blastoise", 
   "Caterpie", "Metapod", "Butterfree", "Weedle", "Kakuna", "Beedrill", "Pidgey", "Pidgeotto", "Pidgeot", 
   "Rattata", "Raticate", "Spearow", "Fearow", "Ekans", "Arbok", "Pikachu", "Raichu", "Sandshrew", "Sandslash", 
@@ -40,7 +35,6 @@ const gen1pokedex = ["Bulbasaur", "Ivysaur", "Venusaur", "Charmander", "Charmele
   "Vaporeon", "Jolteon", "Flareon", "Porygon", "Omanyte", "Omastar", "Kabuto", "Kabutops", "Aerodactyl", "Snorlax", 
   "Articuno", "Zapdos", "Moltres", "Dratini", "Dragonair", "Dragonite", "Mewtwo", "Mew"]
 
-// make sure to add conditionals for user answers on ho-oh, porygon-2
 const gen2pokedex = ["Chikorita", "Bayleef", "Meganium", "Cyndaquil", "Quilava", "Typhlosion", "Totodile", "Croconaw", "Feraligatr",
  "Sentret", "Furret", "Hoothoot", "Noctowl", "Ledyba", "Ledian", "Spinarak", "Ariados", "Crobat", "Chinchou", "Lanturn",
  "Pichu", "Cleffa", "Igglybuff", "Togepi", "Togetic", "Natu", "Xatu", "Mareep", "Flaaffy", "Ampharos", "Bellossom",
@@ -67,7 +61,6 @@ const gen3pokedex = ["Treecko", "Grovyle", "Sceptile", "Torchic", "Combusken", "
   "Luvdisc", "Bagon", "Shelgon", "Salamence", "Beldum", "Metang", "Metagross", "Regirock", "Regice", "Registeel", 
   "Latias", "Latios", "Kyogre", "Groudon", "Rayquaza", "Jirachi", "Deoxys"]
 
-// make sure to add conditionals for user answers on porygon-z, mime jr.
 const gen4pokedex = ["Turtwig", "Grotle", "Torterra", "Chimchar", "Monferno", "Infernape", "Piplup", "Prinplup", "Empoleon", 
   "Starly", "Staravia", "Staraptor", "Bidoof", "Bibarel", "Kricketot", "Kricketune", "Shinx", "Luxio", "Luxray", 
   "Budew", "Roserade", "Cranidos", "Rampardos", "Shieldon", "Bastiodon", "Burmy", "Wormadam", "Mothim", 
@@ -100,7 +93,6 @@ const gen5pokedex = ["Victini", "Snivy", "Servine", "Serperior", "Tepig", "Pigni
   "Hydreigon", "Larvesta", "Volcarona", "Cobalion", "Terrakion", "Virizion", "Tornadus", "Thundurus", 
   "Reshiram", "Zekrom", "Landorus", "Kyurem", "Keldeo", "Meloetta", "Genesect"]
 
-// make sure to add conditionals for user answers on flabébé
 const gen6pokedex = ["Chespin", "Quilladin", "Chesnaught", "Fennekin", "Braixen", "Delphox", "Froakie", "Frogadier", "Greninja", 
   "Bunnelby", "Diggersby", "Fletchling", "Fletchinder", "Talonflame", "Scatterbug", "Spewpa", "Vivillon", 
   "Litleo", "Pyroar", "Flabébé", "Floette", "Florges", "Skiddo", "Gogoat", "Pancham", "Pangoro", "Furfrou", 
@@ -110,7 +102,6 @@ const gen6pokedex = ["Chespin", "Quilladin", "Chesnaught", "Fennekin", "Braixen"
   "Goomy", "Sliggoo", "Goodra", "Klefki", "Phantump", "Trevenant", "Pumpkaboo", "Gourgeist", "Bergmite", 
   "Avalugg", "Noibat", "Noivern", "Xerneas", "Yveltal", "Zygarde", "Diancie", "Hoopa", "Volcanion"]
 
-// make sure to add conditionals for user answers on tapu lele, tapu koko, tapu bulu, tapu fini, type: null, jangmo-o, hakamo-o, kommo-o
 const gen7pokedex = ["Rowlet", "Dartrix", "Decidueye", "Litten", "Torracat", "Incineroar", "Popplio", "Brionne", "Primarina", 
   "Pikipek", "Trumbeak", "Toucannon", "Yungoos", "Gumshoos", "Grubbin", "Charjabug", "Vikavolt", "Crabrawler", 
   "Crabominable", "Oricorio", "Cutiefly", "Ribombee", "Rockruff", "Lycanroc", "Wishiwashi", "Mareanie", "Toxapex", 
@@ -122,8 +113,6 @@ const gen7pokedex = ["Rowlet", "Dartrix", "Decidueye", "Litten", "Torracat", "In
   "Buzzwole", "Pheromosa", "Xurkitree", "Celesteela", "Kartana", "Guzzlord", "Necrozma", "Magearna", 
   "Marshadow", "Poipole", "Naganadel", "Stakataka", "Blacephalon", "Zeraora", "Meltan", "Melmetal"] 
   
-
-// make sure to add conditionals for user answers on sirfetch'd, mr. rime
 const gen8pokedex = ["Grookey", "Thwackey", "Rillaboom", "Scorbunny", "Raboot", "Cinderace", "Sobble", "Drizzile", "Inteleon", 
   "Skwovet", "Greedent", "Rookidee", "Corvisquire", "Corviknight", "Blipbug", "Dottler", "Orbeetle", 
   "Nickit", "Thievul", "Gossifleur", "Eldegoss", "Wooloo", "Dubwool", "Chewtle", "Drednaw", "Yamper", 
@@ -155,19 +144,22 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
  "Revavroom", "Orthworm", "Greavard", "Houndstone", "Cetoddle", "Cetitan", "Veluza",
   "Dondozo", "Tatsugiri", "Farigiraf", "Dudunsparce"]
 
-  let currentGenerations: number[] = [];
-
-  function chooseRandomGeneration() {
+function chooseRandomGeneration() 
+{
     let randomGeneration: number;
-    if (currentGenerations.length === 0) {
+    if (currentGenerations.length === 0) 
+    {
       //If no gens chosen, pick from 1 to 9
       randomGeneration = Math.floor(Math.random() * 9) + 1;
-    } else {
+    } 
+    else 
+    {
       //Otherwise pick from whichever gens are selected
       randomGeneration = currentGenerations[Math.floor(Math.random() * currentGenerations.length)];
     }
   
-    switch (randomGeneration) {
+    switch (randomGeneration) 
+    {
       case 1: return gen1pokedex;
       case 2: return gen2pokedex;
       case 3: return gen3pokedex;
@@ -181,39 +173,46 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
     }
   }
   
-  function getPokemon() {
+  function getPokemon() 
+  {
     const getPokedex = chooseRandomGeneration();
     const randomIndex = Math.floor(Math.random() * getPokedex.length);
     return getPokedex[randomIndex];
   }
   
-  function getSprite(name: string) {
+  function getSprite(name: string) 
+  {
     return `https://play.pokemonshowdown.com/sprites/xyani/${name.toLowerCase()}.gif`;
   }
   
   //Shuffle the initial Pokémon
-  let currentPoke = getPokemon();
-  let currentPokeAnswer
+  let currentPoke: string;
+  let currentPokeAnswer;
 
-  if(currentPoke === "Mrmime") {currentPokeAnswer = "Mr. Mime"}
-  else if(currentPoke === "Farfetchd") {currentPokeAnswer = "Farfetch'd"}
-  else if(currentPoke === "Porygon2") {currentPokeAnswer = "Porygon-2"}
-  else if(currentPoke === "Hooh") {currentPokeAnswer = "Ho-oh"}
-  else if(currentPoke === "PorygonZ") {currentPokeAnswer = "Porygon-Z"}
-  else if(currentPoke === "Mimejr") {currentPokeAnswer = "Mime Jr."}
-  else if(currentPoke === "Flabébé") {currentPokeAnswer = "Flabebe"}
-  else if(currentPoke === "Tapulele") {currentPokeAnswer = "Tapu Lele"}
-  else if(currentPoke === "Tapukoko") {currentPokeAnswer = "Tapu Koko"}
-  else if(currentPoke === "Tapubulu") {currentPokeAnswer = "Tapu Bulu"}
-  else if(currentPoke === "Tapufini") {currentPokeAnswer = "Tapu Fini"}
-  else if(currentPoke === "Typenull") {currentPokeAnswer = "Type: Null"}
-  else if(currentPoke === "Jangmoo") {currentPokeAnswer = "Jangmo-o"}
-  else if(currentPoke === "Hakamoo") {currentPokeAnswer = "Hakamo-o"}
-  else if(currentPoke === "Kommoo") {currentPokeAnswer = "Kommo-o"}
-  else if(currentPoke === "Sirfecthd") {currentPokeAnswer = "Sirfetch'd"} 
-  else if(currentPoke === "Mrrime") {currentPokeAnswer = "Mr. Rime"}
-  else{currentPokeAnswer = currentPoke}
+  function checkPokemonName()
+  {
+    currentPoke = getPokemon();
+    if(currentPoke === "Mrmime") {currentPokeAnswer = "Mr. Mime"}
+    else if(currentPoke === "Farfetchd") {currentPokeAnswer = "Farfetch'd"}
+    else if(currentPoke === "Porygon2") {currentPokeAnswer = "Porygon-2"}
+    else if(currentPoke === "Hooh") {currentPokeAnswer = "Ho-oh"}
+    else if(currentPoke === "PorygonZ") {currentPokeAnswer = "Porygon-Z"}
+    else if(currentPoke === "Mimejr") {currentPokeAnswer = "Mime Jr."}
+    else if(currentPoke === "Flabébé") {currentPokeAnswer = "Flabebe"}
+    else if(currentPoke === "Tapulele") {currentPokeAnswer = "Tapu Lele"}
+    else if(currentPoke === "Tapukoko") {currentPokeAnswer = "Tapu Koko"}
+    else if(currentPoke === "Tapubulu") {currentPokeAnswer = "Tapu Bulu"}
+    else if(currentPoke === "Tapufini") {currentPokeAnswer = "Tapu Fini"}
+    else if(currentPoke === "Typenull") {currentPokeAnswer = "Type: Null"}
+    else if(currentPoke === "Jangmoo") {currentPokeAnswer = "Jangmo-o"}
+    else if(currentPoke === "Hakamoo") {currentPokeAnswer = "Hakamo-o"}
+    else if(currentPoke === "Kommoo") {currentPokeAnswer = "Kommo-o"}
+    else if(currentPoke === "Sirfecthd") {currentPokeAnswer = "Sirfetch'd"} 
+    else if(currentPoke === "Mrrime") {currentPokeAnswer = "Mr. Rime"}
+    else{currentPokeAnswer = currentPoke}
+  }
 
+  checkPokemonName();
   let currentSprite = getSprite(currentPoke);
   
   export default function handler(req: NextApiRequest, res: NextApiResponseServerIO) {
@@ -259,25 +258,7 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
             }
   
             //Get next Pokemon
-            currentPoke = getPokemon();
-            if(currentPoke === "Mrmime") {currentPokeAnswer = "Mr. Mime"}
-            else if(currentPoke === "Farfetchd") {currentPokeAnswer = "Farfetch'd"}
-            else if(currentPoke === "Porygon2") {currentPokeAnswer = "Porygon-2"}
-            else if(currentPoke === "Hooh") {currentPokeAnswer = "Ho-oh"}
-            else if(currentPoke === "PorygonZ") {currentPokeAnswer = "Porygon-Z"}
-            else if(currentPoke === "Mimejr") {currentPokeAnswer = "Mime Jr."}
-            else if(currentPoke === "Flabébé") {currentPokeAnswer = "Flabebe"}
-            else if(currentPoke === "Tapulele") {currentPokeAnswer = "Tapu Lele"}
-            else if(currentPoke === "Tapukoko") {currentPokeAnswer = "Tapu Koko"}
-            else if(currentPoke === "Tapubulu") {currentPokeAnswer = "Tapu Bulu"}
-            else if(currentPoke === "Tapufini") {currentPokeAnswer = "Tapu Fini"}
-            else if(currentPoke === "Typenull") {currentPokeAnswer = "Type: Null"}
-            else if(currentPoke === "Jangmoo") {currentPokeAnswer = "Jangmo-o"}
-            else if(currentPoke === "Hakamoo") {currentPokeAnswer = "Hakamo-o"}
-            else if(currentPoke === "Kommoo") {currentPokeAnswer = "Kommo-o"}
-            else if(currentPoke === "Sirfecthd") {currentPokeAnswer = "Sirfetch'd"} 
-            else if(currentPoke === "Mrrime") {currentPokeAnswer = "Mr. Rime"}
-            else{currentPokeAnswer = currentPoke}
+            checkPokemonName();
             currentSprite = getSprite(currentPoke);
             io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
           } 
