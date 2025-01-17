@@ -56,7 +56,8 @@ export default function Home() {
         setLives(data.lives);
       });
 
-      socket.on('pokemon', ({ name, sprite ,guessed}: Pokemon) => {
+      socket.on('pokemon', ({ name, sprite ,guessed}: Pokemon) => 
+      {
         if(guessed)socket.emit('newTimer');
         setPokemon({ name, sprite ,guessed});
       });
@@ -203,7 +204,7 @@ export default function Home() {
       {playerEntries.map(([socketId, username], index) => (
         <div key={socketId} style={{ margin: '4px 0' }}>
           {username} {lives[socketId]}
-          {index === currTurn && <strong style={{ color: 'yellow', marginLeft: 8 }}>← Current turn</strong>}
+          {index === currTurn && <strong style={{ color: 'red', marginLeft: 8 }}>← Current turn</strong>}
         </div>
       ))}
     </div>

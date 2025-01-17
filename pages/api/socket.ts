@@ -3,14 +3,14 @@ import type { Server as HTTPServer } from 'http';
 import type { Socket } from 'net';
 import { Server } from 'socket.io';
 import { matchesGlob } from 'path';
+import { clear } from 'console';
 
 
 let userMap = new Map<string,string>() //socket.id, username
 let liveMap = new Map<string,number>() //socket.id, lives
 let userList = new Array()            //list of socket ids
 let currTurn: number = 0;
-let timerId;
-let timerList = new Array();
+let timer;
 let currentGenerations: number[] = [];
 
 type NextApiResponseServerIO = NextApiResponse & {
@@ -317,10 +317,8 @@ function chooseRandomGeneration()
             };
             io.emit('message', msg1);
   
-            //Clear timers
-            for (const id of timerList) {
-              clearInterval(id);
-            }
+            //Clear timer
+            clearInterval(timer);
   
             //Get next Pokemon
             checkPokemonName();
@@ -370,23 +368,29 @@ function chooseRandomGeneration()
           io.emit('updateGenerations', currentGenerations);
         });
 
-        socket.on('updateGenerations', (gens: number[]) => {
+        socket.on('updateGenerations', (gens: number[]) => 
+        {
           currentGenerations = gens;
           io.emit('updateGenerations', currentGenerations);
         });
   
-        socket.on('newTimer', () => {
+        socket.on('newTimer', () => 
+        {
+          if(timer)
+          {
+            clearInterval(timer)
+          }
           let count = 15;
           io.emit('setTimer', count);
   
-          timerId = setInterval(() => {
+          timer = setInterval(() => {
             count--;
-            if (count === 0) {
+            if (count === 0) 
+            {
               //Time ran out
-              for (const id of timerList) {
-                clearInterval(id);
-              }
-              let msg1 = {
+              clearInterval(timer);
+              let msg1 = 
+              {
                 user: userMap.get(userList[currTurn]),
                 text: " has failed to guess " + currentPokeAnswer + "!"
               };
@@ -394,55 +398,41 @@ function chooseRandomGeneration()
               //check status of game before announcing next turn
               if(checkGame(io)) return;
               io.emit('message', msg1);
-  
+              
+              clearInterval(timer);
+              
               //Advance turn
               currTurn = (currTurn + 1) % userList.length;
-              io.emit('players', {
+              io.emit('players', 
+              {
                 userMap: Object.fromEntries(userMap),
                 currTurn,
                 lives: Object.fromEntries(liveMap),
               });
-              msg1 = {
+              msg1 = 
+              {
                 user: "It is now " + userMap.get(userList[currTurn]) + "'s turn to guess!",
                 text: ""
               };
+              
               io.emit('message', msg1);
   
               //Shuffle to new Pokémon
-              currentPoke = getPokemon();
+              checkPokemonName();
               currentSprite = getSprite(currentPoke);
-              if(currentPoke === "Mrmime") {currentPokeAnswer = "Mr. Mime"}
-              else if(currentPoke === "Farfetchd") {currentPokeAnswer = "Farfetch'd"}
-              else if(currentPoke === "Porygon2") {currentPokeAnswer = "Porygon-2"}
-              else if(currentPoke === "Hooh") {currentPokeAnswer = "Ho-oh"}
-              else if(currentPoke === "PorygonZ") {currentPokeAnswer = "Porygon-Z"}
-              else if(currentPoke === "Mimejr") {currentPokeAnswer = "Mime Jr."}
-              else if(currentPoke === "Flabébé") {currentPokeAnswer = "Flabebe"}
-              else if(currentPoke === "Tapulele") {currentPokeAnswer = "Tapu Lele"}
-              else if(currentPoke === "Tapukoko") {currentPokeAnswer = "Tapu Koko"}
-              else if(currentPoke === "Tapubulu") {currentPokeAnswer = "Tapu Bulu"}
-              else if(currentPoke === "Tapufini") {currentPokeAnswer = "Tapu Fini"}
-              else if(currentPoke === "Typenull") {currentPokeAnswer = "Type: Null"}
-              else if(currentPoke === "Jangmoo") {currentPokeAnswer = "Jangmo-o"}
-              else if(currentPoke === "Hakamoo") {currentPokeAnswer = "Hakamo-o"}
-              else if(currentPoke === "Kommoo") {currentPokeAnswer = "Kommo-o"}
-              else if(currentPoke === "Sirfecthd") {currentPokeAnswer = "Sirfetch'd"} 
-              else if(currentPoke === "Mrrime") {currentPokeAnswer = "Mr. Rime"}
-              else{currentPokeAnswer = currentPoke}
               io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
             }
   
             io.emit('setTimer', count);
           }, 1000);
-  
-          timerList.push(timerId);
         });
   
         socket.on('disconnect', () => {
           console.log('Client disconnected:', socket.id);
           let index = userList.indexOf(socket.id);
   
-          let msg1 = {
+          let msg1 = 
+          {
             user: userMap.get(socket.id),
             text: " has disconnected "
           };
@@ -455,7 +445,8 @@ function chooseRandomGeneration()
           if (userList.length === 0) {
             //Reset if no players left
             currTurn = 0;
-            io.emit('players', {
+            io.emit('players', 
+            {
               userMap: Object.fromEntries(userMap),
               currTurn,
               lives: Object.fromEntries(liveMap),
@@ -463,31 +454,36 @@ function chooseRandomGeneration()
             return;
           }
   
-          if (currTurn > index) {
+          if (currTurn > index) 
+          {
             currTurn--;
-            io.emit('players', {
+            io.emit('players', 
+            {
               userMap: Object.fromEntries(userMap),
               currTurn,
               lives: Object.fromEntries(liveMap),
             });
           }
-          else if (currTurn === index) {
+          else if (currTurn === index) 
+          {
             currTurn = currTurn % userList.length;
-            io.emit('players', {
+            io.emit('players', 
+            {
               userMap: Object.fromEntries(userMap),
               currTurn,
               lives: Object.fromEntries(liveMap),
             });
-            msg1 = {
+            msg1 = 
+            {
               user: "It is now " + userMap.get(userList[currTurn]) + "'s turn to guess!",
               text: ""
             };
+            
             io.emit('message', msg1);
   
-            //Clear old timers
-            for (const id of timerList) {
-              clearInterval(id);
-            }
+            //Clear timer
+            clearInterval(timer);
+        
             io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
           }
   
