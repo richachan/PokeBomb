@@ -180,9 +180,6 @@ function checkGame(io: Server) {
     });
     return true;
   }
-  while ((liveMap.get(userList[currTurn]) ?? 0) <= 0) {
-    currTurn = (currTurn + 1) % userList.length;
-  }
   io.emit('players', {
     userMap: Object.fromEntries(userMap),
     currTurn,
@@ -382,7 +379,7 @@ function chooseRandomGeneration()
           }
           let count = 15;
           io.emit('setTimer', count);
-  
+          if(checkGame(io)) return;
           timer = setInterval(() => {
             count--;
             if (count === 0) 
@@ -400,9 +397,11 @@ function chooseRandomGeneration()
               io.emit('message', msg1);
               
               clearInterval(timer);
-              
-              //Advance turn
-              currTurn = (currTurn + 1) % userList.length;
+              //skip over dead players
+              do {
+                currTurn = (currTurn + 1) % userList.length;
+              } while ((liveMap.get(userList[currTurn]) ?? 0) <= 0);
+            
               io.emit('players', 
               {
                 userMap: Object.fromEntries(userMap),
@@ -467,6 +466,7 @@ function chooseRandomGeneration()
           else if (currTurn === index) 
           {
             currTurn = currTurn % userList.length;
+            if(checkGame(io)) return;
             io.emit('players', 
             {
               userMap: Object.fromEntries(userMap),
