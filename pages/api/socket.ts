@@ -236,7 +236,7 @@ function chooseRandomGeneration()
   function getPokemon() 
   {
     const missingNo = Math.floor(Math.random() * 5000);
-    if(missingNo != 152)
+    if(missingNo === 152)
     {
       return "MissingNo."
     }
