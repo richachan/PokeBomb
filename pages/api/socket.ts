@@ -11,6 +11,7 @@ let liveMap = new Map<string,number>() //socket.id, lives
 let userList = new Array()            //list of socket ids
 let currTurn: number = 0;
 let timer;
+let currLevel: number = 0;
 let currentGenerations: number[] = [];
 
 type NextApiResponseServerIO = NextApiResponse & {
@@ -159,7 +160,8 @@ function checkGame(io: Server) {
     const winnerId = active[0];
     const winnerName = userMap.get(winnerId);
     io.emit('message', { user: winnerName, text: " is the winner!" });
-    //new game! everyone has 3 lives again
+    //new game! everyone has 3 lives again, reset the level to 0
+    currLevel = 0;
     userList.forEach((id) => { liveMap.set(id, 3); });
     
     io.emit('players', {
@@ -174,6 +176,7 @@ function checkGame(io: Server) {
     io.emit('message', { user: 'No one', text: " has won. Restarting..." });
     userList.forEach((id) => { liveMap.set(id, 3); });
     currTurn = 0
+    currLevel = 0;
     io.emit('players', {
       userMap: Object.fromEntries(userMap),
       currTurn,
@@ -312,6 +315,7 @@ function chooseRandomGeneration()
             io.emit('message', msg1);
   
             //Advance turn
+            if(currTurn === userList.length - 1)currLevel = currLevel + 1;
             currTurn = (currTurn + 1) % userList.length;
             io.emit('players', {
               userMap: Object.fromEntries(userMap),
@@ -389,7 +393,7 @@ function chooseRandomGeneration()
           {
             clearInterval(timer)
           }
-          let count = 15;
+          let count = Math.max(15 - currLevel , 3);
           io.emit('setTimer', count);
           if(checkGame(io)) return;
           timer = setInterval(() => {
@@ -411,6 +415,7 @@ function chooseRandomGeneration()
               clearInterval(timer);
               //skip over dead players
               do {
+                if(currTurn === userList.length - 1)currLevel = currLevel + 1;
                 currTurn = (currTurn + 1) % userList.length;
               } while ((liveMap.get(userList[currTurn]) ?? 0) <= 0);
             
@@ -456,6 +461,7 @@ function chooseRandomGeneration()
           if (userList.length === 0) {
             //Reset if no players left
             currTurn = 0;
+            currLevel = 0;
             io.emit('players', 
             {
               userMap: Object.fromEntries(userMap),
@@ -477,6 +483,7 @@ function chooseRandomGeneration()
           }
           else if (currTurn === index) 
           {
+            if(currTurn >= userList.length - 1)currLevel = currLevel + 1;
             currTurn = currTurn % userList.length;
             if(checkGame(io)) return;
             io.emit('players', 
