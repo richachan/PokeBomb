@@ -288,6 +288,11 @@ function chooseRandomGeneration()
 
   checkPokemonName();
   let currentSprite = getSprite(currentPoke);
+
+  if(currentPoke === "Flabébé")
+  {
+    currentSprite = getSprite("Flabebe");
+  }
   
   export default function handler(req: NextApiRequest, res: NextApiResponseServerIO) {
     if (!res.socket.server.io) {
