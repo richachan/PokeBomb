@@ -235,6 +235,13 @@ function chooseRandomGeneration()
       default: return gen1pokedex;
     }
   }
+
+  function advanceTurn() {
+    do {
+      if(currTurn === userList.length - 1)currLevel = currLevel + 1;
+      currTurn = (currTurn + 1) % userList.length;
+    } while ((liveMap.get(userList[currTurn]) ?? 0) <= 0);
+  }
   
   function getPokemon() 
   {
@@ -320,10 +327,7 @@ function chooseRandomGeneration()
             io.emit('message', msg1);
   
             //Advance turn
-            do {
-              if(currTurn === userList.length - 1)currLevel = currLevel + 1;
-              currTurn = (currTurn + 1) % userList.length;
-            } while ((liveMap.get(userList[currTurn]) ?? 0) <= 0);
+            advanceTurn();
             
             if(checkGame(io)) return;
 
@@ -431,10 +435,7 @@ function chooseRandomGeneration()
               
               clearInterval(timer);
               //skip over dead players
-              do {
-                if(currTurn === userList.length - 1)currLevel = currLevel + 1;
-                currTurn = (currTurn + 1) % userList.length;
-              } while ((liveMap.get(userList[currTurn]) ?? 0) <= 0);
+              advanceTurn();
             
               io.emit('players', 
               {
