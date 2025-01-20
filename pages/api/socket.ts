@@ -340,7 +340,14 @@ function chooseRandomGeneration()
   
             //Get next Pokemon
             checkPokemonName();
+
+            if(currentPoke === "Flabébé")
+            {
+              currentSprite = getSprite("Flabebe");
+            }
+
             currentSprite = getSprite(currentPoke);
+            
             io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
           } 
           else if (socket.id === userList[currTurn]) {
@@ -440,6 +447,12 @@ function chooseRandomGeneration()
   
               //Shuffle to new Pokémon
               checkPokemonName();
+              
+              if(currentPoke === "Flabébé")
+              {
+                  currentSprite = getSprite("Flabebe");
+              }
+
               currentSprite = getSprite(currentPoke);
               io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
             }
