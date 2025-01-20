@@ -320,8 +320,8 @@ function chooseRandomGeneration()
             io.emit('message', msg1);
   
             //Advance turn
-            if(currTurn === userList.length - 1)currLevel = currLevel + 1;
-            currTurn = (currTurn + 1) % userList.length;
+            if(checkGame(io)) return;
+            
             io.emit('players', {
               userMap: Object.fromEntries(userMap),
               currTurn,
