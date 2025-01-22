@@ -20,6 +20,7 @@ export default function Home() {
   const [userMap, setUserMap] = useState<{ [socketId: string]: string }>({});
   const [currTurn, setCurrTurn] = useState<number>(0);
   const [lives, setLives] = useState<{ [socketId: string]: number }>({});
+  const [gameActive, setGameActive] = useState(false)
 
 
   useEffect(() => {
@@ -31,7 +32,8 @@ export default function Home() {
     fetch('/api/socket').catch((err) => console.error(err));
 
     // Connect the client socket if not already connected
-    if (!socket) {
+    if (!socket) 
+    {
       socket = io({ path: '/api/socket_io' });
 
       socket.on('connect', () => {
@@ -64,30 +66,29 @@ export default function Home() {
     }
 
     // Cleanup on unmount
-    return () => {
+    return () => 
+    {
       socket?.disconnect();
       socket = null;
     };
   }, [router.query]);
 
-  useEffect(() => {
+  useEffect(() => 
+  {
     if (socket) {
       socket.on('updateGenerations', (gens: number[]) => {
         setSelectedGenerations(gens); // Update local state when the server broadcasts generations
       });
     }
-  
-    return () => {
-      socket?.off('updateGenerations');
-    };
   }, []);
 
   useEffect(() => 
-    {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+  {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
-  const sendMessage = (e: React.FormEvent) => {
+  const sendMessage = (e: React.FormEvent) => 
+  {
     e.preventDefault();
     if (!socket || !message.trim() || !user.trim()) return;
 
@@ -95,6 +96,14 @@ export default function Home() {
     socket.emit('message', userMsg);
     setMessage('');
   };
+
+  useEffect(() => 
+  {
+    socket.on('gameStatus', ({ gameActive }: { gameActive: boolean }) => 
+    {
+      setGameActive(gameActive);
+    });
+  }, []);
 
   const toggleGeneration = (generation: number) =>
   {
@@ -112,8 +121,14 @@ export default function Home() {
     setSelectedGenerations(updatedGenerations);
     socket?.emit('updateGenerations', updatedGenerations);
   }
+
   //for current players and turns
   const playerEntries = Object.entries(userMap);
+
+  const startGame = () =>
+  {
+    socket.emit('gameStarted')
+  };
 
   return (
     <div style={{ margin: '40px auto', maxWidth: 600 }}>
@@ -137,7 +152,7 @@ export default function Home() {
     {/* "Current Pokémon" text image on top */}
     <img
       src="/current_pokemon.png"
-      style={{ width: '180px', height: 'auto', marginBottom: '0px' }}
+      style={{ width: '240px', height: '50px', marginBottom: '0px' }}
       alt="Current Pokémon Title"
     />
   </div>
@@ -149,7 +164,7 @@ export default function Home() {
         alignItems: 'center',     // Center horizontally
         justifyContent: 'center',
         height: '165px',
-        marginTop: '-60px',
+        marginTop: '-50px',
         overflow: 'hidden',
         position: 'relative',
         zIndex: 2
@@ -163,6 +178,30 @@ export default function Home() {
       />
     </div>
   )}
+
+
+
+  <div id = "startButton" style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
+    <button 
+      onClick = {startGame}
+      disabled = {gameActive}
+      style = 
+      {{ 
+        padding: '6px 15px', 
+        fontSize: '17px', 
+        color: 'black',
+        cursor: 'pointer', 
+        border: '4px solid #000', 
+        borderRadius: '25px',      
+        background: 'linear-gradient(to bottom, #e25031 50%, #fff 50%)',
+        marginTop: '20px',
+        marginBottom: '20px',
+        fontWeight: 'bold',
+        visibility: gameActive ? 'hidden' : 'visible', 
+        }}>
+        Start Game
+    </button>
+  </div>
 
     <div id = "timer" style={{display: 'flex', justifyContent: 'center',alignItems: 'center'}}>
       Waiting for game to start...
