@@ -135,11 +135,13 @@ export default function Home() {
 
   return (
     <div
-      className="bg-pokemon bg-cover bg-center text-white min-h-[200vh]"
+      className="bg-pokemon bg-cover bg-center text-white min-h-[100vh]"
       style={{
         backgroundImage: "url('/eevee.jpg')", 
-        backgroundPosition: "center",
+        backgroundPosition: "50% 80%",
         backgroundRepeat: "no-repeat",
+        backgroundSize: "100%"
+        
       }}
       
     >
