@@ -22,7 +22,7 @@ export default function UserPage() {
           onChange={(e) => setUsername(e.target.value)}
           style={{ width: '100%', marginBottom: 10 }}
         />
-        <button type="submit" style={{ width: '100%' }}>Join Chat</button>
+        <button type="submit" style={{ width: '100%' }}>Join Game</button>
       </form>
     </div>
   );

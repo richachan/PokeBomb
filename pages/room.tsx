@@ -82,11 +82,14 @@ export default function Home() {
     }
   }, []);
 
-  useEffect(() => 
-  {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollTo({
+        top: messagesEndRef.current.scrollHeight,
+        behavior: "smooth", // Smooth scrolling
+      });
+    }
   }, [messages]);
-
   const sendMessage = (e: React.FormEvent) => 
   {
     e.preventDefault();
@@ -131,10 +134,19 @@ export default function Home() {
   };
 
   return (
-    <div style={{ margin: '40px auto', maxWidth: 600 }}>
-      <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'left', height: '0px', overflow: 'hidden'}}></div>
-        <img src={"/pokebomb_logo.png"} style={{ maxWidth: '150px', height: 'auto' }} />
+    <div
+      className="bg-pokemon bg-cover bg-center text-white min-h-[200vh]"
+      style={{
+        backgroundImage: "url('/eevee.jpg')", 
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
       
+    >
+      
+    <div style={{ margin: '0px auto', maxWidth: 800 }}>
+      <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'left', height: '70px', overflow: 'hidden'}}></div>
+        <img src={"/pokebomb_logo.png"} style={{ position: 'absolute', top: '20px', left: '20px', maxWidth: '150px', height: 'auto', }} />
         {pokemon && (
   <div
     style={{
@@ -181,7 +193,7 @@ export default function Home() {
 
 
 
-  <div id = "startButton" style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
+  <div id = "startButton" style={{ display: 'flex', justifyContent: 'center', marginTop: -15 }}>
     <button 
       onClick = {startGame}
       disabled = {gameActive}
@@ -221,16 +233,16 @@ export default function Home() {
       ))}
       </div>
 
-      <div style={{ border: '1px solid #ccc', padding: 10, height: 200, overflowY: 'auto'}}>
+      <div style={{ border: '1px solid #ccc', padding: 10, height: 200, overflowY: 'auto'}} ref={messagesEndRef}>
         {messages.map((userMsg, i) => (
           <div key={i}>{userMsg}</div>
         ))}
-        <div ref={messagesEndRef} />
+        
       </div>
 
       <form onSubmit={sendMessage} style={{ marginTop: 10 }}>
         <input
-          style={{ width: '75%', marginRight: 10 }}
+          style={{ width: '93%', marginRight: 10 }}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type a message..."
@@ -246,6 +258,7 @@ export default function Home() {
           {index === currTurn && <strong style={{ color: 'red', marginLeft: 8 }}>← Current turn</strong>}
         </div>
       ))}
+    </div>
     </div>
   );  
 }

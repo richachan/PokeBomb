@@ -161,7 +161,7 @@ function checkGame(io: Server)
     //one player left and wins
     const winnerId = active[0];
     const winnerName = userMap.get(winnerId);
-    io.emit('setTimer', "GGs!");
+    io.emit('setTimer', winnerName + " has won the game!");
     io.emit('message', { user: winnerName, text: " is the winner!" });
     gameActive = false;
     io.emit('gameStatus', { gameActive });
