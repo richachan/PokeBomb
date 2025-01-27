@@ -35,14 +35,6 @@ export default function Home() {
 
   const [currentTrack, setCurrentTrack] = useState<string>(musicTracks[1]);
 
-  useEffect(() => {
-    // Ensure random track is selected only on the client
-    if (typeof window !== "undefined") {
-      const randomTrack = musicTracks[Math.floor(Math.random() * musicTracks.length)];
-      setCurrentTrack(randomTrack);
-    }
-  }, []);
-
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => 
   {
     const newValue = parseFloat(e.target.value);
