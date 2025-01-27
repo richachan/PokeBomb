@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 
 let socket: Socket | null = null;
@@ -22,9 +23,89 @@ export default function Home() {
   const [lives, setLives] = useState<{ [socketId: string]: number }>({});
   const [gameActive, setGameActive] = useState(false)
 
+  //music
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [volume, setVolume] = useState(0.5);
+  const [changingVolume, setChangingVolume] = useState(false);
 
-  useEffect(() => {
+  const musicTracks = ["/music/Littleroot Town.mp3", "/music/Lake.mp3"]
 
+  const [currentTrack, setCurrentTrack] = useState<string>(musicTracks[Math.floor(Math.random() * musicTracks.length)]);
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => 
+  {
+    const newValue = parseFloat(e.target.value);
+    setVolume(newValue / 100);
+    if (audioRef.current) 
+    {
+      audioRef.current.volume = newValue / 100;
+    }
+  };
+
+  const togglePlay = () => 
+  {
+    if (audioRef.current) {
+      if (isPlaying) 
+      {
+        audioRef.current.pause();
+      } 
+      else 
+      {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleTimeUpdate = () => 
+  {
+    if (audioRef.current) 
+    {
+      setCurrentTime(audioRef.current.currentTime);
+    }
+  };
+
+  const handleLoadedMetadata = () => 
+  {
+    if (audioRef.current) 
+    {
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => 
+  {
+    if (audioRef.current) 
+    {
+      audioRef.current.currentTime = Number(e.target.value);
+      setCurrentTime(audioRef.current.currentTime);
+    }
+  };
+
+  useEffect(() => 
+  {
+    if (audioRef.current) 
+    {
+      audioRef.current.load();
+      if (isPlaying) audioRef.current.play();
+    }
+  }, [currentTrack]);
+
+  useEffect(() => 
+    {
+    if (audioRef.current) 
+    {
+      audioRef.current.volume = 0.5; // Ensure the volume starts at 50%
+      setVolume(0.5); // Synchronize the state
+    }
+  }, []);
+
+
+  useEffect(() => 
+  {
     const username = query.username as string;
     setUser(username);
 
@@ -175,7 +256,7 @@ export default function Home() {
   <div
       style={{
         display: 'flex',
-        alignItems: 'center',     // Center horizontally
+        alignItems: 'center',   
         justifyContent: 'center',
         height: '165px',
         marginTop: '-50px',
@@ -217,7 +298,8 @@ export default function Home() {
     </button>
   </div>
 
-    <div id = "timer" style={{display: 'flex', justifyContent: 'center',alignItems: 'center'}}>
+    
+    <div id = "timer" style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
       Waiting for game to start...
     </div>
 
@@ -235,7 +317,7 @@ export default function Home() {
       ))}
       </div>
 
-      <div style={{ border: '1px solid #ccc', padding: 10, height: 200, overflowY: 'auto'}} ref={messagesEndRef}>
+      <div style={{ border: '2px solid #ccc', padding: 10, height: 200, overflowY: 'auto'}} ref={messagesEndRef}>
         {messages.map((userMsg, i) => (
           <div key={i}>{userMsg}</div>
         ))}
@@ -260,7 +342,160 @@ export default function Home() {
           {index === currTurn && <strong style={{ color: 'red', marginLeft: 8 }}>← Current turn</strong>}
         </div>
       ))}
+
+    <div
+      style =
+      {{
+        position: 'absolute',
+        top: '15px', 
+        left: '1500px',
+        transform: 'scale(1)', 
+        width: '300px', 
+        height: '170px',
+        padding: '10px',
+        border: '2px solid #000',
+        backgroundColor: 'hsl(248, 13%, 82%, 0.25)',
+        borderRadius: '14px', 
+        opacity: 0.9
+      }}
+    >
+      <h3
+        
+        style = 
+        {{
+          marginLeft: '13px',
+          marginBottom: '30px',
+          fontWeight: 'bold',
+          fontSize: '18px',
+        }}  
+      >
+        {currentTrack.split('/').pop().replace('_', ' ').replace('.mp3', '')}
+      
+      </h3>
+      <audio
+        ref={audioRef}
+        src={currentTrack}
+        onTimeUpdate = {handleTimeUpdate}
+        onLoadedMetadata = {handleLoadedMetadata}
+        onEnded = {() =>
+        {
+          const randomTrack = musicTracks[Math.floor(Math.random() * musicTracks.length)];
+          setCurrentTrack(randomTrack);
+        }}
+        autoPlay
+      />
+
+      {/*volume slider and volume text*/}
+      <div
+        style =
+        {{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          marginTop: '30px',
+          gap: '0px',
+          position: 'absolute',
+          top: '65px',
+          left: '-25px'
+        }}
+      >
+        <label htmlFor="volume-control"> </label>
+        <input
+          id="volume-control"
+          type="range"
+          min="0"
+          max="100"
+          step="1"
+          value={volume * 100}
+          onChange={handleVolumeChange}
+          onMouseDown={() => setChangingVolume(true)} 
+          onMouseUp={() => setChangingVolume(false)}
+          style = 
+          {{
+            transform: 'rotate(-90deg)',
+            marginBottom: '0px',
+            width: '85px'
+          }}
+        />
+
+        <i 
+          className ="fas fa-volume-up"
+          style = 
+          {{
+            position: 'absolute',
+            fontSize: '14px',
+            top: '54px',
+            opacity: '0.8'
+          }}
+        >
+        </i>
+
+        {changingVolume && (
+        <span
+        style =
+        {{
+          position: 'absolute', 
+          left: '8px',         
+          top: '50px',         
+          transform: 'translate(50px , 0)', 
+          fontSize: '14px',   
+          fontWeight: 'bold',
+        }}
+        >
+      {Math.round(volume * 100)}
+    </span>
+  )}
+      </div>
+
+      {/* play/pause button*/}
+      <div
+        onClick={togglePlay}
+        style={{
+        position: 'absolute',
+        top: '47px',    
+        left: '142px',  
+        width: '26px', 
+        height: '29px', 
+        cursor: 'pointer',
+        
+        backgroundColor: 'rgba(255, 0, 0, 0.2)',  
+        //check hitbox of button
+       }}
+     >
+       <i
+        className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'} fa-xl`}
+        style =
+        {{
+           fontSize: '26px',
+           position: 'relative', 
+           top: '4px',        
+           left: '4px'
+        }}
+       />
+     </div>
+
+      {/*song progress bar */}
+      <div>
+        <input
+          type="range"
+          min="0"
+          max={duration}
+          value={currentTime} 
+          onChange={handleSeek}
+          style = 
+          {{
+            marginTop: '12px', marginLeft: '45px', width: '70%', background: 'transparent', borderRadius: '0px'
+          }}
+        />
+        
+        {/*song time text */}
+        <div style={{ textAlign: 'center', marginTop: '-3px', borderRadius: '0', fontWeight: 'bold'}}>
+          {Math.floor(currentTime)} / {Math.floor(duration)} seconds
+        </div>
+      </div>
     </div>
     </div>
+    </div>
+
   );  
 }
