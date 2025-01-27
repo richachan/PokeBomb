@@ -215,140 +215,44 @@ export default function Home() {
   };
 
   return (
+
     <div
       className="bg-pokemon bg-cover bg-center text-white min-h-[100vh]"
       style={{
         backgroundImage: "url('/eevee.jpg')", 
         backgroundPosition: "50% 80%",
         backgroundRepeat: "no-repeat",
-        backgroundSize: "100%"
-        
-      }}
-      
-    >
-      
-    <div style={{ margin: '0px auto', maxWidth: 800 }}>
-      <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'left', height: '70px', overflow: 'hidden'}}></div>
-        <img src={"/pokebomb_logo.png"} style={{ position: 'absolute', top: '20px', left: '20px', maxWidth: '150px', height: 'auto', }} />
-        {pokemon && (
-  <div
-    style={{
-      display: 'flex',
-      flexDirection: 'column',  // Column to stack "Current Pokémon" text above sprite
-      alignItems: 'center',     // Center horizontally
-      justifyContent: 'center',
-      height: '150px',
-      marginTop: '-40px',
-      overflow: 'hidden',
-      position: 'relative',
-      zIndex: 1
-    }}
-  >
-    {/* "Current Pokémon" text image on top */}
-    <img
-      src="/current_pokemon.png"
-      style={{ width: '240px', height: '50px', marginBottom: '0px' }}
-      alt="Current Pokémon Title"
-    />
-  </div>
-)}
-  {pokemon && (
-  <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',   
-        justifyContent: 'center',
-        height: '165px',
-        marginTop: '-50px',
+        backgroundSize: "100%",
         overflow: 'hidden',
-        position: 'relative',
-        zIndex: 2
-      }}
-    >
-      {/* Actual Pokémon sprite below */}
-      <img
-        src={pokemon.sprite}
-        alt={pokemon.name}
-        style={{width: 'auto', height: 'auto'}}
-      />
-    </div>
-  )}
-
-
-
-  <div id = "startButton" style={{ display: 'flex', justifyContent: 'center', marginTop: -15 }}>
-    <button 
-      onClick = {startGame}
-      disabled = {gameActive}
-      style = 
-      {{ 
-        padding: '6px 15px', 
-        fontSize: '17px', 
-        color: 'black',
-        cursor: 'pointer', 
-        border: '4px solid #000', 
-        borderRadius: '25px',      
-        background: 'linear-gradient(to bottom, #e25031 50%, #fff 50%)',
-        marginTop: '20px',
-        marginBottom: '20px',
-        fontWeight: 'bold',
-        visibility: gameActive ? 'hidden' : 'visible', 
-        }}>
-        Start Game
-    </button>
-  </div>
-
-    
-    <div id = "timer" style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-      Waiting for game to start...
-    </div>
-
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10, marginBottom: 20 }}>
-      {Array.from({ length: 9 }, (_, i) => i + 1).map((gen) => (
-        <label key={gen} style={{ margin: '0 10px', textAlign: 'center' }}>
-          <input
-            type="checkbox"
-            checked={selectedGenerations.includes(gen)}
-            onChange={() => toggleGeneration(gen)}
-            style={{ marginRight: 5 }}
-          />
-          Gen {gen}
-        </label>
-      ))}
-      </div>
-
-      <div style={{ border: '2px solid #ccc', padding: 10, height: 200, overflowY: 'auto'}} ref={messagesEndRef}>
-        {messages.map((userMsg, i) => (
-          <div key={i}>{userMsg}</div>
-        ))}
         
-      </div>
+      }}
+      
+    >
 
-      <form onSubmit={sendMessage} style={{ marginTop: 10 }}>
-        <input
-          style={{ width: '93%', marginRight: 10 }}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type a message..."
-        />
-        <button type="submit">Send</button>
-      </form>
-      <hr />
-      <h2>Playing:</h2>
-      {playerEntries.length === 0 && <p>It's quiet in here</p>}
-      {playerEntries.map(([socketId, username], index) => (
-        <div key={socketId} style={{ margin: '4px 0' }}>
-          {username} {lives[socketId]}
-          {index === currTurn && <strong style={{ color: 'red', marginLeft: 8 }}>← Current turn</strong>}
-        </div>
-      ))}
+    {/* Header */}
 
     <div
+    style={{
+      position: "relative",
+      transform: "scale(1)", // Keep the header scaling as you intended
+      maxWidth: "100%", // Ensure it doesn’t go offscreen
+      height: "80px",
+      padding: "10px",
+      backgroundColor: "rgba(248, 248, 248, 0.25)", // Your original `hsl(248, 13%, 82%, 0.25)` in RGBA
+      opacity: 0.9, // Maintain your opacity setting
+    }}
+  > 
+
+  {/* Music Player */}
+
+  <div
       style =
       {{
-        position: 'absolute',
-        top: '15px', 
-        left: '1500px',
+        justifyContent: 'right', 
+        alignItems: 'right',
+        position: 'fixed',
+        top: '100px', 
+        right: '10px',
         transform: 'scale(1)', 
         width: '300px', 
         height: '170px',
@@ -495,7 +399,134 @@ export default function Home() {
       </div>
     </div>
     </div>
+      
+    <div style={{ margin: '80px auto', maxWidth: 800 }}>
+      <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'left', height: '10px', overflow: 'hidden'}}></div>
+        <img src={"/pokebomb_logo.png"} style={{ position: 'absolute', top: '20px', left: '20px', maxWidth: '150px', height: 'auto', }} />
+        {pokemon && (
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column',  // Column to stack "Current Pokémon" text above sprite
+      alignItems: 'center',     // Center horizontally
+      justifyContent: 'center',
+      height: '50px',
+      marginTop: '-50px',
+      
+      position: 'relative',
+      zIndex: 1
+    }}
+  >
+    {/* "Current Pokémon" text image on top */}
+    <img
+      src="/current_pokemon.png"
+      style={{ width: '15vw', marginBottom: '0px' }}
+      alt="Current Pokémon Title"
+    />
+  </div>
+)}
+  {pokemon && (
+  <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',   
+        justifyContent: 'center',
+        height: '25vh',
+        
+        overflow: 'hidden',
+        position: 'relative',
+        zIndex: 2
+      }}
+    >
+      {/* Actual Pokémon sprite below */}
+      <img
+        src={pokemon.sprite}
+        alt={pokemon.name}
+        style={{width: 'auto', height: 'auto'}}
+      />
+    </div>
+  )}
+
+
+
+  <div id = "startButton" style={{ display: 'flex', justifyContent: 'center', marginTop: -15 }}>
+    <button 
+      onClick = {startGame}
+      disabled = {gameActive}
+      style = 
+      {{ 
+        padding: '6px 15px', 
+        fontSize: '17px', 
+        color: 'black',
+        cursor: 'pointer', 
+        border: '4px solid #000', 
+        borderRadius: '25px',      
+        background: 'linear-gradient(to bottom, #e25031 50%, #fff 50%)',
+        marginTop: '20px',
+        marginBottom: '20px',
+        fontWeight: 'bold',
+        visibility: gameActive ? 'hidden' : 'visible', 
+        }}>
+        Start Game
+    </button>
+  </div>
+
+    
+    <div id = "timer" style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+      Waiting for game to start...
     </div>
 
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10, marginBottom: 20 }}>
+      {Array.from({ length: 9 }, (_, i) => i + 1).map((gen) => (
+        <label key={gen} style={{ margin: '0 10px', textAlign: 'center' }}>
+          <input
+            type="checkbox"
+            checked={selectedGenerations.includes(gen)}
+            onChange={() => toggleGeneration(gen)}
+            style={{ marginRight: 5 }}
+          />
+          Gen {gen}
+        </label>
+      ))}
+      </div>
+
+      <div style={{ border: '2px solid #ccc', padding: 10, height: 200, overflowY: 'auto'}} ref={messagesEndRef}>
+        {messages.map((userMsg, i) => (
+          <div key={i}>{userMsg}</div>
+        ))}
+        
+      </div>
+
+      <form onSubmit={sendMessage} style={{ marginTop: 10 }}>
+        <input
+          style={{ width: '93%', marginRight: 10 }}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Type a message..."
+        />
+        <button type="submit">Send</button>
+      </form>
+      <hr />
+      <div style = 
+      {{
+        display: 'flex', 
+        justifyContent: 'left', 
+        alignItems: 'left', 
+        flexDirection: 'column', 
+        position: 'absolute',
+        top: '70.7vh',
+        right: '12vw'}}>
+        
+      <h2>Playing:</h2>
+      {playerEntries.length === 0 && <p>It's quiet in here</p>}
+      {playerEntries.map(([socketId, username], index) => (
+        <div key={socketId} style={{ margin: '4px 0' }}>
+          {username} {lives[socketId]}
+          {index === currTurn && <strong style={{ color: 'violet', marginLeft: 8 }}>← Current turn</strong>}
+        </div>
+      ))}
+      </div>
+    </div>
+    </div>
   );  
 }
