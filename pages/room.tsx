@@ -499,7 +499,7 @@ export default function Home() {
 
       <form onSubmit={sendMessage} style={{ marginTop: 10 }}>
         <input
-          style={{ width: '93%', marginRight: 10 }}
+          style={{ width: '93%', marginRight: 10, color: 'violet' }}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type a message..."
