@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import next from 'next';
 
 
 let socket: Socket | null = null;
@@ -22,7 +23,7 @@ export default function Home() {
   const [userMap, setUserMap] = useState<{ [socketId: string]: string }>({});
   const [currTurn, setCurrTurn] = useState<number>(0);
   const [lives, setLives] = useState<{ [socketId: string]: number }>({});
-  const [gameActive, setGameActive] = useState(false)
+  const [gameActive, setGameActive] = useState(false);
 
   //music
   const [isPlaying, setIsPlaying] = useState(true);
@@ -31,10 +32,15 @@ export default function Home() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [volume, setVolume] = useState(0.5);
   const [changingVolume, setChangingVolume] = useState(false);
+  const [trackIndex, setTrackIndex] = useState(0);
 
-  const musicTracks = ["/music/Littleroot Town.mp3", "/music/Lake.mp3"]
+  const musicTrackCalm = 
+  [
+    "/music/Lake.mp3", "/music/Littleroot Town.mp3", "/music/National Park HGSS.mp3", "/music/Eterna Forest.mp3", 
+    "/music/Eterna City.mp3"
+  ];
 
-  const [currentTrack, setCurrentTrack] = useState<string>(musicTracks[1]);
+  const [currentTrack, setCurrentTrack] = useState<string>(musicTrackCalm[0]);
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => 
   {
@@ -77,23 +83,32 @@ export default function Home() {
     }
   };
 
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => 
+  const previousTrack = () =>
   {
-    if (audioRef.current) 
+    if(trackIndex === 0)
     {
-      audioRef.current.currentTime = Number(e.target.value);
-      setCurrentTime(audioRef.current.currentTime);
+      setTrackIndex(musicTrackCalm.length - 1);
     }
-  };
+    else
+    {
+      setTrackIndex((prevIndex) => (prevIndex - 1) % musicTrackCalm.length);
+    }
+  }
+
+  const nextTrack = () =>
+  {
+    setTrackIndex((prevIndex) => (prevIndex + 1) % musicTrackCalm.length);
+  }
 
   useEffect(() => 
   {
     if (audioRef.current) 
     {
       audioRef.current.load();
-      if (isPlaying) audioRef.current.play();
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
     }
-  }, [currentTrack]);
+  }, [trackIndex]);
 
   useEffect(() => 
     {
@@ -256,9 +271,8 @@ export default function Home() {
       maxWidth: "100%", // Ensure it doesn’t go offscreen
       height: "69px",
       padding: "10px",
-      backgroundColor: "rgba(32, 32, 37, 0.5)", // Your original `hsl(248, 13%, 82%, 0.25)` in RGBA
-      opacity: 0.9, // Maintain your opacity setting
-      backdropFilter: 'blur(1.5px)'
+      backgroundColor: "rgba(32, 32, 37, 0)", // Your original `hsl(248, 13%, 82%, 0.25)` in RGBA
+      backdropFilter: 'blur(1.5px)',
     }}
   > 
 
@@ -292,18 +306,21 @@ export default function Home() {
           fontSize: '18px',
         }}  
       >
-        {currentTrack.split('/').pop().replace('_', ' ').replace('.mp3', '')}
+        {musicTrackCalm[trackIndex].split('/').pop().replace('.mp3', '')}
       
       </h3>
       <audio
-        ref={audioRef}
-        src={currentTrack}
+        ref = {audioRef}
+        src = {musicTrackCalm[trackIndex]}
         onTimeUpdate = {handleTimeUpdate}
         onLoadedMetadata = {handleLoadedMetadata}
         onEnded = {() =>
         {
-          const randomTrack = musicTracks[Math.floor(Math.random() * musicTracks.length)];
-          setCurrentTrack(randomTrack);
+          setTrackIndex((prevIndex) => 
+          {
+            const nextIndex = (prevIndex + 1) % musicTrackCalm.length;
+            return nextIndex;
+          });
         }}
         autoPlay
       />
@@ -372,15 +389,15 @@ export default function Home() {
 
       {/* play/pause button*/}
       <div
-        onClick={togglePlay}
-        style={{
+        onClick = {togglePlay}
+        style =
+        {{
         position: 'absolute',
-        top: '47px',    
-        left: '142px',  
+        top: '48px',    
+        left: '138px',  
         width: '26px', 
-        height: '29px', 
+        height: '28px', 
         cursor: 'pointer',
-        
         backgroundColor: 'rgba(255, 0, 0, 0.2)',  
         //check hitbox of button
        }}
@@ -389,22 +406,97 @@ export default function Home() {
         className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'} fa-xl`}
         style =
         {{
-           fontSize: '26px',
-           position: 'relative', 
-           top: '4px',        
-           left: '4px'
+          fontSize: '25px',
+          position: 'relative', 
+          top: '3px',        
+          left: '4px'
         }}
        />
-     </div>
+      </div>
+
+      {/* previous song button */}
+      <div
+        onClick = {previousTrack}
+        style = 
+        {{
+          position: 'absolute',
+          cursor: 'pointer',
+          top: '48px',
+          left: '100px', 
+          width: '26px', 
+          height: '28px', 
+          backgroundColor: 'rgba(255, 0, 0, 0.2)'
+        }}
+      >
+        <i 
+          className = "fa-solid fa-backward-step"
+          style = 
+          {{
+            fontSize : '28px',
+            position: 'relative',
+            left: '4px',
+            top: '0px',
+          }}
+        >
+        </i>
+      </div>
+
+      {/* next song button */}
+      <div
+        onClick = {nextTrack}
+        style = 
+        {{
+          position: 'absolute',
+          cursor: 'pointer',
+          top: '48px',
+          left: '176px', 
+          width: '26px', 
+          height: '28px', 
+          backgroundColor: 'rgba(255, 0, 0, 0.2)'
+        }}
+      >
+        <i className="fa-solid fa-forward-step"
+           style = 
+           {{
+             fontSize : '28px',
+             position: 'relative',
+             left: '4px',
+             top: '0px',
+           }}
+        >
+        </i>
+
+
+      </div>
 
       {/* song progress bar */}
       <div>
         <input
-          type="range"
-          min="0"
-          max={duration}
-          value={currentTime} 
-          onChange={handleSeek}
+          type = "range"
+          min = "0"
+          max = {duration || 0}
+          value= {audioRef.current ? audioRef.current.currentTime : 0} 
+          onChange = {(e) =>
+          {
+            if (audioRef.current) 
+            {
+              const newTime = Number(e.target.value);
+              audioRef.current.currentTime = newTime;
+              setCurrentTime(newTime);
+            } 
+          }}
+          
+          onMouseUp = {() => 
+          {
+            if (audioRef.current) 
+            {
+              if (audioRef.current.currentTime >= audioRef.current.duration - 0.9) 
+              {
+                nextTrack();
+              }
+            }
+          }}
+
           style = 
           {{
             marginTop: '12px', marginLeft: '45px', width: '70%', background: 'transparent', borderRadius: '0px'
@@ -412,8 +504,12 @@ export default function Home() {
         />
         
         {/*song time text */}
-        <div style={{ textAlign: 'center', marginTop: '-3px', borderRadius: '0', fontWeight: 'bold'}}>
-          {Math.floor(currentTime)} / {Math.floor(duration)} seconds
+        <div 
+          style = 
+          {{ 
+            textAlign: 'center', marginTop: '-3px', borderRadius: '0', fontWeight: 'bold'
+          }}
+        >
         </div>
       </div>
     </div>
@@ -427,13 +523,17 @@ export default function Home() {
         overflow: 'hidden'}}>
         </div>
         <img src={"/pokebomb_logo.png"} 
-        style={{ 
+        style =
+        {{ 
+           
           filter: 'saturate(70%)',
           position: 'absolute', 
           top: '15px', 
           left: '12px', 
-          maxWidth: '150px',
-          height: 'auto', }} />
+          maxWidth: '165px',
+          height: 'auto', 
+        }} 
+        />
         {pokemon && (
   <div
     style={{
@@ -481,8 +581,6 @@ export default function Home() {
       />
     </div>
   )}
-
-
 
   <div id = "startButton" style={{ display: 'flex', justifyContent: 'center', marginTop: -40 }}>
     <button 
