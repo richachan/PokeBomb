@@ -256,7 +256,7 @@ export default function Home() {
         backgroundRepeat: "no-repeat",
         backgroundSize: "100%",
         overflow: 'hidden',
-        boxShadow: 'inset 0 0 1000px 205px rgba(0, 0, 0, 0.74)'
+        boxShadow: 'inset 0 0 1000px 205px rgba(0, 0, 0, 0.80)'
         
       }}
       
@@ -667,7 +667,8 @@ export default function Home() {
     }}
   >
     <input
-      style={{ 
+      style = 
+      {{ 
         flex: 1, 
         padding: '2px',
         marginLeft: '1px',
@@ -685,33 +686,40 @@ export default function Home() {
     />
   </form>
 </div>
-      <hr />
+      <hr/>
       
-      { /*guessing box*/ }
-      <form 
-    onSubmit={sendMessage} 
-    style={{ 
-      height: '40px',
-      borderTop: '1px solid #ccc',
-      padding: '5px',
-      justifyContent: 'center', 
-      alignContent: 'center',
-    }}
+    { /*guessing box*/ }
+    <form 
+      onSubmit={sendMessage} 
+      style = 
+      {{ 
+        height: '40px',
+        borderTop: '1px solid #ccc',
+        padding: '5px',
+        display: 'flex',
+        justifyContent: 'center', 
+        alignContent: 'center',
+        fontWeight: 'bold'
+      }}
   >
-    <input
-      style={{ 
+      <input
+      style = 
+      {{ 
         flex: 1, 
-        padding: '2px',
-        marginLeft: '195px',
+        fontWeight: 'bold',
+        padding: '8px',
+        marginRight: '5px',
         justifyContent: 'center',
         alignContent: 'center',
         borderRadius: '5px',
         outline: 'none',
-        color: '#2980b9',
+        color: '#000',
         width: '50%',
+        maxWidth: '400px',
+        textAlign: 'center',
         backgroundColor: 'rgba(255, 255, 255, 1)',
       }}
-      value={message}
+      value = {message}
       onChange={(e) => setMessage(e.target.value)}
       placeholder=" Guess the Pokémon "
     />
