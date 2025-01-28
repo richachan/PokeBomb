@@ -13,6 +13,7 @@ export default function Home() {
   const router = useRouter();
   const { query } = router;
   const [message, setMessage] = useState('');
+  const [chat, setChat] = useState('');
   const [messages, setMessages] = useState<string[]>([]);
   const [user, setUser] = useState<string>('');
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
@@ -129,6 +130,12 @@ export default function Home() {
         setMessages((prev) => [...prev, strMsg]);
       });
 
+      socket.on('chat', (msg: displayMessage) => {
+        const strMsg = `${msg.user}: ${msg.text}`;
+        setMessages((prev) => [...prev, strMsg]);
+      });
+
+
       socket.on('setTimer', (num) => {
         document.getElementById("timer").innerHTML = num.toString();
       });
@@ -181,6 +188,16 @@ export default function Home() {
     setMessage('');
   };
 
+  const sendChat = (e: React.FormEvent) =>
+  {
+    e.preventDefault();
+    if (!socket || !chat.trim() || !user.trim()) return;
+
+    const chatMsg = { user: user, text: chat }; // user + message in one constant
+    socket.emit('chat', chatMsg);
+    setChat('');
+  }
+
   useEffect(() => 
   {
     socket.on('gameStatus', ({ gameActive }: { gameActive: boolean }) => 
@@ -220,10 +237,11 @@ export default function Home() {
       className="bg-pokemon bg-cover bg-center text-white min-h-[100vh]"
       style={{
         backgroundImage: "url('/eevee.jpg')", 
-        backgroundPosition: "50% 80%",
+        backgroundPosition: "50% 85%",
         backgroundRepeat: "no-repeat",
         backgroundSize: "100%",
         overflow: 'hidden',
+        boxShadow: 'inset 0 0 1000px 205px rgba(0, 0, 0, 0.74)'
         
       }}
       
@@ -238,8 +256,9 @@ export default function Home() {
       maxWidth: "100%", // Ensure it doesn’t go offscreen
       height: "80px",
       padding: "10px",
-      backgroundColor: "rgba(248, 248, 248, 0.25)", // Your original `hsl(248, 13%, 82%, 0.25)` in RGBA
+      backgroundColor: "rgba(42, 42, 42, 0.4)", // Your original `hsl(248, 13%, 82%, 0.25)` in RGBA
       opacity: 0.9, // Maintain your opacity setting
+      backdropFilter: 'blur(1.5px)'
     }}
   > 
 
@@ -378,7 +397,7 @@ export default function Home() {
        />
      </div>
 
-      {/*song progress bar */}
+      {/* song progress bar */}
       <div>
         <input
           type="range"
@@ -401,8 +420,20 @@ export default function Home() {
     </div>
       
     <div style={{ margin: '80px auto', maxWidth: 800 }}>
-      <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'left', height: '10px', overflow: 'hidden'}}></div>
-        <img src={"/pokebomb_logo.png"} style={{ position: 'absolute', top: '20px', left: '20px', maxWidth: '150px', height: 'auto', }} />
+      <div style={{ display: 'flex', 
+        justifyContent: 'left', 
+        alignItems: 'left', 
+        height: '10px', 
+        overflow: 'hidden'}}>
+        </div>
+        <img src={"/pokebomb_logo.png"} 
+        style={{ 
+          filter: 'saturate(70%)',
+          position: 'absolute', 
+          top: '20px', 
+          left: '20px', 
+          maxWidth: '150px',
+          height: 'auto', }} />
         {pokemon && (
   <div
     style={{
@@ -410,7 +441,7 @@ export default function Home() {
       flexDirection: 'column',  // Column to stack "Current Pokémon" text above sprite
       alignItems: 'center',     // Center horizontally
       justifyContent: 'center',
-      height: '50px',
+      height: '20px',
       marginTop: '-50px',
       
       position: 'relative',
@@ -420,7 +451,11 @@ export default function Home() {
     {/* "Current Pokémon" text image on top */}
     <img
       src="/current_pokemon.png"
-      style={{ width: '15vw', marginBottom: '0px' }}
+      style={{ 
+        width: '15vw', 
+        marginBottom: '0px' ,
+        filter: 'saturate(70%)',
+      }}
       alt="Current Pokémon Title"
     />
   </div>
@@ -449,22 +484,22 @@ export default function Home() {
 
 
 
-  <div id = "startButton" style={{ display: 'flex', justifyContent: 'center', marginTop: -15 }}>
+  <div id = "startButton" style={{ display: 'flex', justifyContent: 'center', marginTop: -40 }}>
     <button 
       onClick = {startGame}
       disabled = {gameActive}
       style = 
       {{ 
         padding: '6px 15px', 
-        fontSize: '17px', 
-        color: 'black',
+        fontSize: '15px', 
+        color: 'white',
         cursor: 'pointer', 
-        border: '4px solid #000', 
-        borderRadius: '25px',      
-        background: 'linear-gradient(to bottom, #e25031 50%, #fff 50%)',
+        
+        borderRadius: '8px',      
+        backgroundColor: 'rgb(255, 255, 255, 0.3)',
         marginTop: '20px',
         marginBottom: '20px',
-        fontWeight: 'bold',
+        
         visibility: gameActive ? 'hidden' : 'visible', 
         }}>
         Start Game
@@ -490,39 +525,116 @@ export default function Home() {
       ))}
       </div>
 
-      <div style={{ border: '2px solid #ccc', padding: 10, height: 200, overflowY: 'auto'}} ref={messagesEndRef}>
-        {messages.map((userMsg, i) => (
-          <div key={i}>{userMsg}</div>
-        ))}
-        
-      </div>
+  <div 
+  style={{
+    position: 'absolute',
+    right: 20,
+    height: '200px',
+    bottom: 20,  // Ensure it stays near the bottom
+    width: '22%',  // Adjust to fit well on zoom
+    minWidth: '300px', // Prevent it from getting too small
+    maxWidth: '500px', // Prevent excessive growth
+    
+    borderRadius: '8px',
+    display: 'flex',
+    flexDirection: 'column',
+    backgroundColor: 'white',
+    backgroundColor: 'rgba(42, 42, 42, 0.4)',
+    backdropFilter: 'blur(1.5px)'
+  }}
+>
+  {/* Chat History */}
+  <div 
+    style={{ 
+      flex: 1,  // Makes the chat history take up available space
+      padding: 10,
+      overflowY: 'auto',
+      height: '200px', // Prevents excessive growth
+      color: '#f9e2c2',
+      fontWeight: 'bold',
+    }} 
+    ref={messagesEndRef}
+  >
+    {messages.map((userMsg, i) => (
+      <div key={i}>{userMsg}</div>
+    ))}
+  </div>
 
-      <form onSubmit={sendMessage} style={{ marginTop: 10 }}>
-        <input
-          style={{ width: '93%', marginRight: 10, color: 'violet' }}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type a message..."
-        />
-        <button type="submit">Send</button>
-      </form>
+  {/* Chat Input */}
+  <form 
+    onSubmit={sendChat} 
+    style={{ 
+      height: '40px',
+      borderTop: '1px solid #ccc',
+      padding: '5px'
+    }}
+  >
+    <input
+      style={{ 
+        flex: 1, 
+        padding: '2px',
+        marginLeft: '1px',
+        marginRight: '5px',
+        border: 'none',
+        borderRadius: '5px',
+        outline: 'none',
+        color: '#2980b9',
+        width: '100%',
+        backgroundColor: 'rgba(42, 42, 42, 0.4)',
+      }}
+      value={chat}
+      onChange={(p) => setChat(p.target.value)}
+      placeholder=" Type your message "
+    />
+  </form>
+</div>
       <hr />
-      <div style = 
+      
+      { /*guessing box*/ }
+      <form 
+    onSubmit={sendMessage} 
+    style={{ 
+      height: '40px',
+      borderTop: '1px solid #ccc',
+      padding: '5px',
+      justifyContent: 'center', 
+      alignContent: 'center',
+    }}
+  >
+    <input
+      style={{ 
+        flex: 1, 
+        padding: '2px',
+        marginLeft: '195px',
+        justifyContent: 'center',
+        alignContent: 'center',
+        borderRadius: '5px',
+        outline: 'none',
+        color: '#2980b9',
+        width: '50%',
+        backgroundColor: 'rgba(255, 255, 255, 1)',
+      }}
+      value={message}
+      onChange={(e) => setMessage(e.target.value)}
+      placeholder=" Guess the Pokémon "
+    />
+  </form>
+
+  <div style = 
       {{
         display: 'flex', 
-        justifyContent: 'left', 
-        alignItems: 'left', 
-        flexDirection: 'column', 
-        position: 'absolute',
-        top: '70.7vh',
-        right: '12vw'}}>
+        justifyContent: 'center',
+        alignContent: 'center',
+        flexDirection: 'column',
+        marginLeft: '375px',
+        }}>
         
       <h2>Playing:</h2>
       {playerEntries.length === 0 && <p>It's quiet in here</p>}
       {playerEntries.map(([socketId, username], index) => (
         <div key={socketId} style={{ margin: '4px 0' }}>
           {username} {lives[socketId]}
-          {index === currTurn && <strong style={{ color: 'violet', marginLeft: 8 }}>← Current turn</strong>}
+          {index === currTurn && <strong style={{ color: '#f9e2c2', marginLeft: 8 }}>← Current turn</strong>}
         </div>
       ))}
       </div>

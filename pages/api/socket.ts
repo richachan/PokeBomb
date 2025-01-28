@@ -312,14 +312,23 @@ function chooseRandomGeneration()
           origin: '*',
         },
       });
-  
+      
       io.on('connection', (socket) => {
         console.log('A client connected:', socket.id);
 
+
+        socket.on('chat', (msg) => {
+          let chatMsg = {
+            user: userMap.get(socket.id), text: ": " + msg.text
+          };
+          io.emit('chat', msg);
+        });
         socket.on('message', (msg) => {
           if (userList.length === 0) return;
   
           //Compare guess
+
+
           if(gameActive === true)
           {
             if (socket.id === userList[currTurn] && msg.text.toLowerCase() === currentPokeAnswer.toLowerCase())
