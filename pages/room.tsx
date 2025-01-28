@@ -52,6 +52,12 @@ export default function Home() {
     }
   };
 
+  const keyPress = (e) => {
+    const currentValue = e.target.value;
+    setMessage(currentValue);       
+    socket.emit('logKey', currentValue); 
+  };
+
   const togglePlay = () => 
   {
     if (audioRef.current) {
@@ -74,10 +80,7 @@ export default function Home() {
       setCurrentTime(audioRef.current.currentTime);
     }
   };
-  const keyPress = (event) =>{
-    console.log(event.key);
-    socket.emit('logKey',message);
-  }
+  
   const handleLoadedMetadata = () => 
   {
     if (audioRef.current) 
@@ -715,6 +718,7 @@ export default function Home() {
        borderTop: '1px solid #ccc', 
        padding: '5px', 
        display: 'flex', 
+       color: 'black',
        justifyContent: 'center', 
        alignContent: 'center', 
        fontWeight: 'bold' }}> </p>
@@ -731,7 +735,8 @@ export default function Home() {
         alignContent: 'center',
         fontWeight: 'bold'
       }}
-      onKeyUp={keyPress}
+     
+      onChange = {keyPress}
   >
       <input
       style = 
@@ -744,7 +749,7 @@ export default function Home() {
         alignContent: 'center',
         borderRadius: '5px',
         outline: 'none',
-        color: '#000',
+        color: 'black',
         width: '50%',
         maxWidth: '400px',
         textAlign: 'center',
