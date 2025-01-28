@@ -515,13 +515,22 @@ export default function Home() {
     </div>
     </div>
       
-    <div style={{ margin: '80px auto', maxWidth: 800 }}>
-      <div style={{ display: 'flex', 
-        justifyContent: 'left', 
-        alignItems: 'left', 
-        height: '10px', 
-        overflow: 'hidden'}}>
-        </div>
+    <div 
+      style = 
+      {{ 
+        margin: '80px auto', 
+        maxWidth: 800 
+      }}>
+      <div 
+        style = 
+        {{ 
+          display: 'flex', 
+          justifyContent: 'left', 
+          alignItems: 'left', 
+          height: '10px', 
+          overflow: 'hidden'
+        }}>
+      </div>
         <img src={"/pokebomb_logo.png"} 
         style =
         {{ 
@@ -532,9 +541,9 @@ export default function Home() {
           maxWidth: '165px',
           height: 'auto', 
         }} 
-        />
-        {pokemon && (
-  <div
+    />
+    {pokemon && (
+    <div
     style={{
       display: 'flex',
       flexDirection: 'column',  // Column to stack "Current Pokémon" text above sprite
@@ -561,15 +570,16 @@ export default function Home() {
 )}
   {pokemon && (
   <div
-      style={{
-        display: 'flex',
+      style = 
+      {{
+        display: 'absolute',
         alignItems: 'center',   
         justifyContent: 'center',
-        height: '25vh',
-        
+        height: '200px',
         overflow: 'hidden',
         position: 'relative',
-        zIndex: 2
+        zIndex: 2,
+        pointerEvents: 'none',
       }}
     >
       {/* Actual Pokémon sprite below */}
@@ -581,7 +591,14 @@ export default function Home() {
     </div>
   )}
 
-  <div id = "startButton" style={{ display: 'flex', justifyContent: 'center', marginTop: -40 }}>
+  <div 
+    id = "startButton" 
+    style = 
+    {{ 
+      display: 'flex', 
+      justifyContent: 'center',
+      marginTop: '-40px', 
+    }}>
     <button 
       onClick = {startGame}
       disabled = {gameActive}
@@ -591,12 +608,10 @@ export default function Home() {
         fontSize: '15px', 
         color: 'white',
         cursor: 'pointer', 
-        
         borderRadius: '8px',      
         backgroundColor: 'rgb(255, 255, 255, 0.3)',
         marginTop: '20px',
         marginBottom: '20px',
-        
         visibility: gameActive ? 'hidden' : 'visible', 
         }}>
         Start Game
