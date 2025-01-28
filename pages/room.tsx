@@ -74,7 +74,10 @@ export default function Home() {
       setCurrentTime(audioRef.current.currentTime);
     }
   };
-
+  const keyPress = (event) =>{
+    console.log(event.key);
+    socket.emit('logKey',message);
+  }
   const handleLoadedMetadata = () => 
   {
     if (audioRef.current) 
@@ -143,6 +146,10 @@ export default function Home() {
       socket.on('message', (msg: displayMessage) => {
         const strMsg = `${msg.user} ${msg.text}`;
         setMessages((prev) => [...prev, strMsg]);
+      });
+
+      socket.on('updateGlobalKey',(message)=>{
+        document.getElementById("GlobalKeyDisplay").innerHTML=message.toString()
       });
 
       socket.on('chat', (msg: displayMessage) => {
@@ -702,7 +709,15 @@ export default function Home() {
   </form>
 </div>
       <hr/>
-      
+    {/* Display Key Box for Other players*/} 
+    <p id = "GlobalKeyDisplay" style = 
+    {{ height: '40px', 
+       borderTop: '1px solid #ccc', 
+       padding: '5px', 
+       display: 'flex', 
+       justifyContent: 'center', 
+       alignContent: 'center', 
+       fontWeight: 'bold' }}> </p>
     { /*guessing box*/ }
     <form 
       onSubmit={sendMessage} 
@@ -716,6 +731,7 @@ export default function Home() {
         alignContent: 'center',
         fontWeight: 'bold'
       }}
+      onKeyUp={keyPress}
   >
       <input
       style = 
@@ -736,7 +752,7 @@ export default function Home() {
       }}
       value = {message}
       onChange={(e) => setMessage(e.target.value)}
-      placeholder=" Guess the Pokémon "
+      placeholder=" Guess the Pokémon "   
     />
   </form>
 

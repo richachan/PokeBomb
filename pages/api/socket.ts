@@ -323,6 +323,11 @@ function chooseRandomGeneration()
           };
           io.emit('chat', msg);
         });
+        
+        socket.on('logKey', (message) => {
+          if(socket.id === userList[currTurn])io.emit('updateGlobalKey',message);
+        });
+
         socket.on('message', (msg) => {
           if (userList.length === 0) return;
   
