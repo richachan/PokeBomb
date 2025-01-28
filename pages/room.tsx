@@ -254,9 +254,9 @@ export default function Home() {
       position: "relative",
       transform: "scale(1)", // Keep the header scaling as you intended
       maxWidth: "100%", // Ensure it doesn’t go offscreen
-      height: "80px",
+      height: "69px",
       padding: "10px",
-      backgroundColor: "rgba(42, 42, 42, 0.4)", // Your original `hsl(248, 13%, 82%, 0.25)` in RGBA
+      backgroundColor: "rgba(32, 32, 37, 0.5)", // Your original `hsl(248, 13%, 82%, 0.25)` in RGBA
       opacity: 0.9, // Maintain your opacity setting
       backdropFilter: 'blur(1.5px)'
     }}
@@ -276,8 +276,8 @@ export default function Home() {
         width: '300px', 
         height: '170px',
         padding: '10px',
-        border: '2px solid #000',
-        backgroundColor: 'hsl(248, 13%, 82%, 0.25)',
+      
+        backgroundColor: 'rgba(42, 42, 42, 0.4)',
         borderRadius: '14px', 
         opacity: 0.9
       }}
@@ -430,8 +430,8 @@ export default function Home() {
         style={{ 
           filter: 'saturate(70%)',
           position: 'absolute', 
-          top: '20px', 
-          left: '20px', 
+          top: '15px', 
+          left: '12px', 
           maxWidth: '150px',
           height: 'auto', }} />
         {pokemon && (
