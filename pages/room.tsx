@@ -582,21 +582,25 @@ export default function Home() {
   <div
       style = 
       {{
-        display: 'absolute',
+        display: 'flex',
         alignItems: 'center',   
         justifyContent: 'center',
-        height: '200px',
+        height: '270px',
+        pointerEvents: 'none',
         overflow: 'hidden',
         position: 'relative',
-        zIndex: 2,
-        pointerEvents: 'none',
+        zIndex: 2
       }}
     >
       {/* Actual Pokémon sprite below */}
       <img
-        src={pokemon.sprite}
-        alt={pokemon.name}
-        style={{width: 'auto', height: 'auto'}}
+        src = {pokemon.sprite}
+        alt = {pokemon.name}
+        style = 
+        {{
+          width: 'auto', 
+          height: 'auto'
+        }}
       />
     </div>
   )}
@@ -635,7 +639,13 @@ export default function Home() {
 
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10, marginBottom: 20 }}>
       {Array.from({ length: 9 }, (_, i) => i + 1).map((gen) => (
-        <label key={gen} style={{ margin: '0 10px', textAlign: 'center' }}>
+        <label 
+          key = {gen} 
+          style = 
+          {{ 
+            margin: '0 10px', 
+            textAlign: 'center' 
+          }}>
           <input
             type="checkbox"
             checked={selectedGenerations.includes(gen)}
@@ -724,7 +734,7 @@ export default function Home() {
        fontWeight: 'bold' }}> </p>
     { /*guessing box*/ }
     <form 
-      onSubmit={sendMessage} 
+      onSubmit = {sendMessage} 
       style = 
       {{ 
         height: '40px',
