@@ -525,8 +525,7 @@ export default function Home() {
         <img src={"/pokebomb_logo.png"} 
         style =
         {{ 
-           
-          filter: 'saturate(70%)',
+          filter: 'saturate(60%)',
           position: 'absolute', 
           top: '15px', 
           left: '12px', 
@@ -624,7 +623,8 @@ export default function Home() {
       </div>
 
   <div 
-  style={{
+  style =
+  {{
     position: 'absolute',
     right: 20,
     height: '200px',
@@ -636,7 +636,6 @@ export default function Home() {
     borderRadius: '8px',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: 'white',
     backgroundColor: 'rgba(42, 42, 42, 0.4)',
     backdropFilter: 'blur(1.5px)'
   }}
