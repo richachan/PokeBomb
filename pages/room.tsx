@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import React, { useDeferredValue, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import MusicPlayer from './musicPlayer';
 import next from 'next';
 
 
@@ -10,7 +11,8 @@ let socket: Socket | null = null;
 type displayMessage = { user: string; text: string };
 type Pokemon = { name: string; sprite: string ;guessed:boolean};
 
-export default function Home() {
+export default function Home() 
+{
   const router = useRouter();
   const { query } = router;
   const [message, setMessage] = useState('');
@@ -24,114 +26,8 @@ export default function Home() {
   const [currTurn, setCurrTurn] = useState<number>(0);
   const [lives, setLives] = useState<{ [socketId: string]: number }>({});
   const [gameActive, setGameActive] = useState(false);
-
   const deferredMessage = useDeferredValue(message);
-
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [volume, setVolume] = useState(0.5);
-  const [changingVolume, setChangingVolume] = useState(false);
-  const [trackIndex, setTrackIndex] = useState(0);
-
-
-  const handleInputChange = (e) => {
-    const newValue = e.target.value;
-    setMessage(newValue);
-    if (newValue !== deferredMessage) {
-      socket?.emit('logKey', newValue);
-    }
-  }
   
-  
-
-  const musicTrackCalm = 
-  [
-    "/music/Lake.mp3", "/music/Littleroot Town.mp3", "/music/National Park HGSS.mp3", "/music/Eterna Forest.mp3", 
-    "/music/Eterna City.mp3"
-  ];
-
-  const [currentTrack, setCurrentTrack] = useState<string>(musicTrackCalm[0]);
-
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => 
-  {
-    const newValue = parseFloat(e.target.value);
-    setVolume(newValue / 100);
-    if (audioRef.current) 
-    {
-      audioRef.current.volume = newValue / 100;
-    }
-  };
-
-  const togglePlay = () => 
-  {
-    if (audioRef.current) {
-      if (isPlaying) 
-      {
-        audioRef.current.pause();
-      } 
-      else 
-      {
-        audioRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  const handleTimeUpdate = () => 
-  {
-    if (audioRef.current) 
-    {
-      setCurrentTime(audioRef.current.currentTime);
-    }
-  };
-  
-  const handleLoadedMetadata = () => 
-  {
-    if (audioRef.current) 
-    {
-      setDuration(audioRef.current.duration);
-    }
-  };
-
-  const previousTrack = () =>
-  {
-    if(trackIndex === 0)
-    {
-      setTrackIndex(musicTrackCalm.length - 1);
-    }
-    else
-    {
-      setTrackIndex((prevIndex) => (prevIndex - 1) % musicTrackCalm.length);
-    }
-  }
-
-  const nextTrack = () =>
-  {
-    setTrackIndex((prevIndex) => (prevIndex + 1) % musicTrackCalm.length);
-  }
-
-  useEffect(() => 
-  {
-    if (audioRef.current) 
-    {
-      audioRef.current.load();
-      audioRef.current.currentTime = 0;
-      audioRef.current.play();
-    }
-  }, [trackIndex]);
-
-  useEffect(() => 
-    {
-    if (audioRef.current) 
-    {
-      audioRef.current.volume = 0.5; // Ensure the volume starts at 50%
-      setVolume(0.5); // Synchronize the state
-    }
-  }, []);
-
-
   useEffect(() => 
   {
     const username = query.username as string;
@@ -262,6 +158,17 @@ export default function Home() {
     socket.emit('gameStarted')
   };
 
+  const handleInputChange = (e) => 
+  {
+    const newValue = e.target.value;
+    setMessage(newValue);
+
+    if (newValue !== deferredMessage) 
+    {
+      socket?.emit('logKey', newValue);
+    }
+  }
+
   return (
 
     <div
@@ -281,256 +188,22 @@ export default function Home() {
     {/* Header */}
 
     <div
-    style={{
-      position: "relative",
-      transform: "scale(1)", // Keep the header scaling as you intended
-      maxWidth: "100%", // Ensure it doesn’t go offscreen
-      height: "69px",
-      padding: "10px",
-      backgroundColor: "rgba(32, 32, 37, 0)", // Your original `hsl(248, 13%, 82%, 0.25)` in RGBA
-      backdropFilter: 'blur(1.5px)',
-    }}
-  > 
-
-  {/* Music Player */}
-
-  <div
-      style =
+      style = 
       {{
-        justifyContent: 'right', 
-        alignItems: 'right',
-        position: 'fixed',
-        top: '20px', 
-        right: '20px',
-        transform: 'scale(1)', 
-        width: '300px', 
-        height: '170px',
-        padding: '10px',
-      
-        backgroundColor: 'rgba(42, 42, 42, 0.4)',
-        borderRadius: '14px', 
-        opacity: 0.9
+        position: "relative",
+        transform: "scale(1)", // Keep the header scaling as you intended
+        maxWidth: "100%", // Ensure it doesn’t go offscreen
+        height: "69px",
+        padding: "10px",
+        backgroundColor: "rgba(32, 32, 37, 0)", // Your original `hsl(248, 13%, 82%, 0.25)` in RGBA
+        backdropFilter: 'blur(1.5px)',
       }}
     >
-      <h3
-        
-        style = 
-        {{
-          marginLeft: '13px',
-          marginBottom: '30px',
-          fontWeight: 'bold',
-          fontSize: '18px',
-        }}  
-      >
-        {musicTrackCalm[trackIndex].split('/').pop().replace('.mp3', '')}
-      
-      </h3>
-      <audio
-        ref = {audioRef}
-        src = {musicTrackCalm[trackIndex]}
-        onTimeUpdate = {handleTimeUpdate}
-        onLoadedMetadata = {handleLoadedMetadata}
-        onEnded = {() =>
-        {
-          setTrackIndex((prevIndex) => 
-          {
-            const nextIndex = (prevIndex + 1) % musicTrackCalm.length;
-            return nextIndex;
-          });
-        }}
-        autoPlay
-      />
-
-      {/*volume slider and volume text*/}
-      <div
-        style =
-        {{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          marginTop: '30px',
-          gap: '0px',
-          position: 'absolute',
-          top: '65px',
-          left: '-25px'
-        }}
-      >
-        <label htmlFor="volume-control"> </label>
-        <input
-          id="volume-control"
-          type="range"
-          min="0"
-          max="100"
-          step="1"
-          value={volume * 100}
-          onChange={handleVolumeChange}
-          onMouseDown={() => setChangingVolume(true)} 
-          onMouseUp={() => setChangingVolume(false)}
-          style = 
-          {{
-            transform: 'rotate(-90deg)',
-            marginBottom: '0px',
-            width: '85px'
-          }}
-        />
-
-        <i 
-          className ="fas fa-volume-up"
-          style = 
-          {{
-            position: 'absolute',
-            fontSize: '14px',
-            top: '54px',
-            opacity: '0.8'
-          }}
-        >
-        </i>
-
-        {changingVolume && (
-        <span
-        style =
-        {{
-          position: 'absolute', 
-          left: '8px',         
-          top: '50px',         
-          transform: 'translate(50px , 0)', 
-          fontSize: '14px',   
-          fontWeight: 'bold',
-        }}
-        >
-      {Math.round(volume * 100)}
-    </span>
-  )}
-      </div>
-
-      {/* play/pause button*/}
-      <div
-        onClick = {togglePlay}
-        style =
-        {{
-        position: 'absolute',
-        top: '48px',    
-        left: '138px',  
-        width: '26px', 
-        height: '28px', 
-        cursor: 'pointer',
-        backgroundColor: 'rgba(255, 0, 0, 0.2)',  
-        //check hitbox of button
-       }}
-     >
-       <i
-        className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'} fa-xl`}
-        style =
-        {{
-          fontSize: '25px',
-          position: 'relative', 
-          top: '3px',        
-          left: '4px'
-        }}
-       />
-      </div>
-
-      {/* previous song button */}
-      <div
-        onClick = {previousTrack}
-        style = 
-        {{
-          position: 'absolute',
-          cursor: 'pointer',
-          top: '48px',
-          left: '100px', 
-          width: '26px', 
-          height: '28px', 
-          backgroundColor: 'rgba(255, 0, 0, 0.2)'
-        }}
-      >
-        <i 
-          className = "fa-solid fa-backward-step"
-          style = 
-          {{
-            fontSize : '28px',
-            position: 'relative',
-            left: '4px',
-            top: '0px',
-          }}
-        >
-        </i>
-      </div>
-
-      {/* next song button */}
-      <div
-        onClick = {nextTrack}
-        style = 
-        {{
-          position: 'absolute',
-          cursor: 'pointer',
-          top: '48px',
-          left: '176px', 
-          width: '26px', 
-          height: '28px', 
-          backgroundColor: 'rgba(255, 0, 0, 0.2)'
-        }}
-      >
-        <i className="fa-solid fa-forward-step"
-           style = 
-           {{
-             fontSize : '28px',
-             position: 'relative',
-             left: '4px',
-             top: '0px',
-           }}
-        >
-        </i>
-
-
-      </div>
-
-      {/* song progress bar */}
-      <div>
-        <input
-          type = "range"
-          min = "0"
-          max = {duration || 0}
-          value= {audioRef.current ? audioRef.current.currentTime : 0} 
-          onChange = {(e) =>
-          {
-            if (audioRef.current) 
-            {
-              const newTime = Number(e.target.value);
-              audioRef.current.currentTime = newTime;
-              setCurrentTime(newTime);
-            } 
-          }}
-          
-          onMouseUp = {() => 
-          {
-            if (audioRef.current) 
-            {
-              if (audioRef.current.currentTime >= audioRef.current.duration - 0.9) 
-              {
-                nextTrack();
-              }
-            }
-          }}
-
-          style = 
-          {{
-            marginTop: '12px', marginLeft: '45px', width: '70%', background: 'transparent', borderRadius: '0px'
-          }}
-        />
-        
-        {/*song time text */}
-        <div 
-          style = 
-          {{ 
-            textAlign: 'center', marginTop: '-3px', borderRadius: '0', fontWeight: 'bold'
-          }}
-        >
-        </div>
-      </div>
     </div>
-    </div>
-      
+
+    {/*Music Player */}
+    <MusicPlayer/>
+
     <div 
       style = 
       {{ 
