@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useDeferredValue, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import next from 'next';
@@ -25,7 +25,8 @@ export default function Home() {
   const [lives, setLives] = useState<{ [socketId: string]: number }>({});
   const [gameActive, setGameActive] = useState(false);
 
-  //music
+  const deferredMessage = useDeferredValue(message);
+
   const [isPlaying, setIsPlaying] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -33,6 +34,16 @@ export default function Home() {
   const [volume, setVolume] = useState(0.5);
   const [changingVolume, setChangingVolume] = useState(false);
   const [trackIndex, setTrackIndex] = useState(0);
+
+
+  const handleInputChange = (e) => {
+    const newValue = e.target.value;
+    setMessage(newValue);
+
+    if (newValue !== deferredMessage) {
+      socket?.emit('logKey', newValue);
+    }
+  }
 
   const musicTrackCalm = 
   [
@@ -782,8 +793,8 @@ export default function Home() {
         textAlign: 'center',
         backgroundColor: 'rgba(255, 255, 255, 1)',
       }}
-      value = {message}
-      onChange={(e) => setMessage(e.target.value)}
+      value = {deferredMessage}
+      onChange = {handleInputChange}
       placeholder=" Guess the Pokémon "   
     />
   </form>
