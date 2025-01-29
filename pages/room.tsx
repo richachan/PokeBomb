@@ -6,6 +6,7 @@ import next from 'next';
 
 
 let socket: Socket | null = null;
+let typingTimeout;
 
 type displayMessage = { user: string; text: string };
 type Pokemon = { name: string; sprite: string ;guessed:boolean};
@@ -54,8 +55,11 @@ export default function Home() {
 
   const keyPress = (e) => {
     const currentValue = e.target.value;
-    setMessage(currentValue);       
+    setMessage(currentValue);    
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
     socket.emit('logKey', currentValue); 
+    }, 100);
   };
 
   const togglePlay = () => 
