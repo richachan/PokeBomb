@@ -3,7 +3,7 @@ import type { Server as HTTPServer } from 'http';
 import type { Socket } from 'net';
 import { Server } from 'socket.io';
 import { matchesGlob } from 'path';
-import { clear, time } from 'console';
+import { clear } from 'console';
 
 
 let userMap = new Map<string,string>() //socket.id, username
@@ -14,7 +14,6 @@ let timer;
 let currLevel: number = 0;
 let currentGenerations: number[] = [];
 let gameActive = false;
-let timeout;
 
 type NextApiResponseServerIO = NextApiResponse & {
   socket: Socket & {
@@ -327,11 +326,7 @@ function chooseRandomGeneration()
         });
         
         socket.on('logKey', (message) => {
-          clearTimeout(timeout);
-          if(socket.id === userList[currTurn]) {
-            timeout = setTimeout(() => {
-            io.emit('updateGlobalKey',message);}, 80);
-          }
+          if(socket.id === userList[currTurn])io.emit('updateGlobalKey',message);
         });
 
         socket.on('message', (msg) => {
