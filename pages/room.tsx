@@ -152,7 +152,7 @@ export default function Home() {
       });
 
       socket.on('updateGlobalKey',(message)=>{
-        document.getElementById("GlobalKeyDisplay").innerHTML=message.toString()
+        setMessage(message);
       });
 
       socket.on('chat', (msg: displayMessage) => {
@@ -294,8 +294,8 @@ export default function Home() {
         justifyContent: 'right', 
         alignItems: 'right',
         position: 'fixed',
-        top: '100px', 
-        right: '10px',
+        top: '20px', 
+        right: '20px',
         transform: 'scale(1)', 
         width: '300px', 
         height: '170px',
@@ -560,7 +560,7 @@ export default function Home() {
       alignItems: 'center',     // Center horizontally
       justifyContent: 'center',
       height: '20px',
-      marginTop: '-50px',
+      marginTop: '-30px',
       
       position: 'relative',
       zIndex: 1
@@ -571,7 +571,7 @@ export default function Home() {
       src="/current_pokemon.png"
       style={{ 
         width: '15vw', 
-        marginBottom: '0px' ,
+        marginBottom: '-70px' ,
         filter: 'saturate(70%)',
       }}
       alt="Current Pokémon Title"
@@ -611,33 +611,58 @@ export default function Home() {
     {{ 
       display: 'flex', 
       justifyContent: 'center',
-      marginTop: '-40px', 
+      position: 'fixed',
+      top: '415px',
+      left: '50%', 
+      transform: 'translate(-50%, 0)',
+    
     }}>
-    <button 
-      onClick = {startGame}
-      disabled = {gameActive}
-      style = 
-      {{ 
-        padding: '6px 15px', 
-        fontSize: '15px', 
-        color: 'white',
-        cursor: 'pointer', 
-        borderRadius: '8px',      
-        backgroundColor: 'rgb(255, 255, 255, 0.3)',
-        marginTop: '20px',
-        marginBottom: '20px',
-        visibility: gameActive ? 'hidden' : 'visible', 
-        }}>
-        Start Game
-    </button>
+    {(playerEntries.length < 2) ? (
+  <p style={{
+    color: 'white', 
+    fontSize: '16px', 
+    
+    
+    marginTop: '10px',
+    marginBottom: '160px',
+    
+  }}>
+    Need 2 or more players to start!
+  </p>
+) : (
+  <button 
+    onClick={startGame}
+    disabled={gameActive}
+    style={{ 
+      padding: '6px 15px', 
+      fontSize: '15px', 
+      color: 'white',
+      cursor: 'pointer', 
+      borderRadius: '8px',      
+      
+      backgroundColor: 'rgb(255, 255, 255, 0.3)',
+      marginTop: '20px',
+      marginBottom: '140px',
+      visibility: gameActive ? 'hidden' : 'visible', 
+    }}>
+    Start Game
+  </button>
+)}
+
   </div>
 
     
-    <div id = "timer" style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-      Waiting for game to start...
+    <div id = "timer" style={{fontWeight: 'bold', marginTop: '-55px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+      Waiting for start
     </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10, marginBottom: 20 }}>
+      <div style={{ 
+        display: 'flex', 
+        position: 'absolute', 
+        bottom: '10px', 
+        left: '10px',
+        visibility: gameActive ? 'hidden' : 'visible'
+        }}>
       {Array.from({ length: 9 }, (_, i) => i + 1).map((gen) => (
         <label 
           key = {gen} 
@@ -650,7 +675,7 @@ export default function Home() {
             type="checkbox"
             checked={selectedGenerations.includes(gen)}
             onChange={() => toggleGeneration(gen)}
-            style={{ marginRight: 5 }}
+            style={{ marginRight: 5, border: 'none' }}
           />
           Gen {gen}
         </label>
@@ -711,7 +736,7 @@ export default function Home() {
         border: 'none',
         borderRadius: '5px',
         outline: 'none',
-        color: '#2980b9',
+        color: 'grey',
         width: '100%',
         backgroundColor: 'rgba(42, 42, 42, 0.4)',
       }}
@@ -721,29 +746,20 @@ export default function Home() {
     />
   </form>
 </div>
-      <hr/>
-    {/* Display Key Box for Other players*/} 
-    <p id = "GlobalKeyDisplay" style = 
-    {{ height: '40px', 
-       borderTop: '1px solid #ccc', 
-       padding: '5px', 
-       display: 'flex', 
-       color: 'black',
-       justifyContent: 'center', 
-       alignContent: 'center', 
-       fontWeight: 'bold' }}> </p>
+     
+    
     { /*guessing box*/ }
     <form 
       onSubmit = {sendMessage} 
       style = 
       {{ 
         height: '40px',
-        borderTop: '1px solid #ccc',
         padding: '5px',
         display: 'flex',
         justifyContent: 'center', 
         alignContent: 'center',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        border: 'none',
       }}
      
       onChange = {keyPress}
@@ -757,11 +773,12 @@ export default function Home() {
         marginRight: '5px',
         justifyContent: 'center',
         alignContent: 'center',
-        borderRadius: '5px',
+        borderRadius: '8px',
+        border: 'none',
         outline: 'none',
         color: 'black',
         width: '50%',
-        maxWidth: '400px',
+        maxWidth: '250px',
         textAlign: 'center',
         backgroundColor: 'rgba(255, 255, 255, 1)',
       }}
@@ -774,13 +791,16 @@ export default function Home() {
   <div style = 
       {{
         display: 'flex', 
-        justifyContent: 'center',
-        alignContent: 'center',
+        
         flexDirection: 'column',
-        marginLeft: '375px',
+        position: 'absolute',
+        left: '18%',
+        top: '30%',
+        border: 'none',
+        fontSize: '20px',
         }}>
         
-      <h2>Playing:</h2>
+      <h2>Players:</h2>
       {playerEntries.length === 0 && <p>It's quiet in here</p>}
       {playerEntries.map(([socketId, username], index) => (
         <div key={socketId} style={{ margin: '4px 0' }}>
