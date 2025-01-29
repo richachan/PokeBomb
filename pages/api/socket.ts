@@ -241,6 +241,7 @@ function chooseRandomGeneration()
     {
       if(currTurn === userList.length - 1)currLevel = currLevel + 1;
       currTurn = (currTurn + 1) % userList.length;
+      
     } while ((liveMap.get(userList[currTurn]) ?? 0) <= 0);
   }
   
@@ -347,7 +348,8 @@ function chooseRandomGeneration()
     
               //Advance turn
               advanceTurn();
-              
+              io.emit('updateGlobalKey',''); //clear the global input field
+
               if(checkGame(io)) return;
 
               io.emit('players', 
@@ -442,7 +444,7 @@ function chooseRandomGeneration()
           {
             clearInterval(timer)
           }
-          let count = Math.max(15 - currLevel , 3);
+          let count = Math.max(15 - currLevel , 5);
           io.emit('setTimer', count);
           if(checkGame(io)) return;
           timer = setInterval(() => {
@@ -465,7 +467,8 @@ function chooseRandomGeneration()
               clearInterval(timer);
               //skip over dead players
               advanceTurn();
-            
+              io.emit('updateGlobalKey',''); //clear the global input field
+              
               io.emit('players', 
               {
                 userMap: Object.fromEntries(userMap),

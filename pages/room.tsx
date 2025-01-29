@@ -546,8 +546,8 @@ export default function Home() {
         {{ 
           filter: 'saturate(60%)',
           position: 'absolute', 
-          top: '15px', 
-          left: '12px', 
+          top: '20px', 
+          left: '15px', 
           maxWidth: '165px',
           height: 'auto', 
         }} 
@@ -571,7 +571,7 @@ export default function Home() {
       src="/current_pokemon.png"
       style={{ 
         width: '15vw', 
-        marginBottom: '-70px' ,
+        marginBottom: '-105px' ,
         filter: 'saturate(70%)',
       }}
       alt="Current Pokémon Title"
@@ -653,7 +653,7 @@ export default function Home() {
 
     
     <div id = "timer" style={{fontWeight: 'bold', marginTop: '-55px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-      Waiting for start
+      Waiting for game start
     </div>
 
       <div style={{ 
@@ -687,12 +687,12 @@ export default function Home() {
   {{
     position: 'absolute',
     right: 20,
-    height: '200px',
+    height: '220px',
     bottom: 20,  // Ensure it stays near the bottom
-    width: '22%',  // Adjust to fit well on zoom
-    minWidth: '300px', // Prevent it from getting too small
-    maxWidth: '500px', // Prevent excessive growth
-    
+    width: '25%',  // Adjust to fit well on zoom
+    minWidth: '420px', // Prevent it from getting too small
+    maxWidth: '420px', // Prevent excessive growth
+    fontSize: '14px',
     borderRadius: '8px',
     display: 'flex',
     flexDirection: 'column',
@@ -794,8 +794,8 @@ export default function Home() {
         
         flexDirection: 'column',
         position: 'absolute',
-        left: '18%',
-        top: '30%',
+        left: '20%',
+        top: '35%',
         border: 'none',
         fontSize: '20px',
         }}>
@@ -804,8 +804,8 @@ export default function Home() {
       {playerEntries.length === 0 && <p>It's quiet in here</p>}
       {playerEntries.map(([socketId, username], index) => (
         <div key={socketId} style={{ margin: '4px 0' }}>
-          {username} {lives[socketId]}
-          {index === currTurn && <strong style={{ color: '#f9e2c2', marginLeft: 8 }}>← Current turn</strong>}
+          {username}  {lives[socketId]}
+          {index === currTurn && <strong style={{ color: '#f9e2c2', marginLeft: 8 }}>🡄</strong>}
         </div>
       ))}
       </div>

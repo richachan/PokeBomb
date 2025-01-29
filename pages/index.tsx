@@ -12,15 +12,17 @@ export default function UserPage() {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: '50px auto' }}>
-      <h1>Enter player name</h1>
+    <div style={{ maxWidth: 400, margin: '50px auto', marginTop: '20%'}}>
+      <h1>Welcome to PokéBomb!</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Your name"
+          placeholder="Choose a name"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          style={{ width: '100%', marginBottom: 10 }}
+          style={{ width: '100%', marginBottom: 10, borderRadius: 8, padding: 5,
+            color: 'black', border: '1px solid #ccc',
+          }}
         />
         <button type="submit" style={{ width: '100%' }}>Join Game</button>
       </form>
