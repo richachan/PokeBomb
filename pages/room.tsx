@@ -26,12 +26,6 @@ export default function Home() {
   const [gameActive, setGameActive] = useState(false);
 
   const deferredMessage = useDeferredValue(message);
-  const useDebouncedEffect = (effect, delay, deps) => {
-    useEffect(() => {
-      const handler = setTimeout(() => effect(), delay);
-      return () => clearTimeout(handler);
-    }, [...(deps || []), delay]);
-  };
 
   const [isPlaying, setIsPlaying] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
@@ -45,12 +39,11 @@ export default function Home() {
   const handleInputChange = (e) => {
     const newValue = e.target.value;
     setMessage(newValue);
-  };
-    useDebouncedEffect(() => {
-    if (message !== deferredMessage) {
-      socket?.emit('logKey', message);
+    if (newValue !== deferredMessage) {
+      socket?.emit('logKey', newValue);
     }
-  }, 200, [message]);
+  }
+  
   
 
   const musicTrackCalm = 
@@ -753,7 +746,7 @@ export default function Home() {
         width: '100%',
         backgroundColor: 'rgba(42, 42, 42, 0.4)',
       }}
-      value={chat}
+      value = {chat}
       onChange={(p) => setChat(p.target.value)}
       placeholder=" Type your message "
     />
