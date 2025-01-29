@@ -63,12 +63,6 @@ export default function Home() {
     }
   };
 
-  const keyPress = (e) => {
-    const currentValue = e.target.value;
-    setMessage(currentValue);    
-    socket.emit('logKey', currentValue); 
-  };
-
   const togglePlay = () => 
   {
     if (audioRef.current) {
@@ -773,7 +767,6 @@ export default function Home() {
         border: 'none',
       }}
      
-      onChange = {keyPress}
   >
       <input
       style = 
