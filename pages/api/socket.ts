@@ -355,7 +355,7 @@ function chooseRandomGeneration()
               //Advance turn
               
               io.emit('updateGlobalKey','');
-              advanceTurn();
+              advanceTurn(io);
               io.emit('updateGlobalKey',''); //clear the global input field
 
               if(checkGame(io)) return;
@@ -475,7 +475,7 @@ function chooseRandomGeneration()
               clearInterval(timer);
               //skip over dead players
               io.emit('updateGlobalKey',''); 
-              advanceTurn();
+              advanceTurn(io);
               io.emit('updateGlobalKey',''); //clear the global input field
               
               io.emit('players', 
