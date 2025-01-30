@@ -163,7 +163,7 @@ export default function Home()
     const newValue = e.target.value;
     setMessage(newValue);
 
-    if (socket && socket.id !== Object.keys(userMap)[currTurn]) 
+    if (socket && socket.id == Object.keys(userMap)[currTurn]) 
     {
       socket?.emit('logKey', newValue);
     }
@@ -473,21 +473,41 @@ export default function Home()
         flexDirection: 'column',
         position: 'absolute',
         left: '20%',
-        top: '35%',
+        top: '30%',
         border: 'none',
         fontSize: '20px',
         }}>
         
-      <h2>Players:</h2>
-      {playerEntries.length === 0 && <p>It's quiet in here</p>}
-      {playerEntries.map(([socketId, username], index) => (
-        <div key={socketId} style={{ margin: '4px 0' }}>
-          {username}  {lives[socketId]}
-          {index === currTurn && <strong style={{ color: '#f9e2c2', marginLeft: 8 }}>🡄</strong>}
-        </div>
-      ))}
-      </div>
+        <h2>Players:</h2>
+{playerEntries.length === 0 && <p>It's quiet in here</p>}
+<div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+  {playerEntries.map(([socketId, username], index) => (
+    <div 
+      key={socketId} 
+      style={{ 
+        padding: '7px 13px',
+        backgroundColor: index === currTurn ? 'rgba(249, 226, 194, 0.1)' : 'rgba(255, 255, 255, 0.1)',
+        color: 'white',
+        borderRadius: '8px',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        textAlign: 'center',
+        fontWeight: 'bold',
+        boxShadow: index === currTurn ? '0 0 10px 4px rgba(249, 226, 194, 0.8)' : 'none',
+        transition: 'box-shadow 0.3s ease-in-out',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '200px',
+      }}
+    >
+      <span>{username}</span>
+      <span style={{ fontSize: '14px', opacity: 0.8}}> {lives[socketId]}</span>
+    </div>
+    ))}
+    </div>
+    </div>
     </div>
     </div>
   );  
+
 }
