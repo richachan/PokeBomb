@@ -105,23 +105,35 @@ const MusicPlayer = React.memo(() =>
           right: '0px',
           top: '0px',
           width: '300px', 
-          height: '100px',
+          height: '75px',
           padding: '10px',
           backgroundColor: 'rgba(42, 42, 42, 0.4)',
           borderRadius: '0px', 
           opacity: 0.9
         }}
     >
+        {/* Track Title */}
         <h3
             style = 
             {{
                 position: 'relative',
-                marginLeft: '13px',
-                top: '50px',
+                marginLeft: '70px',
+                right: '36px',
+                top: '31px',
                 fontWeight: 'bold',
                 fontSize: '18px',
             }}  
         >
+            <i
+              style =
+              {{
+                position: 'absolute',
+                fontSize: '25px',
+                top: '13px',
+                right: '220px',
+              }}
+              className = "fa-solid fa-music fa-sm">
+            </i>
 
         {musicTrackCalm[trackIndex].split('/').pop().replace('.mp3', '')}
         </h3>
@@ -152,8 +164,8 @@ const MusicPlayer = React.memo(() =>
                 marginTop: '30px',
                 gap: '0px',
                 position: 'absolute',
-                top: '65px',
-                left: '-25px'
+                top: '-2px',
+                left: '-50px'
             }}
         >
           <label 
@@ -174,7 +186,8 @@ const MusicPlayer = React.memo(() =>
             {{
               transform: 'rotate(-90deg)',
               marginBottom: '0px',
-              width: '85px'
+              width: '70px',
+              height: '25px'
             }}
           />
   
@@ -226,7 +239,7 @@ const MusicPlayer = React.memo(() =>
             className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'} fa-xl`}
             style =
             {{
-               fontSize: '25px',
+               fontSize: '27px',
                position: 'relative', 
                top: '3px',        
                left: '4px'
