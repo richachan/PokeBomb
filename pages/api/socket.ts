@@ -242,8 +242,12 @@ function chooseRandomGeneration()
     do 
     {
       if(currTurn === userList.length - 1)currLevel = currLevel + 1;
+      
+      
+      
       currTurn = (currTurn + 1) % userList.length;
-      io.emit('updateGlobalKey',''); //clear the global input field
+      //clear the global input field
+      io.emit('updateGlobalKey','');
       
     } while ((liveMap.get(userList[currTurn]) ?? 0) <= 0);
   }
