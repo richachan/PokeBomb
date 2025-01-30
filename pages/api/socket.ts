@@ -355,6 +355,7 @@ function chooseRandomGeneration()
               io.emit('message', msg1);
     
               //Advance turn
+              io.emit('updateGlobalKey','');
               advanceTurn();
               io.emit('updateGlobalKey',''); //clear the global input field
 
@@ -474,6 +475,7 @@ function chooseRandomGeneration()
               
               clearInterval(timer);
               //skip over dead players
+              io.emit('updateGlobalKey','');
               advanceTurn();
               io.emit('updateGlobalKey',''); //clear the global input field
               
