@@ -28,6 +28,10 @@ export default function Home()
   const [gameActive, setGameActive] = useState(false);
   const deferredMessage = useDeferredValue(message);
   
+  useEffect(() => {
+    setMessage(''); 
+  }, [currTurn]); 
+
   useEffect(() => 
   {
     const username = query.username as string;
