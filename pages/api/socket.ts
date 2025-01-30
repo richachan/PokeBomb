@@ -250,6 +250,7 @@ function chooseRandomGeneration()
       io.emit('updateGlobalKey','');
       
     } while ((liveMap.get(userList[currTurn]) ?? 0) <= 0);
+    io.emit('updateGlobalKey','');
   }
   
   function getPokemon() 
