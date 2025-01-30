@@ -160,6 +160,7 @@ export default function Home()
   const startGame = () =>
   {
     socket.emit('gameStarted')
+    socket.emit('updateGlobalKey', ''); //clear the global key on game start
   };
 
   const handleInputChange = (e) => 

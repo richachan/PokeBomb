@@ -164,6 +164,7 @@ function checkGame(io: Server)
     const winnerName = userMap.get(winnerId);
     io.emit('setTimer', winnerName + " has won the game!");
     io.emit('message', { user: winnerName, text: " is the winner!" });
+    io.emit('updateGlobalKey',''); //clear the global input field when game ends
     gameActive = false;
     io.emit('gameStatus', { gameActive });
 
@@ -236,12 +237,13 @@ function chooseRandomGeneration()
     }
   }
 
-  function advanceTurn() 
+  function advanceTurn(io: Server) 
   {
     do 
     {
       if(currTurn === userList.length - 1)currLevel = currLevel + 1;
       currTurn = (currTurn + 1) % userList.length;
+      io.emit('updateGlobalKey',''); //clear the global input field
       
     } while ((liveMap.get(userList[currTurn]) ?? 0) <= 0);
   }
@@ -351,6 +353,7 @@ function chooseRandomGeneration()
               io.emit('message', msg1);
     
               //Advance turn
+              
               io.emit('updateGlobalKey','');
               advanceTurn();
               io.emit('updateGlobalKey',''); //clear the global input field
