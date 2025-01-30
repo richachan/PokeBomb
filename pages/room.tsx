@@ -57,7 +57,8 @@ export default function Home()
       });
 
       socket.on('updateGlobalKey',(message)=>{
-        setMessage(message);
+        if (socket && socket.id == Object.keys(userMap)[currTurn]) {
+        setMessage(message); }
       });
 
       socket.on('chat', (msg: displayMessage) => {
@@ -74,6 +75,7 @@ export default function Home()
         setUserMap(data.userMap);
         setCurrTurn(data.currTurn);
         setLives(data.lives);
+        socket?.emit('updateGlobalKey', ''); //clear the global key on player update
       });
 
       socket.on('pokemon', ({ name, sprite ,guessed}: Pokemon) => 
@@ -165,9 +167,9 @@ export default function Home()
   const handleInputChange = (e) => 
   {
     if (socket && socket.id == Object.keys(userMap)[currTurn]) {
-    const newValue = e.target.value;
-    setMessage(newValue);
-    socket?.emit('logKey', newValue);
+      const newValue = e.target.value;
+      setMessage(newValue);
+      socket?.emit('logKey', newValue);
     }
   }
 

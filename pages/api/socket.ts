@@ -242,6 +242,7 @@ function chooseRandomGeneration()
     do 
     {
       if(currTurn === userList.length - 1)currLevel = currLevel + 1;
+      
       currTurn = (currTurn + 1) % userList.length;
       io.emit('updateGlobalKey',''); //clear the global input field
       
@@ -329,10 +330,9 @@ function chooseRandomGeneration()
         });
         
         socket.on('logKey', (message) => {
-          clearTimeout(timeout);
-          timeout = setTimeout(() => {
+         
           const currentPlayerSocketId = Object.keys(userMap)[currTurn];
-          socket.broadcast.emit('updateGlobalKey', message)}, 0);
+          socket.broadcast.emit('updateGlobalKey', message)
         });
 
         socket.on('message', (msg) => {
