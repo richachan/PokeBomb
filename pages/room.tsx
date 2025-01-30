@@ -164,12 +164,10 @@ export default function Home()
 
   const handleInputChange = (e) => 
   {
+    if (socket && socket.id == Object.keys(userMap)[currTurn]) {
     const newValue = e.target.value;
     setMessage(newValue);
-
-    if (socket && socket.id == Object.keys(userMap)[currTurn]) 
-    {
-      socket?.emit('logKey', newValue);
+    socket?.emit('logKey', newValue);
     }
   }
 
@@ -467,7 +465,7 @@ export default function Home()
       value = {deferredMessage}
       onChange = {handleInputChange}
       placeholder=" Guess the Pokémon "   
-      disabled = { socket?.id !== Object.keys(userMap)[currTurn]}
+      
     />
   </form>
 
