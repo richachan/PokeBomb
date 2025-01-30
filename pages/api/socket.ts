@@ -328,13 +328,9 @@ function chooseRandomGeneration()
         
         socket.on('logKey', (message) => {
           clearTimeout(timeout);
-        
           timeout = setTimeout(() => {
           const currentPlayerSocketId = Object.keys(userMap)[currTurn];
-
-              // Broadcast the live update to all players except the current guesser
-          socket.broadcast.emit('updateGlobalKey', message)}, 80);
-          
+          socket.broadcast.emit('updateGlobalKey', message)}, 0);
         });
 
         socket.on('message', (msg) => {
@@ -475,7 +471,7 @@ function chooseRandomGeneration()
               
               clearInterval(timer);
               //skip over dead players
-              io.emit('updateGlobalKey','');
+              io.emit('updateGlobalKey',''); 
               advanceTurn();
               io.emit('updateGlobalKey',''); //clear the global input field
               
