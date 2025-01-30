@@ -256,10 +256,10 @@ function chooseRandomGeneration()
     {
       currentSprite = getSprite("Flabebe");
     }
-    setTimeout(() => { 
-      io.emit('updateGlobalKey','');
-      io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
-    } , 5000);
+    
+    io.emit('updateGlobalKey','');
+    io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
+    
     
   }
   
@@ -367,10 +367,14 @@ function chooseRandomGeneration()
               io.emit('message', msg1);
     
               //Advance turn
-              
+              socket.removeAllListeners('logkey');
               io.emit('updateGlobalKey','');
               advanceTurn(io);
-              io.emit('updateGlobalKey',''); //clear the global input field
+              socket.on('logKey', (message) => {
+         
+                const currentPlayerSocketId = Object.keys(userMap)[currTurn];
+                socket.broadcast.emit('updateGlobalKey', message)
+              });
 
               if(checkGame(io)) return;
 
