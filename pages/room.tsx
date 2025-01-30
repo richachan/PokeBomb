@@ -163,7 +163,7 @@ export default function Home()
     const newValue = e.target.value;
     setMessage(newValue);
 
-    if (newValue !== deferredMessage) 
+    if (socket && socket.id !== Object.keys(userMap)[currTurn]) 
     {
       socket?.emit('logKey', newValue);
     }

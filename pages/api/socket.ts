@@ -328,10 +328,13 @@ function chooseRandomGeneration()
         
         socket.on('logKey', (message) => {
           clearTimeout(timeout);
-          if(socket.id === userList[currTurn]) {
-            timeout = setTimeout(() => {
-            io.emit('updateGlobalKey',message);}, 80);
-          }
+        
+          timeout = setTimeout(() => {
+          const currentPlayerSocketId = Object.keys(userMap)[currTurn];
+
+              // Broadcast the live update to all players except the current guesser
+          socket.broadcast.emit('updateGlobalKey', message)}, 80);
+          
         });
 
         socket.on('message', (msg) => {
