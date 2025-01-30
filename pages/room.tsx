@@ -57,7 +57,7 @@ export default function Home()
       });
 
       socket.on('updateGlobalKey',(message)=>{
-        if (socket && socket.id == Object.keys(userMap)[currTurn]) {
+        if (socket && socket.id !== Object.keys(userMap)[currTurn]) {
         setMessage(message); }
       });
 
