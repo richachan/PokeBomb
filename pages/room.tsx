@@ -468,6 +468,7 @@ export default function Home()
       value = {deferredMessage}
       onChange = {handleInputChange}
       placeholder=" Guess the Pokémon "   
+      disabled = { socket?.id !== Object.keys(userMap)[currTurn]}
     />
   </form>
 
