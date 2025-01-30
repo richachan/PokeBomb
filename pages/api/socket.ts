@@ -4,6 +4,7 @@ import type { Socket } from 'net';
 import { Server } from 'socket.io';
 import { matchesGlob } from 'path';
 import { clear, time } from 'console';
+import { buffer } from 'stream/consumers';
 
 
 let userMap = new Map<string,string>() //socket.id, username
@@ -250,7 +251,9 @@ function chooseRandomGeneration()
       io.emit('updateGlobalKey','');
       
     } while ((liveMap.get(userList[currTurn]) ?? 0) <= 0);
+    //setTimeout(() => {
     io.emit('updateGlobalKey','');
+    //}, 5000);
   }
   
   function getPokemon() 
