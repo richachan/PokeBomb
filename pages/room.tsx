@@ -5,7 +5,6 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import MusicPlayer from './musicPlayer';
 import next from 'next';
 
-
 let socket: Socket | null = null;
 
 type displayMessage = { user: string; text: string };
