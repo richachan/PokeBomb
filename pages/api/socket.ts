@@ -344,9 +344,10 @@ function chooseRandomGeneration()
         });
         
         socket.on('logKey', (message) => {
-         
+          if (socket.id === userList[currTurn]) {
           const currentPlayerSocketId = Object.keys(userMap)[currTurn];
           socket.broadcast.emit('updateGlobalKey', message)
+          }
         });
 
         socket.on('message', (msg) => {

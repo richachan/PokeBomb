@@ -465,7 +465,7 @@ export default function Home()
         backgroundColor: 'rgba(255, 255, 255, 1)',
       }}
       value = {deferredMessage}
-      onChange = {handleInputChange}
+      onChange = {socket?.id === Object.keys(userMap)[currTurn] ? handleInputChange : undefined}
       placeholder=" Guess the Pokémon "   
       
     />
