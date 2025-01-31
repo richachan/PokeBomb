@@ -75,7 +75,6 @@ export default function Home()
         setUserMap(data.userMap);
         setCurrTurn(data.currTurn);
         setLives(data.lives);
-        socket?.emit('updateGlobalKey', ''); //clear the global key on player update
       });
 
       socket.on('pokemon', ({ name, sprite ,guessed}: Pokemon) => 
