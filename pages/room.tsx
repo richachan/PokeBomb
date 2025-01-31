@@ -28,8 +28,10 @@ export default function Home()
   const deferredMessage = useDeferredValue(message);
   
   useEffect(() => {
-    setMessage(''); 
-  }, [currTurn]); 
+    if (socket?.id === Object.keys(userMap)[currTurn]) {
+      setMessage(''); // Clear input only if it's the new turn for this player
+    }
+  }, [currTurn]);
 
   useEffect(() => 
   {

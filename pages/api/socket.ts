@@ -244,11 +244,12 @@ function chooseRandomGeneration()
       if(currTurn === userList.length - 1)currLevel = currLevel + 1;
       
       currTurn = (currTurn + 1) % userList.length;
-      io.emit('updateGlobalKey',''); //clear the global input field
+      io.to(userMap[currTurn]).emit('updateGlobalKey', '');
       
     } while ((liveMap.get(userList[currTurn]) ?? 0) <= 0);
     //Get next Pokemon
     checkPokemonName();
+    
 
     currentSprite = getSprite(currentPoke);
     
