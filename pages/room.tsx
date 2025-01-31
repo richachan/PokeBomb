@@ -176,7 +176,7 @@ export default function Home()
   }
 
   return (
-
+    
     <div
       className="bg-pokemon bg-cover bg-center text-white min-h-[100vh]"
       style={{
@@ -185,12 +185,13 @@ export default function Home()
         backgroundRepeat: "no-repeat",
         backgroundSize: "100%",
         overflow: 'hidden',
-        boxShadow: 'inset 0 0 1000px 205px rgba(0, 0, 0, 0.80)'
+        boxShadow: 'inset 0 0 500px 200px rgba(0, 0, 0, 0.80)'
+
         
       }}
       
     >
-
+      
     {/* Header */}
 
     <div
@@ -407,29 +408,31 @@ export default function Home()
     onSubmit={sendChat} 
     style={{ 
       height: '40px',
-      borderTop: '1px solid #ccc',
-      padding: '5px'
+      padding: '8px'
     }}
   >
     <input
-      style = 
-      {{ 
-        flex: 1, 
-        padding: '2px',
-        marginLeft: '1px',
-        marginRight: '5px',
-        border: 'none',
-        borderRadius: '5px',
-        outline: 'none',
-        color: 'grey',
-        width: '100%',
-        backgroundColor: 'rgba(42, 42, 42, 0.4)',
-      }}
-      value = {chat}
-      onChange={(p) => setChat(p.target.value)}
-      placeholder=" Type your message "
-    />
+    className = "placeholder-[rgb(105,105,105)]"
+    style={{
+      flex: 1,
+      padding: '2px',
+      marginLeft: '1px',
+      marginRight: '5px',
+      border: 'none',
+      borderRadius: '5px',
+      outline: 'none',
+      color: 'rgba(255, 255, 255, 0.8)',
+      width: '100%',
+      backgroundColor: 'rgba(60, 60, 60, 0.4)',
+  }}
+    value={chat}
+    onChange={(p) => setChat(p.target.value)}
+    placeholder = "Type your message"
+  />
+
+    
   </form>
+  
 </div>
      
     
@@ -479,42 +482,57 @@ export default function Home()
         
         flexDirection: 'column',
         position: 'absolute',
-        left: '20%',
+        left: '18%',
         top: '30%',
         border: 'none',
         fontSize: '20px',
         }}>
         
-        <h2>Players:</h2>
-{playerEntries.length === 0 && <p>It's quiet in here</p>}
-<div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <h2 style={{ marginBottom: '10px', textAlign: 'center', fontWeight: 'bold' }}>Players:</h2>
+
+<div 
+  style={{ 
+    display: 'flex', 
+    flexDirection: 'column', 
+    gap: '8.5px', 
+    marginTop: '5px', 
+    perspective: '800px', 
+  }}
+>
   {playerEntries.map(([socketId, username], index) => (
     <div 
       key={socketId} 
       style={{ 
         padding: '7px 13px',
-        backgroundColor: index === currTurn ? 'rgba(249, 226, 194, 0.1)' : 'rgba(255, 255, 255, 0.1)',
+        backgroundColor: 'rgba(100, 100, 100, 0.4)',
         color: 'white',
         borderRadius: '8px',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
+        border: '1px solid rgba(155, 155, 155, 0.3)',
         textAlign: 'center',
         fontWeight: 'bold',
         boxShadow: index === currTurn ? '0 0 10px 4px rgba(249, 226, 194, 0.8)' : 'none',
-        transition: 'box-shadow 0.3s ease-in-out',
+        transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         width: '200px',
+        backdropFilter: 'blur(1.5px)',
+        
+        // 3D Transformations
+        transform: `rotateX(2deg) rotateY(6deg)`,
+        transformOrigin: 'center center', // Rotates from center
       }}
     >
       <span>{username}</span>
-      <span style={{ fontSize: '14px', opacity: 0.8}}> {lives[socketId]}</span>
+      <span style={{ fontSize: '14px', opacity: 0.8 }}> {lives[socketId]}</span>
     </div>
-    ))}
+  ))}
+</div>
+
     </div>
     </div>
     </div>
-    </div>
+    
   );  
 
 }
