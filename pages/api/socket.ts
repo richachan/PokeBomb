@@ -334,7 +334,11 @@ function chooseRandomGeneration()
       
       io.on('connection', (socket) => {
         console.log('A client connected:', socket.id);
-
+        io.emit('players', {
+          userMap: Object.fromEntries(userMap),
+          currTurn,
+          lives: Object.fromEntries(liveMap),
+        });
 
         socket.on('chat', (msg) => {
           let chatMsg = {
@@ -417,6 +421,11 @@ function chooseRandomGeneration()
           userList.push(socket.id);
           userMap.set(socket.id, userName);
           liveMap.set(socket.id, 3);
+          io.emit('players', {
+            userMap: Object.fromEntries(userMap),
+            currTurn,
+            lives: Object.fromEntries(liveMap),
+          });
 
           console.log(userMap.get(socket.id) + " has joined the game with client id: " + socket.id);
           let registerMsg = 
@@ -508,6 +517,12 @@ function chooseRandomGeneration()
 
         socket.on('gameStarted', () =>
         {
+          io.emit('players', {
+            userMap: Object.fromEntries(userMap),
+            currTurn,
+            lives: Object.fromEntries(liveMap),
+          });
+          
           if(gameActive === false)
           {
             gameActive = true;
@@ -541,8 +556,13 @@ function chooseRandomGeneration()
   
         socket.on('disconnect', () => {
           console.log('Client disconnected:', socket.id);
+          io.emit('players', {
+            userMap: Object.fromEntries(userMap),
+            currTurn,
+            lives: Object.fromEntries(liveMap),
+          });
           let index = userList.indexOf(socket.id);
-  
+          
           let msg1 = 
           {
             user: userMap.get(socket.id),
