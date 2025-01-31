@@ -181,11 +181,11 @@ export default function Home()
       className="bg-pokemon bg-cover bg-center text-white min-h-[100vh]"
       style={{
         backgroundImage: "url('/eevee.jpg')", 
-        backgroundPosition: "50% 85%",
+        backgroundPosition: "50% 86%",
         backgroundRepeat: "no-repeat",
         backgroundSize: "100%",
         overflow: 'hidden',
-        boxShadow: 'inset 0 0 500px 200px rgba(0, 0, 0, 0.80)'
+        boxShadow: 'inset 0 0 500px 215px rgba(0, 0, 0, 0.80)'
 
         
       }}
@@ -241,14 +241,18 @@ export default function Home()
     {pokemon && (
     <div
     style={{
+      position: 'absolute',
+      top: '30%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)', // Center it properly
       display: 'flex',
-      flexDirection: 'column',  // Column to stack "Current Pokémon" text above sprite
-      alignItems: 'center',     // Center horizontally
+      flexDirection: 'column',
+      alignItems: 'center',
       justifyContent: 'center',
-      height: '20px',
-      marginTop: '-30px',
-      
-      position: 'relative',
+      width: '250px', // Ensures it scales but doesn’t collapse
+      height: 'auto',
+      textAlign: 'center',
+     
       zIndex: 1
     }}
   >
@@ -256,9 +260,7 @@ export default function Home()
     <img
       src="/current_pokemon.png"
       style={{ 
-        width: '15vw', 
-        marginBottom: '-105px' ,
-        filter: 'saturate(70%)',
+        filter: 'saturate(60%)',
       }}
       alt="Current Pokémon Title"
     />
@@ -271,11 +273,15 @@ export default function Home()
         display: 'flex',
         alignItems: 'center',   
         justifyContent: 'center',
-        height: '270px',
+        height: '300px',
         pointerEvents: 'none',
         overflow: 'hidden',
-        position: 'relative',
-        zIndex: 2
+        zIndex: 2,
+        position: 'absolute',
+        top: '44%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)', // Center it properly
+        flexDirection: 'column',
       }}
     >
       {/* Actual Pokémon sprite below */}
@@ -284,7 +290,7 @@ export default function Home()
         alt = {pokemon.name}
         style = 
         {{
-          width: 'auto', 
+          width: 'auto',   
           height: 'auto'
         }}
       />
@@ -297,21 +303,22 @@ export default function Home()
     {{ 
       display: 'flex', 
       justifyContent: 'center',
-      position: 'fixed',
-      top: '415px',
-      left: '50%', 
-      transform: 'translate(-50%, 0)',
+      position: 'absolute',
+   
+      top: '65.5%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)', // Center it properly
+   
+      flexDirection: 'column',
+      alignItems: 'center',
+   
     
     }}>
     {(playerEntries.length < 2) ? (
   <p style={{
     color: 'white', 
     fontSize: '16px', 
-    
-    
-    marginTop: '10px',
-    marginBottom: '160px',
-    
+
   }}>
     Need 2 or more players to start!
   </p>
@@ -320,15 +327,21 @@ export default function Home()
     onClick={startGame}
     disabled={gameActive}
     style={{ 
-      padding: '6px 15px', 
+      width: '100px',
+      height: '33.5px',
       fontSize: '15px', 
       color: 'white',
       cursor: 'pointer', 
-      borderRadius: '8px',      
-      
-      backgroundColor: 'rgb(255, 255, 255, 0.3)',
-      marginTop: '20px',
-      marginBottom: '140px',
+      borderRadius: '7px',      
+      backgroundColor: 'rgb(255, 255, 255, 0.2)',
+      backdropFilter: 'blur(1.5px)',
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)', // Center it properly
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
       visibility: gameActive ? 'hidden' : 'visible', 
     }}>
     Start Game
@@ -338,7 +351,21 @@ export default function Home()
   </div>
 
     
-    <div id = "timer" style={{fontWeight: 'bold', marginTop: '-55px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+    <div id = "timer" style = {
+      {fontWeight: 'bold', 
+   
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center',
+      position: 'absolute',
+      top: '55.5%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)', // Center it properly
+
+      flexDirection: 'column',
+
+   
+      }}>
       Waiting for game start
     </div>
 
@@ -383,6 +410,8 @@ export default function Home()
     display: 'flex',
     flexDirection: 'column',
     backgroundColor: 'rgba(42, 42, 42, 0.4)',
+    border: '1px solid rgba(75, 75, 75, 0.3)',
+    boxShadow : '0 0 5px 0.5px rgba(42, 42, 42, 0.8)',
     backdropFilter: 'blur(1.5px)'
   }}
 >
@@ -391,6 +420,7 @@ export default function Home()
     style={{ 
       flex: 1,  // Makes the chat history take up available space
       padding: 10,
+      
       overflowY: 'auto',
       height: '200px', // Prevents excessive growth
       color: '#f9e2c2',
@@ -441,22 +471,30 @@ export default function Home()
       onSubmit = {sendMessage} 
       style = 
       {{ 
-        height: '40px',
+        height: '10%',
+        width: '16%',
         padding: '5px',
         display: 'flex',
         justifyContent: 'center', 
         alignContent: 'center',
         fontWeight: 'bold',
         border: 'none',
+        position: 'absolute',
+        top: '60%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)', // Center it properly
+
+        alignItems: 'center',
+   
       }}
      
   >
       <input
       style = 
       {{ 
-        flex: 1, 
+        flex: 10, 
         fontWeight: 'bold',
-        padding: '8px',
+        padding: '3.8px',
         marginRight: '5px',
         justifyContent: 'center',
         alignContent: 'center',
@@ -465,7 +503,7 @@ export default function Home()
         outline: 'none',
         color: 'black',
         width: '50%',
-        maxWidth: '250px',
+        maxWidth: '220px',
         textAlign: 'center',
         backgroundColor: 'rgba(255, 255, 255, 1)',
       }}
@@ -488,7 +526,7 @@ export default function Home()
         fontSize: '20px',
         }}>
         
-        <h2 style={{ marginBottom: '10px', textAlign: 'center', fontWeight: 'bold' }}>Players:</h2>
+        <h2 style={{ marginBottom: '10px', textAlign: 'center', fontWeight: 'bold' }}>Players</h2>
 
 <div 
   style={{ 
@@ -507,11 +545,11 @@ export default function Home()
         backgroundColor: 'rgba(100, 100, 100, 0.4)',
         color: 'white',
         borderRadius: '8px',
-        border: '1px solid rgba(155, 155, 155, 0.3)',
+        border: '1px solid rgba(125, 125, 125, 0.3)',
         textAlign: 'center',
         fontWeight: 'bold',
-        boxShadow: index === currTurn ? '0 0 10px 4px rgba(249, 226, 194, 0.8)' : 'none',
-        transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out',
+        boxShadow: index === currTurn ? '0 0 13px 2px rgba(249, 226, 194, 0.8)' : '0 0 10px 0.5px rgba(114, 114, 114, 0.7)',
+        transition: 'box-shadow 0.35s ease-in-out, transform 0.35s ease-in-out',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
