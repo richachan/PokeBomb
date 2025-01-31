@@ -371,6 +371,7 @@ function chooseRandomGeneration()
               socket.removeAllListeners('logkey');
               io.emit('updateGlobalKey','');
               advanceTurn(io);
+              io.emit('updateGlobalKey','');
               socket.on('logKey', (message) => {
          
                 const currentPlayerSocketId = Object.keys(userMap)[currTurn];
