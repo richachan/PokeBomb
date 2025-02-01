@@ -4,6 +4,7 @@ import { io, Socket } from 'socket.io-client';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import MusicPlayer from './musicPlayer';
 import next from 'next';
+import { clear } from 'console';
 
 let socket: Socket | null = null;
 
@@ -25,8 +26,11 @@ export default function Home()
   const [currTurn, setCurrTurn] = useState<number>(0);
   const [lives, setLives] = useState<{ [socketId: string]: number }>({});
   const [gameActive, setGameActive] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
   const deferredMessage = useDeferredValue(message);
-  
+  const [fade, setFade] = useState<boolean>(false);
+  const [blur, setBlur] = useState<boolean>(false);
+
   useEffect(() => {
     if (socket?.id === Object.keys(userMap)[currTurn]) {
       setMessage(''); // Clear input only if it's the new turn for this player
@@ -162,8 +166,28 @@ export default function Home()
 
   const startGame = () =>
   {
-    socket.emit('gameStarted')
-    socket.emit('updateGlobalKey', ''); //clear the global key on game start
+    setBlur(true);
+    let time = 3;
+    setCountdown(time);
+    const countdownInterval = setInterval(() => {
+      setFade(true);
+      setTimeout(() => {
+        setFade(false);
+      }, 500);
+      setTimeout(() => {
+        if (time == 1) {
+          clearInterval(countdownInterval);
+          setCountdown(null);
+          socket.emit('startGame', selectedGenerations);
+          socket.emit('updateGlobalKey', '');
+          
+        }
+        else {
+          time--;
+          setCountdown(time);
+        }
+      }, 1000);
+    }, 1000);
   };
 
   const handleInputChange = (e) => 
@@ -191,6 +215,48 @@ export default function Home()
       }}
       
     >
+      {/* Countdown Overlay */}
+      {countdown !== null && (
+        <>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100vh', width: '100vw',
+            position: 'fixed',  
+            fontSize: '7rem',
+            color: '#f9e2c2',
+            zIndex: 1000, //make sure it's on top
+            transition: 'opacity 0.3s ease-in-out, transform 0.8s ease-in-out',
+            opacity: fade ? 1 : 0, 
+            transform: fade ? 'scale(1)' : 'scale(1.2)'
+          }}
+      >
+        {countdown} 
+            
+      </div>
+      </>
+      )}
+
+      {/* {countdown !== null && (
+      <div 
+        style={{
+            
+            
+            position: 'fixed',
+            height: '100vh', 
+            width: '100vw',
+            backdropFilter: 'blur(3.5px)',
+            backgroundColor: 'rgba(100, 100, 100, 0.1)', // Static Dark Overlay
+            transition: 'opacity 0.2s ease-in-out, transform 0.5s ease-in-out',
+            opacity: blur ? 1 : 0,
+            zIndex: 900, // Below the countdown number
+        }}
+      /> /*}
+      )}
+     
+
       
     {/* Header */}
 
