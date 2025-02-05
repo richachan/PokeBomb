@@ -178,7 +178,7 @@ export default function Home()
         if (time == 1) {
           clearInterval(countdownInterval);
           setCountdown(null);
-          socket.emit('startGame', selectedGenerations);
+          socket.emit('gameStarted');
           socket.emit('updateGlobalKey', '');
           
         }
