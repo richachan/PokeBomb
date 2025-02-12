@@ -34,6 +34,7 @@ export default function Home()
 
   useEffect(() => {
     if (socket) {
+      
       //listen for countdown updates from the socket.ts
       socket.on('countdownUpdate', (time) => {
         setCountdown(time);
@@ -55,6 +56,7 @@ export default function Home()
         socket.emit('updateGlobalKey', '');
       });
     }
+  
     return () => {
       socket?.off('countdownUpdate');
       socket?.off('countdownEnd');
@@ -63,7 +65,7 @@ export default function Home()
 
   useEffect(() => {
     if (socket?.id === Object.keys(userMap)[currTurn]) {
-      setMessage(''); // Clear input only if it's the new turn for this player
+      setMessage(''); //clear input only if it's the new turn for this player
     }
   }, [currTurn]);
 
@@ -127,7 +129,7 @@ export default function Home()
       });
     }
 
-    // Cleanup on unmount
+    //cleanup on unmount
     return () => 
     {
       socket?.disconnect();
@@ -148,7 +150,7 @@ export default function Home()
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollTo({
         top: messagesEndRef.current.scrollHeight,
-        behavior: "smooth", // Smooth scrolling
+        behavior: "smooth", //smooth scrolling
       });
     }
   }, [messages]);
@@ -157,7 +159,7 @@ export default function Home()
     e.preventDefault();
     if (!socket || !message.trim() || !user.trim()) return;
 
-    const userMsg = { user: user, text: message }; // user + message in one constant
+    const userMsg = { user: user, text: message }; //user + message in one constant
     socket.emit('message', userMsg);
     setMessage('');
   };
@@ -167,7 +169,7 @@ export default function Home()
     e.preventDefault();
     if (!socket || !chat.trim() || !user.trim()) return;
 
-    const chatMsg = { user: user, text: chat }; // user + message in one constant
+    const chatMsg = { user: user, text: chat }; //user + message in one constant
     socket.emit('chat', chatMsg);
     setChat('');
   }
@@ -575,9 +577,9 @@ export default function Home()
         width: '200px',
         backdropFilter: 'blur(1.5px)',
         
-        // 3D Transformations
+        //3D Transformations
         transform: `rotateX(2deg) rotateY(6deg)`,
-        transformOrigin: 'center center', // Rotates from center
+        transformOrigin: 'center center',
       }}
     >
       <span>{username}</span>
