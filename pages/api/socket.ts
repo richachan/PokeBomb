@@ -336,7 +336,7 @@ function chooseRandomGeneration()
       io.on('connection', (socket) => {
         console.log('A client connected:', socket.id);
 
-        socket.emit('gameStatus', { gameActive });  
+       
         socket.on('chat', (msg) => {
           let chatMsg = {
             user: userMap.get(socket.id), text: ": " + msg.text
