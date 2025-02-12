@@ -15,7 +15,7 @@ let currLevel: number = 0;
 let currentGenerations: number[] = [];
 let gameActive = false;
 let timeout;
-
+let countdownInterval;
 
 type NextApiResponseServerIO = NextApiResponse & {
   socket: Socket & {
@@ -352,7 +352,22 @@ function chooseRandomGeneration()
           }
         });
         
-        
+        socket.on('countdown', () => {  
+          let time = 4;
+          if (countdownInterval) {
+            clearInterval(countdownInterval);
+          }
+          
+          countdownInterval = setInterval(() => {
+            io.emit('countdownUpdate', time); 
+            if (time === 0) { 
+              clearInterval(countdownInterval);
+              io.emit('countdownEnd');
+              
+          }
+          time--;
+          }, 1000);
+        });
 
         socket.on('message', (msg) => {
           if (userList.length === 0) return;

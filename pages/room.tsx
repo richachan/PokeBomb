@@ -30,6 +30,38 @@ export default function Home()
   const deferredMessage = useDeferredValue(message);
   const [fade, setFade] = useState<boolean>(false);
   const [blur, setBlur] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (socket) {
+      
+      // Listen for countdown updates from the socket.ts
+      socket.on('countdownUpdate', (time) => {
+        setCountdown(time);
+        if (time != 4) {
+          setVisible(true);
+        }
+        else {
+          setVisible(false);
+        }
+        setTimeout(() => setFade(true), 0);
+        setTimeout(() => setFade(false), 500); 
+      });
+      
+      //start game as soon as countdown ends
+      socket.on('countdownEnd', () => {
+        setCountdown(null);
+        setFade(false);
+        socket.emit('gameStarted');
+        socket.emit('updateGlobalKey', '');
+      });
+    }
+  
+    return () => {
+      socket?.off('countdownUpdate');
+      socket?.off('countdownEnd');
+    };
+  }, [socket]);
 
   useEffect(() => {
     if (socket?.id === Object.keys(userMap)[currTurn]) {
@@ -173,27 +205,7 @@ export default function Home()
   const startGame = () =>
   {
     setBlur(true);
-    let time = 3;
-    setCountdown(time);
-    const countdownInterval = setInterval(() => {
-      setFade(true);
-      setTimeout(() => {
-        setFade(false);
-      }, 500);
-      setTimeout(() => {
-        if (time == 1) {
-          clearInterval(countdownInterval);
-          setCountdown(null);
-          socket.emit('gameStarted');
-          socket.emit('updateGlobalKey', '');
-          
-        }
-        else {
-          time--;
-          setCountdown(time);
-        }
-      }, 1000);
-    }, 1000);
+    socket?.emit('countdown');
   };
 
   const handleInputChange = (e) => 
@@ -211,7 +223,7 @@ export default function Home()
       className="bg-pokemon bg-cover bg-center text-white min-h-[100vh]"
       style={{
         backgroundImage: "url('/eevee.jpg')", 
-        backgroundPosition: "50% 86%",
+        backgroundPosition: "50% 88%",
         backgroundRepeat: "no-repeat",
         backgroundSize: "100%",
         overflow: 'hidden',
@@ -222,7 +234,7 @@ export default function Home()
       
     >
       {/* Countdown Overlay */}
-      {countdown !== null && (
+      { (countdown !== null) && (
         <>
         <div
           style={{
@@ -236,6 +248,7 @@ export default function Home()
             zIndex: 1000, //make sure it's on top
             transition: 'opacity 0.3s ease-in-out, transform 0.8s ease-in-out',
             opacity: fade ? 1 : 0, 
+            visibility: visible ? 'visible' : 'hidden',
             transform: fade ? 'scale(1)' : 'scale(1.2)'
           }}
       >
@@ -391,7 +404,7 @@ export default function Home()
         justifyContent: 'center',
         alignItems: 'center',
         position: 'absolute',
-        top: '75%',
+        top: '76.5%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
       }}
@@ -549,14 +562,15 @@ export default function Home()
       key={socketId} 
       style={{ 
         padding: '7px 13px',
-        backgroundColor: 'rgba(200, 200, 200, 0.15)',
+        backgroundColor: lives[socketId] === 0 ? 'rgba(200, 200, 200, 0.10)' : 'rgba(200, 200, 200, 0.15)',
         color: 'white',
         borderRadius: '8px',
         border: '1px solid rgba(125, 125, 125, 0.3)',
         textAlign: 'center',
         fontWeight: 'bold',
-        boxShadow: index === currTurn ? '0 0 13px 2px rgba(249, 226, 194, 0.8)' : '0 0 10px 0.5px rgba(114, 114, 114, 0.7)',
-        transition: 'box-shadow 0.35s ease-in-out, transform 0.35s ease-in-out',
+        boxShadow: index === currTurn ? '0 0 13px 2px rgba(249, 226, 194, 0.8)' : '0 0 5px 0.1px rgba(220, 220, 220, 0.35)',
+        transition: 'box-shadow 0.35s ease-in-out, transform 0.35s ease-in-out, opacity 0.35s ease-in-out',
+        opacity: lives[socketId] === 0 ? 0.4 : 1,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
