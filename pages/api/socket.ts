@@ -161,7 +161,7 @@ function checkGame(io: Server)
   const active = activePlayers();
   if (active.length === 1) 
   {
-    if (timer) clearInterval(timer);
+    clearInterval(timer);
     //one player left and wins
     const winnerId = active[0];
     const winnerName = userMap.get(winnerId);

@@ -34,8 +34,7 @@ export default function Home()
 
   useEffect(() => {
     if (socket) {
-      
-      // Listen for countdown updates from the socket.ts
+      //listen for countdown updates from the socket.ts
       socket.on('countdownUpdate', (time) => {
         setCountdown(time);
         if (time != 4) {
@@ -56,7 +55,6 @@ export default function Home()
         socket.emit('updateGlobalKey', '');
       });
     }
-  
     return () => {
       socket?.off('countdownUpdate');
       socket?.off('countdownEnd');
@@ -74,10 +72,10 @@ export default function Home()
     const username = query.username as string;
     setUser(username);
 
-    // Ensure the server side is initialized
+    //ensure the server side is initialized
     fetch('/api/socket').catch((err) => console.error(err));
 
-    // Connect the client socket if not already connected
+    //connect the client socket if not already connected
     if (!socket) 
     {
       socket = io({ path: '/api/socket_io' });
