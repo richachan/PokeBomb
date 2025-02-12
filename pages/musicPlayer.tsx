@@ -10,13 +10,16 @@ const MusicPlayer = React.memo(() =>
     const [changingVolume, setChangingVolume] = useState(false);
     const [trackIndex, setTrackIndex] = useState(0);
     const audioRef = useRef<HTMLAudioElement>(null);
+    const [nextTrackTransition, setNextTrackTransition] = useState(false);
+    const [movingUp, setMovingUp] = useState(false);
   
     const musicTrackCalm = [
       "/music/Lake.mp3", 
       "/music/Littleroot Town.mp3", 
       "/music/National Park HGSS.mp3", 
       "/music/Eterna Forest.mp3", 
-      "/music/Eterna City.mp3"
+      "/music/Eterna City.mp3",
+      "/music/Snowpoint City.mp3",
     ];
 
     useEffect(() => 
@@ -82,19 +85,45 @@ const MusicPlayer = React.memo(() =>
       
     const previousTrack = () =>
     {
-      if(trackIndex === 0)
+      setNextTrackTransition(true);
+      setIsPlaying(true);
+
+      setTimeout(() =>
       {
-        setTrackIndex(musicTrackCalm.length - 1);
-      }
-      else
+        if(trackIndex === 0)
+        {
+          setTrackIndex(musicTrackCalm.length - 1);
+        }
+        else
+        {
+          setTrackIndex((prevIndex) => (prevIndex - 1) % musicTrackCalm.length);
+        }
+        setNextTrackTransition(false);
+        setMovingUp(true);
+      }, 300)
+  
+      setTimeout(() =>
       {
-        setTrackIndex((prevIndex) => (prevIndex - 1) % musicTrackCalm.length);
-      }
+        setMovingUp(false);
+      }, 600)
     }
       
     const nextTrack = () =>
     {
-      setTrackIndex((prevIndex) => (prevIndex + 1) % musicTrackCalm.length);
+      setNextTrackTransition(true);
+      setIsPlaying(true);
+
+      setTimeout(() =>
+      {
+        setTrackIndex((prevIndex) => (prevIndex + 1) % musicTrackCalm.length);
+        setNextTrackTransition(false);
+        setMovingUp(true);
+      }, 300)
+
+      setTimeout(() =>
+      {
+        setMovingUp(false);
+      }, 600)
     }
 
     return (
@@ -122,6 +151,13 @@ const MusicPlayer = React.memo(() =>
                 top: '31px',
                 fontWeight: 'bold',
                 fontSize: '18px',
+                transition: 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out',
+                opacity: nextTrackTransition ? 0 : 1,
+                transform: nextTrackTransition ? 
+                'translateY(10px)' // Moves down when fading out
+                : movingUp 
+                ? 'translateY(-5px)' // Moves up when fading in
+                : 'translateY(0)', // Default position
             }}  
         >
             <i
@@ -145,11 +181,24 @@ const MusicPlayer = React.memo(() =>
             onLoadedMetadata = {handleLoadedMetadata}
             onEnded = {() =>
             {
-              setTrackIndex((prevIndex) => 
+              setNextTrackTransition(true);
+             
+              setTimeout(() =>
+              {  
+                setTrackIndex((prevIndex) => 
+                {
+                  const nextIndex = (prevIndex + 1) % musicTrackCalm.length;
+                  return nextIndex;
+                });
+
+                setNextTrackTransition(false);
+                setMovingUp(true);
+              }, 300)
+          
+              setTimeout(() =>
               {
-                const nextIndex = (prevIndex + 1) % musicTrackCalm.length;
-                return nextIndex;
-              });
+                setMovingUp(false);
+              }, 600)
             }}
             autoPlay
         />
