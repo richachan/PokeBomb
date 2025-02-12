@@ -4,6 +4,7 @@ import type { Socket } from 'net';
 import { Server } from 'socket.io';
 import { matchesGlob } from 'path';
 import { clear, time } from 'console';
+import { act } from 'react';
 
 
 let userMap = new Map<string,string>() //socket.id, username
@@ -573,7 +574,10 @@ function chooseRandomGeneration()
           userList.splice(index, 1);
           userMap.delete(socket.id);
           liveMap.delete(socket.id);
-   
+          
+          if (activePlayers().length === 1) {
+            clearInterval(timer);
+          }
 
           if (userList.length === 0) {
             //Reset if no players left
