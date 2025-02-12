@@ -136,9 +136,10 @@ const MusicPlayer = React.memo(() =>
           width: '300px', 
           height: '75px',
           padding: '10px',
-          backgroundColor: 'rgba(42, 42, 42, 0.4)',
+          backgroundColor: 'rgba(42, 42, 42, 0)',
           borderRadius: '0px', 
-          opacity: 0.9
+          opacity: 0.9,
+          zIndex: 1000,
         }}
     >
         {/* Track Title */}

@@ -54,7 +54,8 @@ export default function Home()
         console.log('Connected:', socket?.id);
         const msg = {user: username, text:" has connected"};
         socket.emit('message', msg)
-        socket.emit('register',username)
+        socket.emit('register', username)
+        
       });
 
       socket.on('message', (msg: displayMessage) => {
@@ -210,7 +211,7 @@ export default function Home()
         backgroundSize: "100%",
         overflow: 'hidden',
         
-
+        
         
       }}
       
@@ -223,7 +224,7 @@ export default function Home()
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            height: '100vh', width: '100vw',
+            height: '100vh', width: '105vw',
             position: 'fixed',  
             fontSize: '7rem',
             color: '#f9e2c2',
@@ -264,213 +265,156 @@ export default function Home()
           overflow: 'hidden'
         }}>
 
-    {/*Center components (sprite, guessing box, etc.)*/}
-    <div
-      style = {{
-        position: 'absolute',
-        height: '10vh',
-        width: '10vw',  // Adjust to fit well on zoom
-        alignContent: 'center',
-      }}
-    >
-      <div
-        style={{
-          position: 'absolute',
-          alignContent: 'center',
-        }}
-        >
-    {pokemon && (
-    <div
+<div
+  style={{
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden', // Prevent scrollbars
+    zIndex: 0
+  }}
+>
+  {/* Background container */}
+  <div
     style={{
-      position: 'absolute',
-      top: '30%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)', // Center it properly
+      position: 'relative',
+      height: '200px',
+      width: '500px',
+      borderRadius: '8px',
       display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: '250px', // Ensures it scales but doesn’t collapse
-      height: 'auto',
-      textAlign: 'center',
-     
-      zIndex: 1
+      transform: 'translate(7%, 0%)',
     }}
   >
-  
-  </div>
-)}
- <div 
-    style =
-    {{
-    position: 'relative',
-  
-    height: '200px',
-    left: '0%',
-    width: '700px',  // Adjust to fit well on zoom
-    transform: 'translate(50%, 50%)', // Center it properly
-    borderRadius: '8px',
-    display: 'flex',
-    flexDirection: 'column',
-    backgroundColor: 'rgba(42, 42, 42, 0.4)',
-    border: '1px solid rgba(75, 75, 75, 0.3)',
-    boxShadow : '0 0 5px 0.5px rgba(42, 42, 42, 0.8)',
-    backdropFilter: 'blur(1.5px)'
-  }}
-  >
+    {/* Pokémon sprite */}
+    {pokemon && (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100px',
+          pointerEvents: 'none',
+         
+          zIndex: 2,
+          position: 'absolute',
+          top: '20%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+        }}
+      >
+        <img
+          src={pokemon.sprite}
+          alt={pokemon.name}
+          style={{
+            width: 'auto',
+            height: 'auto',
+          }}
+        />
+      </div>
+    )}
 
-  </div>
-  {pokemon && (
-  <div
-      style = 
-      {{
+    <div 
+      style = {{
+        width: '100%',
+        height: '100%',
+        borderRadius: '8px',
+        backgroundColor: 'rgba(42, 42, 42, 0)',
+      }}
+      ></div>
+    {/* Start button */}
+    <div
+      style={{
         display: 'flex',
-        alignItems: 'center',   
         justifyContent: 'center',
-        height: '100px',
-        pointerEvents: 'none',
-        overflow: 'hidden',
-        zIndex: 2,
         position: 'absolute',
-        left: '58%',
-        top: '80%',
-      
-        flexDirection: 'column',
+        top: '94.5%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
       }}
     >
-      {/* Actual Pokémon sprite below */}
-      <img
-        src = {pokemon.sprite}
-        alt = {pokemon.name}
-        style = 
-        {{
-          width: 'auto',   
-          height: 'auto'
-        }}
-      />
+      {playerEntries.length < 2 ? (
+        <p style={{ color: 'white', fontSize: '16px' }}>
+          Need 2 or more players to start!
+        </p>
+      ) : (
+        <button
+          onClick={startGame}
+          disabled={gameActive}
+          style={{
+            width: '100px',
+            height: '32px',
+            fontSize: '15px',
+            color: 'white',
+            cursor: 'pointer',
+            borderRadius: '7px',
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            backdropFilter: 'blur(1.5px)',
+            visibility: gameActive ? 'hidden' : 'visible'
+          }}
+        >
+          Start Game
+        </button>
+      )}
     </div>
-  )}
 
-  <div 
-    id = "startButton" 
-    style = 
-    {{ 
-      display: 'flex', 
-      justifyContent: 'center',
-      position: 'absolute',
-   
-      top: '188%',
-      left: '62%',
-      transform: 'translate(-50%, -50%)', // Center it properly
-   
-      flexDirection: 'column',
-      alignItems: 'center',
-   
-    
-    }}>
-    {(playerEntries.length < 2) ? (
-  <p style={{
-    color: 'white', 
-    fontSize: '16px', 
-
-  }}>
-    Need 2 or more players to start!
-  </p>
-) : (
-  <button 
-    onClick={startGame}
-    disabled={gameActive}
-    style={{ 
-      width: '100px',
-      height: '33.5px',
-      fontSize: '15px', 
-      color: 'white',
-      cursor: 'pointer', 
-      borderRadius: '7px',      
-      backgroundColor: 'rgb(255, 255, 255, 0.2)',
-      backdropFilter: 'blur(1.5px)',
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)', // Center it properly
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      visibility: gameActive ? 'hidden' : 'visible', 
-    }}>
-    Start Game
-  </button>
-)}
-
-  </div>
-
-    
-    <div id = "timer" style = {
-      {fontWeight: 'bold', 
-   
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center',
-      position: 'absolute',
-      top: '155%',
-      left: '62%',
-      transform: 'translate(-50%, -50%)', // Center it properly
-
-      flexDirection: 'column',
-
-   
-      }}>
+    {/* Timer */}
+    <div id = "timer"
+      style={{
+        fontWeight: 'bold',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        top: '60%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+      }}
+    >
       Waiting for game start
     </div>
-    { /*guessing box*/ }
-    <form 
-      onSubmit = {sendMessage} 
-      style = 
-      {{ 
-        height: '10%',
-        width: '100%',
-        padding: '5px',
-        display: 'flex',
-        justifyContent: 'center', 
-        alignContent: 'center',
-        fontWeight: 'bold',
-        border: 'none',
-        position: 'absolute',
-        top: '171%',
-        left: '62%',
-        transform: 'translate(-50%, -50%)', // Center it properly
 
-        alignItems: 'center',
-   
-      }}
-     
-  >
-      <input
-      style = 
-      {{ 
-        flex: 10, 
-        fontWeight: 'bold',
-        padding: '3.8px',
-        marginRight: '5px',
+    {/* Guessing box */}
+    <form
+      onSubmit={sendMessage}
+      style={{
+        display: 'flex',
         justifyContent: 'center',
-        alignContent: 'center',
-        borderRadius: '8px',
-        border: 'none',
-        outline: 'none',
-        color: 'black',
-        width: '50%',
-        maxWidth: '220px',
-        textAlign: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 1)',
+        alignItems: 'center',
+        position: 'absolute',
+        top: '75%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
       }}
-      value = {deferredMessage}
-      onChange = {socket?.id === Object.keys(userMap)[currTurn] ? handleInputChange : undefined}
-      placeholder=" Guess the Pokémon "   
-      
-    />
-  </form>
+    >
+      <input
+        style={{
+          flex: 10,
+          fontWeight: 'bold',
+          padding: '3.8px',
+          marginRight: '5px',
+          borderRadius: '8px',
+          border: 'none',
+          outline: 'none',
+          color: 'black',
+          width: '50%',
+          maxWidth: '220px',
+          textAlign: 'center',
+          backgroundColor: 'rgba(255, 255, 255, 1)',
+        }}
+        value={deferredMessage}
+        onChange={
+          socket?.id === Object.keys(userMap)[currTurn] ? handleInputChange : undefined
+        }
+        placeholder="Guess the Pokémon"
+      />
+    </form>
   </div>
-  </div>
+</div>
 
       <div style={{ 
         display: 'flex', 
@@ -512,9 +456,9 @@ export default function Home()
     borderRadius: '8px',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: 'rgba(42, 42, 42, 0.4)',
-    border: '1px solid rgba(75, 75, 75, 0.3)',
-    boxShadow : '0 0 5px 0.5px rgba(42, 42, 42, 0.8)',
+    backgroundColor: 'rgba(170, 170, 170, 0.08)',
+    border: '1px solid rgba(205, 205, 205, 0.1)',
+    boxShadow : '0 0 5px 0.5px rgba(200, 200, 200, 0.2)',
     backdropFilter: 'blur(1.5px)'
   }}
 >
@@ -527,6 +471,7 @@ export default function Home()
       overflowY: 'auto',
       height: '200px', // Prevents excessive growth
       color: '#f9e2c2',
+      
       fontWeight: 'bold',
     }} 
     ref={messagesEndRef}
@@ -599,7 +544,7 @@ export default function Home()
       key={socketId} 
       style={{ 
         padding: '7px 13px',
-        backgroundColor: 'rgba(100, 100, 100, 0.4)',
+        backgroundColor: 'rgba(200, 200, 200, 0.15)',
         color: 'white',
         borderRadius: '8px',
         border: '1px solid rgba(125, 125, 125, 0.3)',
@@ -624,10 +569,10 @@ export default function Home()
   ))}
   </div>
 
-    </div>
-    </div>
-    </div>
-    </div>
+  </div>
+  </div>
+  </div>
+  </div>
   );  
 
 }
