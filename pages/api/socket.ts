@@ -16,6 +16,7 @@ let currentGenerations: number[] = [];
 let gameActive = false;
 let timeout;
 
+
 type NextApiResponseServerIO = NextApiResponse & {
   socket: Socket & {
     server: HTTPServer & {
@@ -417,9 +418,15 @@ function chooseRandomGeneration()
         });
  
         socket.on('register', (userName) => {
+
           userList.push(socket.id);
           userMap.set(socket.id, userName);
-          liveMap.set(socket.id, 3);
+          if (gameActive === false) {
+            liveMap.set(socket.id, 3);
+          }
+          else {
+            liveMap.set(socket.id, 0);  
+          }
 
           console.log(userMap.get(socket.id) + " has joined the game with client id: " + socket.id);
           let registerMsg = 
