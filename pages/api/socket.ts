@@ -149,6 +149,7 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
  "Revavroom", "Orthworm", "Greavard", "Houndstone", "Cetoddle", "Cetitan", "Veluza",
   "Dondozo", "Tatsugiri", "Farigiraf", "Dudunsparce"]
 
+
 //only return players with lives left
 function activePlayers() 
 {
@@ -336,7 +337,7 @@ function chooseRandomGeneration()
       
       io.on('connection', (socket) => {
         console.log('A client connected:', socket.id);
-        
+        checkGame(io);
        
         socket.on('chat', (msg) => {
           let chatMsg = {
@@ -559,7 +560,7 @@ function chooseRandomGeneration()
           userMap.delete(socket.id);
           liveMap.delete(socket.id);
           checkGame(io);
-          
+
           if (userList.length === 0) {
             //Reset if no players left
             currTurn = 0;
