@@ -547,7 +547,7 @@ function chooseRandomGeneration()
         socket.on('disconnect', () => {
           console.log('Client disconnected:', socket.id);
           let index = userList.indexOf(socket.id);
-  
+          checkGame(io);
           let msg1 = 
           {
             user: userMap.get(socket.id),
