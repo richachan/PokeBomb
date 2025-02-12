@@ -336,7 +336,7 @@ function chooseRandomGeneration()
       io.on('connection', (socket) => {
         console.log('A client connected:', socket.id);
 
-
+        socket.emit('gameStatus', { gameActive });  
         socket.on('chat', (msg) => {
           let chatMsg = {
             user: userMap.get(socket.id), text: ": " + msg.text
@@ -349,6 +349,11 @@ function chooseRandomGeneration()
           const currentPlayerSocketId = Object.keys(userMap)[currTurn];
           socket.broadcast.emit('updateGlobalKey', message)
           }
+        });
+        
+        socket.on('gameStarted', () => {  
+          gameActive = true;
+          io.emit('gameStatus', { gameActive });
         });
 
         socket.on('message', (msg) => {
