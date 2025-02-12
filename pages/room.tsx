@@ -209,7 +209,7 @@ export default function Home()
         backgroundRepeat: "no-repeat",
         backgroundSize: "100%",
         overflow: 'hidden',
-        boxShadow: 'inset 0 0 500px 215px rgba(0, 0, 0, 0.80)'
+        
 
         
       }}
@@ -239,41 +239,12 @@ export default function Home()
       </>
       )}
 
-      {/* {countdown !== null && (
-      <div 
-        style={{
-            
-            
-            position: 'fixed',
-            height: '100vh', 
-            width: '100vw',
-            backdropFilter: 'blur(3.5px)',
-            backgroundColor: 'rgba(100, 100, 100, 0.1)', // Static Dark Overlay
-            transition: 'opacity 0.2s ease-in-out, transform 0.5s ease-in-out',
-            opacity: blur ? 1 : 0,
-            zIndex: 900, // Below the countdown number
-        }}
-      /> /*}
-      )}
-     
-
       
-    {/* Header */}
+   
 
-    <div
-      style = 
-      {{
-        position: "relative",
-        transform: "scale(1)", // Keep the header scaling as you intended
-        maxWidth: "100%", // Ensure it doesn’t go offscreen
-        height: "69px",
-        padding: "10px",
-        backgroundColor: "rgba(32, 32, 37, 0)", // Your original `hsl(248, 13%, 82%, 0.25)` in RGBA
-        backdropFilter: 'blur(1.5px)',
-      }}
-    >
-    </div>
-
+    
+    
+   
     {/*Music Player */}
     <MusicPlayer/>
 
@@ -292,18 +263,22 @@ export default function Home()
           height: '10px', 
           overflow: 'hidden'
         }}>
-      </div>
-        <img src={"/pokebomb_logo.png"} 
-        style =
-        {{ 
-          filter: 'saturate(60%)',
-          position: 'absolute', 
-          top: '20px', 
-          left: '15px', 
-          maxWidth: '165px',
-          height: 'auto', 
-        }} 
-    />
+
+    {/*Center components (sprite, guessing box, etc.)*/}
+    <div
+      style = {{
+        position: 'absolute',
+        height: '10vh',
+        width: '10vw',  // Adjust to fit well on zoom
+        alignContent: 'center',
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          alignContent: 'center',
+        }}
+        >
     {pokemon && (
     <div
     style={{
@@ -322,16 +297,29 @@ export default function Home()
       zIndex: 1
     }}
   >
-    {/* "Current Pokémon" text image on top */}
-    <img
-      src="/current_pokemon.png"
-      style={{ 
-        filter: 'saturate(60%)',
-      }}
-      alt="Current Pokémon Title"
-    />
+  
   </div>
 )}
+ <div 
+    style =
+    {{
+    position: 'relative',
+  
+    height: '200px',
+    left: '0%',
+    width: '700px',  // Adjust to fit well on zoom
+    transform: 'translate(50%, 50%)', // Center it properly
+    borderRadius: '8px',
+    display: 'flex',
+    flexDirection: 'column',
+    backgroundColor: 'rgba(42, 42, 42, 0.4)',
+    border: '1px solid rgba(75, 75, 75, 0.3)',
+    boxShadow : '0 0 5px 0.5px rgba(42, 42, 42, 0.8)',
+    backdropFilter: 'blur(1.5px)'
+  }}
+  >
+
+  </div>
   {pokemon && (
   <div
       style = 
@@ -339,14 +327,14 @@ export default function Home()
         display: 'flex',
         alignItems: 'center',   
         justifyContent: 'center',
-        height: '300px',
+        height: '100px',
         pointerEvents: 'none',
         overflow: 'hidden',
         zIndex: 2,
         position: 'absolute',
-        top: '44%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)', // Center it properly
+        left: '58%',
+        top: '80%',
+      
         flexDirection: 'column',
       }}
     >
@@ -371,8 +359,8 @@ export default function Home()
       justifyContent: 'center',
       position: 'absolute',
    
-      top: '65.5%',
-      left: '50%',
+      top: '188%',
+      left: '62%',
       transform: 'translate(-50%, -50%)', // Center it properly
    
       flexDirection: 'column',
@@ -424,8 +412,8 @@ export default function Home()
       justifyContent: 'center', 
       alignItems: 'center',
       position: 'absolute',
-      top: '55.5%',
-      left: '50%',
+      top: '155%',
+      left: '62%',
       transform: 'translate(-50%, -50%)', // Center it properly
 
       flexDirection: 'column',
@@ -434,6 +422,55 @@ export default function Home()
       }}>
       Waiting for game start
     </div>
+    { /*guessing box*/ }
+    <form 
+      onSubmit = {sendMessage} 
+      style = 
+      {{ 
+        height: '10%',
+        width: '100%',
+        padding: '5px',
+        display: 'flex',
+        justifyContent: 'center', 
+        alignContent: 'center',
+        fontWeight: 'bold',
+        border: 'none',
+        position: 'absolute',
+        top: '171%',
+        left: '62%',
+        transform: 'translate(-50%, -50%)', // Center it properly
+
+        alignItems: 'center',
+   
+      }}
+     
+  >
+      <input
+      style = 
+      {{ 
+        flex: 10, 
+        fontWeight: 'bold',
+        padding: '3.8px',
+        marginRight: '5px',
+        justifyContent: 'center',
+        alignContent: 'center',
+        borderRadius: '8px',
+        border: 'none',
+        outline: 'none',
+        color: 'black',
+        width: '50%',
+        maxWidth: '220px',
+        textAlign: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 1)',
+      }}
+      value = {deferredMessage}
+      onChange = {socket?.id === Object.keys(userMap)[currTurn] ? handleInputChange : undefined}
+      placeholder=" Guess the Pokémon "   
+      
+    />
+  </form>
+  </div>
+  </div>
 
       <div style={{ 
         display: 'flex', 
@@ -532,53 +569,7 @@ export default function Home()
 </div>
      
     
-    { /*guessing box*/ }
-    <form 
-      onSubmit = {sendMessage} 
-      style = 
-      {{ 
-        height: '10%',
-        width: '16%',
-        padding: '5px',
-        display: 'flex',
-        justifyContent: 'center', 
-        alignContent: 'center',
-        fontWeight: 'bold',
-        border: 'none',
-        position: 'absolute',
-        top: '60%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)', // Center it properly
-
-        alignItems: 'center',
-   
-      }}
-     
-  >
-      <input
-      style = 
-      {{ 
-        flex: 10, 
-        fontWeight: 'bold',
-        padding: '3.8px',
-        marginRight: '5px',
-        justifyContent: 'center',
-        alignContent: 'center',
-        borderRadius: '8px',
-        border: 'none',
-        outline: 'none',
-        color: 'black',
-        width: '50%',
-        maxWidth: '220px',
-        textAlign: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 1)',
-      }}
-      value = {deferredMessage}
-      onChange = {socket?.id === Object.keys(userMap)[currTurn] ? handleInputChange : undefined}
-      placeholder=" Guess the Pokémon "   
-      
-    />
-  </form>
+    
 
   <div style = 
       {{
@@ -631,12 +622,12 @@ export default function Home()
       <span style={{ fontSize: '14px', opacity: 0.8 }}> {lives[socketId]}</span>
     </div>
   ))}
-</div>
+  </div>
 
     </div>
     </div>
     </div>
-    
+    </div>
   );  
 
 }

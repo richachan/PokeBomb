@@ -26,6 +26,19 @@ export default function UserPage() {
         />
         <button type="submit" style={{ width: '100%' }}>Join Game</button>
       </form>
+    <div>
+    <img src={"/pokebomb_logo.png"} 
+    style =
+    {{ 
+      filter: 'saturate(60%)',
+      position: 'absolute', 
+      top: '20px', 
+      left: '15px', 
+      maxWidth: '165px',
+      height: 'auto', 
+    }} 
+    />
+    </div>
     </div>
   );
 }
