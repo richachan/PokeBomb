@@ -547,7 +547,7 @@ function chooseRandomGeneration()
         socket.on('disconnect', () => {
           console.log('Client disconnected:', socket.id);
           let index = userList.indexOf(socket.id);
-          checkGame(io);
+          
           let msg1 = 
           {
             user: userMap.get(socket.id),
@@ -558,7 +558,8 @@ function chooseRandomGeneration()
           userList.splice(index, 1);
           userMap.delete(socket.id);
           liveMap.delete(socket.id);
-  
+          checkGame(io);
+          
           if (userList.length === 0) {
             //Reset if no players left
             currTurn = 0;
