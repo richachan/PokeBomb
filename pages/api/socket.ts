@@ -558,7 +558,7 @@ function chooseRandomGeneration()
           userList.splice(index, 1);
           userMap.delete(socket.id);
           liveMap.delete(socket.id);
-          checkGame(io);
+   
 
           if (userList.length === 0) {
             //Reset if no players left
