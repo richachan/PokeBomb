@@ -243,7 +243,7 @@ function chooseRandomGeneration()
     do 
     {
       if(currTurn === userList.length - 1)currLevel = currLevel + 1;
-      
+      if(checkGame(io)) return;
       currTurn = (currTurn + 1) % userList.length;
       io.to(userMap[currTurn]).emit('updateGlobalKey', '');
       
