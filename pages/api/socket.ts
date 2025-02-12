@@ -421,12 +421,7 @@ function chooseRandomGeneration()
 
           userList.push(socket.id);
           userMap.set(socket.id, userName);
-          if (gameActive === false) {
-            liveMap.set(socket.id, 3);
-          }
-          else {
-            liveMap.set(socket.id, 0);  
-          }
+          liveMap.set(socket.id, 0);  
 
           console.log(userMap.get(socket.id) + " has joined the game with client id: " + socket.id);
           let registerMsg = 
