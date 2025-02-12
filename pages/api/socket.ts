@@ -351,10 +351,7 @@ function chooseRandomGeneration()
           }
         });
         
-        socket.on('gameStarted', () => {  
-          gameActive = true;
-          io.emit('gameStatus', { gameActive });
-        });
+        
 
         socket.on('message', (msg) => {
           if (userList.length === 0) return;
