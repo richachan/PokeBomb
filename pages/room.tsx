@@ -50,6 +50,11 @@ export default function Home()
     {
       socket = io({ path: '/api/socket_io' });
 
+      socket.on('gameStatus', ({ gameActive }) => {
+        console.log('[client] got gameStatus:', gameActive);
+        setGameActive(gameActive);
+      });
+      
       socket.on('connect', () => {
         console.log('Connected:', socket?.id);
         const msg = {user: username, text:" has connected"};
