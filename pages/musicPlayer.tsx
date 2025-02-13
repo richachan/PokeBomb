@@ -48,8 +48,8 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
     {
       if (audioRef.current) 
       {
-       audioRef.current.volume = 0.3; // Ensure the volume starts at 50%
-       setVolume(0.3); // Synchronize the state
+       audioRef.current.volume = 0.4; // Ensure the volume starts at 40%
+       setVolume(0.4); // Synchronize the state
       }
     }, []);
   
@@ -164,7 +164,7 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
                 display: 'flex',
                 fontWeight: 'bold',
                 fontSize: '18px',
-                transition: 'opacity 1s ease-in, opacity 1.5s ease-out, transform 1s ease-in, transform 1.5s ease-out',
+                transition: 'opacity 1s ease-in, opacity 1.5s ease-out, transform 1s ease-in, transform 2s ease-out',
                 opacity: !title ? 0 : nextTrackTransition ? 0 : 1,
                 transform: !title ? 'translateY(6px)' : nextTrackTransition ? 'translateY(6px)' : 'translateY(0px)',
                 }}  //track Title  
@@ -307,7 +307,7 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
             />
         </div>
         */}
-        {/* previous song button 
+        {/* previous song button*/}
         <div
             onClick = {() => 
             {
@@ -337,7 +337,6 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
             >
             </i>
         </div>
-        */}
         {/* next song button 
         <div
           onClick = {nextTrack}

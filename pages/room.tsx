@@ -347,17 +347,14 @@ export default function Home()
 
     <div
       className="bg-pokemon bg-cover bg-center text-white min-h-[100vh]"
-      style={{
+      style =
+      {{
         backgroundImage: "url('/eevee.jpg')", 
-        backgroundPosition: "50% 88%",
+        backgroundPosition: "25% 88%",
         backgroundRepeat: "no-repeat",
-        backgroundSize: "100%",
+        backgroundSize: "105%",
         overflow: 'hidden',
-        
-        
-        
       }}
-      
     >
       {/* Countdown Overlay */}
       { (countdown !== null) && (
@@ -367,7 +364,7 @@ export default function Home()
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            height: '100vh', width: '105vw',
+            height: '100vh', width: '100vw',
             position: 'fixed',  
             fontSize: '7rem',
             color: '#f9e2c2',
@@ -391,9 +388,7 @@ export default function Home()
     
    
     {/*Music Player */}
-    
     <MusicPlayer gameActive = {gameActive}/>
-    
     <div 
       style = 
       {{ 
@@ -410,29 +405,31 @@ export default function Home()
           overflow: 'hidden'
         }}>
 
-<div
-  style={{
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden', // Prevent scrollbars
-    zIndex: 0
-  }}
->
+  <div
+    style = 
+    {{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      overflow: 'hidden', // Prevent scrollbars
+      zIndex: 0
+    }}
+  >
   {/* Background container */}
   <div
-    style={{
+    style = 
+    {{
       position: 'relative',
-      height: '200px',
+      height: '220px',
       width: '500px',
       borderRadius: '8px',
       display: 'flex',
-      transform: 'translate(7%, 0%)',
+      transform: 'translate(1%, 0%)',
     }}
   >
     {/* Pokémon sprite */}
