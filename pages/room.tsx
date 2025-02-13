@@ -31,6 +31,7 @@ export default function Home()
   const [fade, setFade] = useState<boolean>(false);
   const [blur, setBlur] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
+  const [newSprite, setNewSprite] = useState<boolean>(false);
 
   useEffect(() => {
     if (socket) {
@@ -122,10 +123,11 @@ export default function Home()
         socket?.emit('updateGlobalKey', ''); //clear the global key on player update
       });
 
-      socket.on('pokemon', ({ name, sprite ,guessed}: Pokemon) => 
+      socket.on('pokemon', ({ name, sprite, guessed}: Pokemon) => 
       {
         if(guessed)socket.emit('newTimer');
-        setPokemon({ name, sprite ,guessed});
+
+        setPokemon({ name, sprite, guessed });
       });
     }
 
@@ -265,8 +267,9 @@ export default function Home()
     
    
     {/*Music Player */}
-    <MusicPlayer/>
-
+    
+    <MusicPlayer gameActive = {gameActive}/>
+    
     <div 
       style = 
       {{ 
@@ -331,6 +334,8 @@ export default function Home()
           style={{
             width: 'auto',
             height: 'auto',
+            opacity: newSprite ? 0 : 1,
+            transition: 'opacity 1s ease-in, opacity 1s ease-out',
           }}
         />
       </div>
@@ -352,12 +357,12 @@ export default function Home()
         position: 'absolute',
         top: '94.5%',
         left: '50%',
-        transform: 'translate(-50%, -50%)',
+        transform: 'translate(-51%, -50%)',
       }}
     >
       {playerEntries.length < 2 ? (
         <p style={{ color: 'white', fontSize: '16px' }}>
-          Need 2 or more players to start!
+          Need 2 or more players to start
         </p>
       ) : (
         <button

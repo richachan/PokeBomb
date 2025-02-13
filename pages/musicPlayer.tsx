@@ -1,9 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
-const MusicPlayer = React.memo(() => 
+interface prop {
+  gameActive: boolean;
+}
+const MusicPlayer = React.memo(({ gameActive }: prop) => 
 {
     const [isPlaying, setIsPlaying] = useState(true);
+    const [title, setTitle] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [volume, setVolume] = useState(0.5);
@@ -12,32 +16,40 @@ const MusicPlayer = React.memo(() =>
     const audioRef = useRef<HTMLAudioElement>(null);
     const [nextTrackTransition, setNextTrackTransition] = useState(false);
     const [movingUp, setMovingUp] = useState(false);
-  
+
+    
     const musicTrackCalm = [
+      "/music/Snowpoint City.mp3",
       "/music/Lake.mp3", 
       "/music/Littleroot Town.mp3", 
       "/music/National Park HGSS.mp3", 
       "/music/Eterna Forest.mp3", 
       "/music/Eterna City.mp3",
-      "/music/Snowpoint City.mp3",
     ];
 
-    useEffect(() => 
-    {
-      if (audioRef.current) 
-      {
-       audioRef.current.load();
-       audioRef.current.currentTime = 0;
-       audioRef.current.play();
+    useEffect(() => {
+      if (audioRef.current) {
+        audioRef.current.load();
+        audioRef.current.currentTime = 0;
+        if (gameActive) {
+          audioRef.current.play();
+          setIsPlaying(true);
+          setTitle(true);
+          setTimeout(() => setTitle(false), 4000);
+        } else {
+          audioRef.current.pause();
+          setIsPlaying(false);
+          setTitle(false);
+        }
       }
-    }, [trackIndex]);
+    }, [trackIndex, gameActive]);
 
     useEffect(() => 
     {
       if (audioRef.current) 
       {
-       audioRef.current.volume = 0.5; // Ensure the volume starts at 50%
-       setVolume(0.5); // Synchronize the state
+       audioRef.current.volume = 0.3; // Ensure the volume starts at 50%
+       setVolume(0.3); // Synchronize the state
       }
     }, []);
   
@@ -61,7 +73,9 @@ const MusicPlayer = React.memo(() =>
         } 
         else 
         {
+          if (gameActive) {
           audioRef.current.play();
+          }
         }
         setIsPlaying(!isPlaying);
       }
@@ -131,14 +145,14 @@ const MusicPlayer = React.memo(() =>
         style =
         {{
           position: 'absolute',
-          right: '0px',
-          top: '0px',
+          display: 'flex',
           width: '300px', 
-          height: '75px',
-          padding: '10px',
-          backgroundColor: 'rgba(42, 42, 42, 0)',
-          borderRadius: '0px', 
-          opacity: 0.9,
+          left: '50%',
+          bottom: '3%',
+          transform: 'translate(-36.5%, 0)',
+          alignContent: 'center',
+          justifyContent: 'center',
+          alignItems: 'center',
           zIndex: 1000,
         }}
     >
@@ -147,27 +161,22 @@ const MusicPlayer = React.memo(() =>
             style = 
             {{
                 position: 'relative',
-                marginLeft: '70px',
-                right: '36px',
-                top: '31px',
+                display: 'flex',
                 fontWeight: 'bold',
                 fontSize: '18px',
-                transition: 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out',
-                opacity: nextTrackTransition ? 0 : 1,
-                transform: nextTrackTransition ? 
-                'translateY(10px)' // Moves down when fading out
-                : movingUp 
-                ? 'translateY(-5px)' // Moves up when fading in
-                : 'translateY(0)', // Default position
-            }}  
+                transition: 'opacity 1s ease-in, opacity 1.5s ease-out, transform 1s ease-in, transform 1.5s ease-out',
+                opacity: !title ? 0 : nextTrackTransition ? 0 : 1,
+                transform: !title ? 'translateY(6px)' : nextTrackTransition ? 'translateY(6px)' : 'translateY(0px)',
+                }}  //track Title  
         >
             <i
               style =
               {{
-                position: 'absolute',
-                fontSize: '25px',
+                position: 'relative',
+                fontSize: '20px',
                 top: '13px',
-                right: '220px',
+                right: '15px',
+                
               }}
               className = "fa-solid fa-music fa-sm">
             </i>
@@ -204,7 +213,7 @@ const MusicPlayer = React.memo(() =>
             autoPlay
         />
   
-        {/*volume slider and volume text*/}
+        {/*volume slider and volume text
         <div
             style =
             {{
@@ -269,8 +278,9 @@ const MusicPlayer = React.memo(() =>
             </span>
             )}
         </div>
+        */}
 
-        {/* play/pause button*/}
+        {/* play/pause button
         <div
             onClick = {togglePlay}
             style =
@@ -296,8 +306,8 @@ const MusicPlayer = React.memo(() =>
             }}
             />
         </div>
-  
-        {/* previous song button */}
+        */}
+        {/* previous song button 
         <div
             onClick = {previousTrack}
             style = 
@@ -323,8 +333,8 @@ const MusicPlayer = React.memo(() =>
             >
             </i>
         </div>
-  
-        {/* next song button */}
+        */}
+        {/* next song button 
         <div
           onClick = {nextTrack}
           style = 
@@ -351,7 +361,7 @@ const MusicPlayer = React.memo(() =>
           </i>
         </div>
   
-        {/* song progress bar */}
+        {/* song progress bar 
         <div>
             <input
                 type = "range"
@@ -389,7 +399,7 @@ const MusicPlayer = React.memo(() =>
                     borderRadius: '0px',
                 }}
             />
-          
+          */}
           {/*song time text */}
             <div 
                 style = 
@@ -399,7 +409,6 @@ const MusicPlayer = React.memo(() =>
             >
             </div>
         </div>
-    </div>
     );
   });
   

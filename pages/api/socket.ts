@@ -466,6 +466,7 @@ function chooseRandomGeneration()
           });
   
           io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: false });
+          
           io.emit('updateGenerations', currentGenerations);
         });
 
