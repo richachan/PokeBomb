@@ -499,6 +499,10 @@ function chooseRandomGeneration()
               };
               io.emit('message', msg1);
               loseLife(userList[currTurn], io);
+              //if timer is 5 seconds or less, set it back to 10 as a cooldown period
+              if (currLevel >= 10) {
+                currLevel = 5;
+              }
               //check status of game before announcing next turn
               if(checkGame(io)) return;
               
