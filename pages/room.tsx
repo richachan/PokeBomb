@@ -288,7 +288,7 @@ export default function Home()
       }
     }
 
-    // Create particles
+    //Create particles
     const particles: Particle[] = [];
     const numParticles = 35;
 
@@ -305,10 +305,10 @@ export default function Home()
       }
     }
     initParticles();
-    // Completely clear the canvas instead of painting black:
+    //Completely clear the canvas instead of painting black:
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Animation
+    //Animation
     let animationFrame: number;
     function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);

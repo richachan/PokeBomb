@@ -16,8 +16,9 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
     const audioRef = useRef<HTMLAudioElement>(null);
     const [nextTrackTransition, setNextTrackTransition] = useState(false);
     const [movingUp, setMovingUp] = useState(false);
-
-    
+    const [autoPlay, setAutoPlay] = useState(true);
+    const titleTimeoutRef = useRef(null);
+    const debounceTimeoutRef = useRef(null);
     const musicTrackCalm = [
       "/music/Snowpoint City.mp3",
       "/music/Lake.mp3", 
@@ -28,14 +29,32 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
     ];
 
     useEffect(() => {
+      if(gameActive) {
+        setAutoPlay(true);
+      }
+    });
+
+    useEffect(() => {
+      return () => {
+        if (titleTimeoutRef.current) {
+          clearTimeout(titleTimeoutRef.current);
+        }
+        if (debounceTimeoutRef.current) {
+          clearTimeout(debounceTimeoutRef.current);
+        }
+      };
+    }, []);
+
+    useEffect(() => {
       if (audioRef.current) {
         audioRef.current.load();
         audioRef.current.currentTime = 0;
         if (gameActive) {
           audioRef.current.play();
-          setIsPlaying(true);
-          setTitle(true);
-          setTimeout(() => setTitle(false), 4000);
+          if (autoPlay) {
+            setTimeout(() => setTitle(true), 2500);
+            setTimeout(() => setTitle(false), 8000);
+          }
         } else {
           audioRef.current.pause();
           setIsPlaying(false);
@@ -74,7 +93,8 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
         else 
         {
           if (gameActive) {
-          audioRef.current.play();
+            setAutoPlay(true);
+            audioRef.current.play();
           }
         }
         setIsPlaying(!isPlaying);
@@ -99,8 +119,8 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
       
     const previousTrack = () =>
     {
-      setNextTrackTransition(true);
       setIsPlaying(true);
+      setAutoPlay(false);
       if(trackIndex === 0)
       {
         setTrackIndex(musicTrackCalm.length - 1);
@@ -109,17 +129,22 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
       {
         setTrackIndex((prevIndex) => (prevIndex - 1) % musicTrackCalm.length);
       }
-
-      setTimeout(() =>
-      {
-        setNextTrackTransition(false);
-        setMovingUp(true);
-      }, 300)
-  
-      setTimeout(() =>
-      {
-        setMovingUp(false);
-      }, 600)
+      if (gameActive) {
+        setTitle(true);
+        if (titleTimeoutRef.current) {
+          clearTimeout(titleTimeoutRef.current);
+        }
+   
+        titleTimeoutRef.current = setTimeout(() => {
+          setTitle(false);
+        }, 2000);
+    
+        if (debounceTimeoutRef.current) {
+          clearTimeout(debounceTimeoutRef.current);
+        }
+    
+        debounceTimeoutRef.current = setTimeout(() => { }, 500);
+      }
     }
       
     const nextTrack = () =>
@@ -164,9 +189,9 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
                 display: 'flex',
                 fontWeight: 'bold',
                 fontSize: '18px',
-                transition: 'opacity 1s ease-in, opacity 1.5s ease-out, transform 1s ease-in, transform 2s ease-out',
+                transition: 'opacity 1s ease-in, opacity 1.5s ease-out, transform 1s ease-in, transform 1.8s ease-out',
                 opacity: !title ? 0 : nextTrackTransition ? 0 : 1,
-                transform: !title ? 'translateY(6px)' : nextTrackTransition ? 'translateY(6px)' : 'translateY(0px)',
+                transform: !title ? 'translateY(8px)' : nextTrackTransition ? 'translateY(8px)' : 'translateY(0px)',
                 }}  //track Title  
         >
             <i
@@ -192,7 +217,7 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
             onEnded = {() =>
             {
               setNextTrackTransition(true);
-             
+              setAutoPlay(true);
               setTimeout(() =>
               {  
                 setTrackIndex((prevIndex) => 
