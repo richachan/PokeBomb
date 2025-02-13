@@ -5,6 +5,8 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import MusicPlayer from './musicPlayer';
 import next from 'next';
 import { clear } from 'console';
+import dynamic from 'next/dynamic';
+import { trackSynchronousPlatformIOAccessInDev } from 'next/dist/server/app-render/dynamic-rendering';
 
 let socket: Socket | null = null;
 
@@ -32,7 +34,9 @@ export default function Home()
   const [blur, setBlur] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
   const [newSprite, setNewSprite] = useState<boolean>(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  
   useEffect(() => {
     if (socket) {
       
@@ -218,9 +222,129 @@ export default function Home()
       socket?.emit('logKey', newValue);
     }
   }
+  useEffect(() => {
+    // Make sure the window is defined (avoid SSR issues)
+    if (typeof window === 'undefined') return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Resize canvas to fill window
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Particle class
+    class Particle {
+      x: number;
+      y: number;
+      size: number;
+      vx: number;
+      vy: number;
+      color: string;
+      opacity: number;
+
+      constructor(x: number, y: number, size: number, vx: number, vy: number, color: string, opacity: number) {
+        this.x = x;
+        this.y = y;
+        this.size = size;
+        this.vx = vx;
+        this.vy = vy;
+        this.color = color;
+        this.opacity = opacity;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // Wrap around edges
+        if (this.x > canvas.width) this.x = 0;
+        if (this.x < 0) this.x = canvas.width;
+        if (this.y > canvas.height) this.y = 0;
+        if (this.y < 0) this.y = canvas.height;
+      }
+
+      draw(context: CanvasRenderingContext2D) {
+        context.save();
+        context.globalAlpha = this.opacity;
+        const gradient = context.createRadialGradient(
+          this.x, this.y, 0,
+          this.x, this.y, this.size
+        );
+        gradient.addColorStop(0, 'rgba(255,255,255,1)');
+        gradient.addColorStop(1, 'rgba(255,255,255,0)');
+        context.fillStyle = gradient;
+        context.beginPath();
+        context.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+        context.fill();
+        context.closePath();
+        context.restore();
+      }
+    }
+
+    // Create particles
+    const particles: Particle[] = [];
+    const numParticles = 35;
+
+    function initParticles() {
+      for (let i = 0; i < numParticles; i++) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const size = Math.random() * 3 + 2;
+        const vx = (Math.random() - 0.5) * 0.1;
+        const vy = (Math.random() - 0.5) * 0.1;
+        const color = '#ffffff';
+        const opacity = Math.random() * 0.3 + 0.1;
+        particles.push(new Particle(x, y, size, vx, vy, color, opacity));
+      }
+    }
+    initParticles();
+    // Completely clear the canvas instead of painting black:
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Animation
+    let animationFrame: number;
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      for (const p of particles) {
+        p.update();
+        p.draw(ctx);
+      }
+
+      animationFrame = requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Cleanup on unmount
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+      cancelAnimationFrame(animationFrame);
+    };
+  }, []);
 
   return (
-    
+    <div style={{ position: 'relative' }}>
+      {/* The background canvas */}
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          zIndex: 0, // behind content
+          width: '100vw',
+          height: '100vh'
+          
+        }}
+      />
+
     <div
       className="bg-pokemon bg-cover bg-center text-white min-h-[100vh]"
       style={{
@@ -545,8 +669,8 @@ export default function Home()
         
         flexDirection: 'column',
         position: 'absolute',
-        left: '18%',
-        top: '30%',
+        left: '20%',
+        top: '28%',
         border: 'none',
         fontSize: '20px',
         }}>
@@ -591,8 +715,10 @@ export default function Home()
       <span style={{ fontSize: '14px', opacity: 0.8 }}> {lives[socketId]}</span>
     </div>
   ))}
-  </div>
 
+
+  </div>
+  </div>
   </div>
   </div>
   </div>
