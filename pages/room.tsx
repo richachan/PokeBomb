@@ -58,7 +58,7 @@ export default function Home()
         setCountdown(null);
         setFade(false);
         socket.emit('gameStarted');
-        socket.emit('updateGlobalKey', '');
+        setMessage('');
       });
     }
   
@@ -124,7 +124,7 @@ export default function Home()
         setUserMap(data.userMap);
         setCurrTurn(data.currTurn);
         setLives(data.lives);
-        socket?.emit('updateGlobalKey', ''); //clear the global key on player update
+        setMessage('');
       });
 
       socket.on('pokemon', ({ name, sprite, guessed}: Pokemon) => 
