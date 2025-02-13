@@ -494,8 +494,8 @@ export default function Home()
       overflowY: 'auto',
       height: '200px', // Prevents excessive growth
       color: '#f9e2c2',
-      
       fontWeight: 'bold',
+      scrollbarWidth: 'thin',
     }} 
     ref={messagesEndRef}
   >

@@ -101,17 +101,17 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
     {
       setNextTrackTransition(true);
       setIsPlaying(true);
+      if(trackIndex === 0)
+      {
+        setTrackIndex(musicTrackCalm.length - 1);
+      }
+      else
+      {
+        setTrackIndex((prevIndex) => (prevIndex - 1) % musicTrackCalm.length);
+      }
 
       setTimeout(() =>
       {
-        if(trackIndex === 0)
-        {
-          setTrackIndex(musicTrackCalm.length - 1);
-        }
-        else
-        {
-          setTrackIndex((prevIndex) => (prevIndex - 1) % musicTrackCalm.length);
-        }
         setNextTrackTransition(false);
         setMovingUp(true);
       }, 300)
@@ -126,10 +126,10 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
     {
       setNextTrackTransition(true);
       setIsPlaying(true);
+      setTrackIndex((prevIndex) => (prevIndex + 1) % musicTrackCalm.length);
 
       setTimeout(() =>
       {
-        setTrackIndex((prevIndex) => (prevIndex + 1) % musicTrackCalm.length);
         setNextTrackTransition(false);
         setMovingUp(true);
       }, 300)
@@ -309,7 +309,11 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
         */}
         {/* previous song button 
         <div
-            onClick = {previousTrack}
+            onClick = {() => 
+            {
+              previousTrack();
+              new Audio("/sound-effects/Bruh.mp3").play();
+            }}
             style = 
             {{
                position: 'absolute',
@@ -321,7 +325,7 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
                //backgroundColor: 'rgba(255, 0, 0, 0.2)'
           }}
         >
-            <i 
+            <i id = 'previousTrackButton'
                 className = "fa-solid fa-backward-step"
                 style = 
                 {{
