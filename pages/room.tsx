@@ -495,7 +495,7 @@ export default function Home()
       height: '200px', // Prevents excessive growth
       color: '#f9e2c2',
       fontWeight: 'bold',
-      scrollbarWidth: 'thin',
+      scrollbarWidth: 'none',
     }} 
     ref={messagesEndRef}
   >
