@@ -222,6 +222,7 @@ export default function Home()
       socket?.emit('logKey', newValue);
     }
   }
+  
   useEffect(() => {
     // Make sure the window is defined (avoid SSR issues)
     if (typeof window === 'undefined') return;
@@ -336,8 +337,8 @@ export default function Home()
     return () => {
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationFrame);
-    };
-  }, []);
+      };
+    }, []);
 
   return (
     <div style={{ position: 'relative' }}>

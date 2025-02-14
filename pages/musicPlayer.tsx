@@ -8,6 +8,7 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
 {
     const [isPlaying, setIsPlaying] = useState(true);
     const [title, setTitle] = useState(false);
+    const [game, setGame] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [volume, setVolume] = useState(0.5);
@@ -19,13 +20,21 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
     const [autoPlay, setAutoPlay] = useState(true);
     const titleTimeoutRef = useRef(null);
     const debounceTimeoutRef = useRef(null);
+    const [hasAnimated, setHasAnimated] = useState(false);
+
+    useEffect(() => {
+      if (title && !hasAnimated) {
+        setHasAnimated(true);
+      }
+    }, [title, hasAnimated]);
+
     const musicTrackCalm = [
-      "/music/Snowpoint City.mp3",
-      "/music/Lake.mp3", 
-      "/music/Littleroot Town.mp3", 
-      "/music/National Park HGSS.mp3", 
-      "/music/Eterna Forest.mp3", 
-      "/music/Eterna City.mp3",
+      { path: "/music/Snowpoint City.mp3", gameFrom: "Pokémon Diamond & Pearl" },
+      { path: "/music/Lake.mp3", gameFrom: "Pokémon Diamond & Pearl" },
+      { path: "/music/Littleroot Town.mp3", gameFrom: "Pokémon Ruby & Sapphire" },
+      { path: "/music/National Park.mp3", gameFrom: "Pokémon Heart Gold & Soul Silver" },
+      { path: "/music/Eterna Forest.mp3", gameFrom: "Pokémon Diamond & Pearl" },
+      { path: "/music/Eterna City.mp3", gameFrom: "Pokémon Diamond & Pearl" },
     ];
 
     useEffect(() => {
@@ -53,7 +62,10 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
           audioRef.current.play();
           if (autoPlay) {
             setTimeout(() => setTitle(true), 2500);
+            setTimeout(() => setGame(true), 4000);
             setTimeout(() => setTitle(false), 8000);
+            setTimeout(() => setGame(false), 8000);
+            setHasAnimated(false);
           }
         } else {
           audioRef.current.pause();
@@ -119,7 +131,7 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
       
     const previousTrack = () =>
     {
-      setIsPlaying(true);
+      
       setAutoPlay(false);
       if(trackIndex === 0)
       {
@@ -131,19 +143,22 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
       }
       if (gameActive) {
         setTitle(true);
+        setTimeout(() => setGame(false), 1000);
         if (titleTimeoutRef.current) {
           clearTimeout(titleTimeoutRef.current);
         }
    
         titleTimeoutRef.current = setTimeout(() => {
           setTitle(false);
+          setGame(false);
+          
         }, 2000);
     
         if (debounceTimeoutRef.current) {
           clearTimeout(debounceTimeoutRef.current);
         }
     
-        debounceTimeoutRef.current = setTimeout(() => { }, 500);
+        debounceTimeoutRef.current = setTimeout(() => { }, 6500);
       }
     }
       
@@ -173,7 +188,7 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
           display: 'flex',
           width: '300px', 
           left: '50%',
-          bottom: '3%',
+          bottom: '6%',
           transform: 'translate(-50%, 0)',
           alignContent: 'center',
           justifyContent: 'center',
@@ -181,17 +196,22 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
           zIndex: 1000,
         }}
     >
-        {/* Track Title */}
-        <h3
+      {/* Track Title */}
+      <h3
             style = 
             {{
                 position: 'relative',
                 display: 'flex',
                 fontWeight: 'bold',
                 fontSize: '18px',
-                transition: 'opacity 1s ease-in, opacity 2.5s ease-out, transform 1s ease-in, transform 1.8s ease-out',
+                transition: 'opacity 1s ease-in, opacity 2s ease-out, transform 1s ease-in, transform 2.3s ease-out',
                 opacity: !title ? 0 : nextTrackTransition ? 0 : 1,
-                transform: !title ? 'translateY(8px)' : nextTrackTransition ? 'translateY(8px)' : 'translateY(0px)',
+                transform:
+                nextTrackTransition
+                ? 'translateY(8px)'
+                : !hasAnimated
+                ? 'translateY(8px)'
+                : 'translateY(0px)',
                 }}  //track Title  
         >
             <i
@@ -206,12 +226,38 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
               className = "fa-solid fa-music fa-sm">
             </i>
 
-        {musicTrackCalm[trackIndex].split('/').pop().replace('.mp3', '')}
+        {musicTrackCalm[trackIndex].path.split('/').pop().replace('.mp3', '')}
         </h3>
+    
+    {/* game from tag */}
+  <div
+  style={{
+    position: 'absolute',
+    bottom: '-100%',
+    width: '500px',
+    height: '30px',
+    overflow: 'hidden',     // ensures the text is clipped when off the top
+    textAlign: 'center',
+  }}
+>
+  <h3
+    style={{
+      position: 'relative',
+      fontWeight: 'bold',
+      fontSize: '16px',
+      whiteSpace: 'nowrap',
+      transition: 'opacity 2s ease-in, opacity 2s ease-out',
+      color: 'rgba(229, 226, 194)',
+      opacity: !game ? 0 : nextTrackTransition ? 0 : 1,
+    }}
+    >
+    {musicTrackCalm[trackIndex].gameFrom}
+    </h3>
+  </div>
 
         <audio
             ref = {audioRef}
-            src = {musicTrackCalm[trackIndex]}
+            src = {musicTrackCalm[trackIndex].path}
             onTimeUpdate = {handleTimeUpdate}
             onLoadedMetadata = {handleLoadedMetadata}
             onEnded = {() =>
@@ -357,6 +403,7 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
                    position: 'relative',
                    left: '4px',
                    top: '0px',
+                   opacity: '0'
                 }}
             >
             </i>
@@ -436,6 +483,7 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
             >
             </div>
         </div>
+
     );
   });
   
