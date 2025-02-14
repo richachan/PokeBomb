@@ -284,7 +284,7 @@ export default function Home()
           this.x, this.y, 0,
           this.x, this.y, this.size
         );
-        gradient.addColorStop(0, 'rgb(255, 185, 86)');
+        gradient.addColorStop(0, 'rgb(255, 216, 162)');
         gradient.addColorStop(1, 'rgba(255, 221, 158, 0)');
         context.fillStyle = gradient;
         context.beginPath();
@@ -297,7 +297,7 @@ export default function Home()
 
     //Create particles
     const particles: Particle[] = [];
-    const numParticles = 60;
+    const numParticles = 40;
 
     function initParticles() 
     {
@@ -305,7 +305,7 @@ export default function Home()
       {
         const x = Math.random() * canvas.width;
         const y = Math.random() * canvas.height;
-        const size = Math.random() * 12 + 2;
+        const size = Math.random() * 7 + 2;
         const vx = (Math.random() - 0.5) * 0.1;
         const vy = (Math.random() - 0.5) * 0.1;
         const color = '#fabe6b';
@@ -379,6 +379,7 @@ export default function Home()
             position: 'fixed',  
             fontSize: '7rem',
             color: '#f9e2c2',
+            left: '0.35%',
             zIndex: 1000, //make sure it's on top
             transition: 'opacity 0.3s ease-in-out, transform 0.8s ease-in-out',
             opacity: fade ? 1 : 0, 
