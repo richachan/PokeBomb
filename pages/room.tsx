@@ -232,7 +232,8 @@ export default function Home()
     if (!ctx) return;
 
     // Resize canvas to fill window
-    const resizeCanvas = () => {
+    const resizeCanvas = () => 
+    {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
@@ -240,7 +241,8 @@ export default function Home()
     window.addEventListener('resize', resizeCanvas);
 
     // Particle class
-    class Particle {
+    class Particle 
+    {
       x: number;
       y: number;
       size: number;
@@ -249,7 +251,8 @@ export default function Home()
       color: string;
       opacity: number;
 
-      constructor(x: number, y: number, size: number, vx: number, vy: number, color: string, opacity: number) {
+      constructor(x: number, y: number, size: number, vx: number, vy: number, color: string, opacity: number) 
+      {
         this.x = x;
         this.y = y;
         this.size = size;
@@ -259,7 +262,8 @@ export default function Home()
         this.opacity = opacity;
       }
 
-      update() {
+      update() 
+      {
         this.x += this.vx;
         this.y += this.vy;
 
@@ -270,7 +274,8 @@ export default function Home()
         if (this.y < 0) this.y = canvas.height;
       }
 
-      draw(context: CanvasRenderingContext2D) {
+      draw(context: CanvasRenderingContext2D) 
+      {
         context.save();
         context.globalAlpha = this.opacity;
         const gradient = context.createRadialGradient(
@@ -292,7 +297,8 @@ export default function Home()
     const particles: Particle[] = [];
     const numParticles = 35;
 
-    function initParticles() {
+    function initParticles() 
+    {
       for (let i = 0; i < numParticles; i++) {
         const x = Math.random() * canvas.width;
         const y = Math.random() * canvas.height;
@@ -304,13 +310,15 @@ export default function Home()
         particles.push(new Particle(x, y, size, vx, vy, color, opacity));
       }
     }
+
     initParticles();
     //Completely clear the canvas instead of painting black:
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     //Animation
     let animationFrame: number;
-    function animate() {
+    function animate() 
+    {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       for (const p of particles) {

@@ -174,7 +174,7 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
           width: '300px', 
           left: '50%',
           bottom: '3%',
-          transform: 'translate(-36.5%, 0)',
+          transform: 'translate(-50%, 0)',
           alignContent: 'center',
           justifyContent: 'center',
           alignItems: 'center',
@@ -189,7 +189,7 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
                 display: 'flex',
                 fontWeight: 'bold',
                 fontSize: '18px',
-                transition: 'opacity 1s ease-in, opacity 1.5s ease-out, transform 1s ease-in, transform 1.8s ease-out',
+                transition: 'opacity 1s ease-in, opacity 2.5s ease-out, transform 1s ease-in, transform 1.8s ease-out',
                 opacity: !title ? 0 : nextTrackTransition ? 0 : 1,
                 transform: !title ? 'translateY(8px)' : nextTrackTransition ? 'translateY(8px)' : 'translateY(0px)',
                 }}  //track Title  
@@ -218,14 +218,13 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
             {
               setNextTrackTransition(true);
               setAutoPlay(true);
-              setTimeout(() =>
-              {  
-                setTrackIndex((prevIndex) => 
+              setTrackIndex((prevIndex) => 
                 {
                   const nextIndex = (prevIndex + 1) % musicTrackCalm.length;
                   return nextIndex;
                 });
-
+              setTimeout(() =>
+              {  
                 setNextTrackTransition(false);
                 setMovingUp(true);
               }, 300)
