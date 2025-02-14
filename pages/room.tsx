@@ -278,12 +278,13 @@ export default function Home()
       {
         context.save();
         context.globalAlpha = this.opacity;
-        const gradient = context.createRadialGradient(
+        const gradient = context.createRadialGradient
+        (
           this.x, this.y, 0,
           this.x, this.y, this.size
         );
-        gradient.addColorStop(0, 'rgba(255,255,255,1)');
-        gradient.addColorStop(1, 'rgba(255,255,255,0)');
+        gradient.addColorStop(0, 'rgb(255, 185, 86)');
+        gradient.addColorStop(1, 'rgba(255, 221, 158, 0)');
         context.fillStyle = gradient;
         context.beginPath();
         context.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
@@ -295,18 +296,19 @@ export default function Home()
 
     //Create particles
     const particles: Particle[] = [];
-    const numParticles = 35;
+    const numParticles = 60;
 
     function initParticles() 
     {
-      for (let i = 0; i < numParticles; i++) {
+      for (let i = 0; i < numParticles; i++) 
+      {
         const x = Math.random() * canvas.width;
         const y = Math.random() * canvas.height;
-        const size = Math.random() * 3 + 2;
+        const size = Math.random() * 12 + 2;
         const vx = (Math.random() - 0.5) * 0.1;
         const vy = (Math.random() - 0.5) * 0.1;
-        const color = '#ffffff';
-        const opacity = Math.random() * 0.3 + 0.1;
+        const color = '#fabe6b';
+        const opacity = Math.random() * 0.5 + 0.1;
         particles.push(new Particle(x, y, size, vx, vy, color, opacity));
       }
     }
