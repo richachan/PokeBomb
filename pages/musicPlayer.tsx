@@ -204,13 +204,13 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
                 display: 'flex',
                 fontWeight: 'bold',
                 fontSize: '18px',
-                transition: 'opacity 1s ease-in, opacity 2s ease-out, transform 1s ease-in, transform 2.3s ease-out',
+                transition: 'opacity 1s ease-in, opacity 2s ease-out, transform 0.8s ease-in, transform 2.3s ease-out',
                 opacity: !title ? 0 : nextTrackTransition ? 0 : 1,
                 transform:
                 nextTrackTransition
-                ? 'translateY(8px)'
+                ? 'translateY(7px)'
                 : !hasAnimated
-                ? 'translateY(8px)'
+                ? 'translateY(7px)'
                 : 'translateY(0px)',
                 }}  //track Title  
         >
