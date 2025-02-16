@@ -61,10 +61,10 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
         if (gameActive) {
           audioRef.current.play();
           if (autoPlay) {
-            setTimeout(() => setTitle(true), 2500);
-            setTimeout(() => setGame(true), 4000);
-            setTimeout(() => setTitle(false), 8000);
-            setTimeout(() => setGame(false), 8000);
+            setTimeout(() => setTitle(true), 2700);
+            setTimeout(() => setGame(true), 4500);
+            setTimeout(() => setTitle(false), 8500);
+            setTimeout(() => setGame(false), 8500);
             setHasAnimated(false);
           }
         } else {
@@ -208,9 +208,9 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
                 opacity: !title ? 0 : nextTrackTransition ? 0 : 1,
                 transform:
                 nextTrackTransition
-                ? 'translateY(7px)'
+                ? 'translateY(5px)'
                 : !hasAnimated
-                ? 'translateY(7px)'
+                ? 'translateY(5px)'
                 : 'translateY(0px)',
                 }}  //track Title  
         >
@@ -218,9 +218,9 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
               style =
               {{
                 position: 'relative',
-                fontSize: '20px',
+                fontSize: '16px',
                 top: '13px',
-                right: '15px',
+                right: '7px',
                 
               }}
               className = "fa-solid fa-music fa-sm">
@@ -233,7 +233,7 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
   <div
   style={{
     position: 'absolute',
-    bottom: '-100%',
+    bottom: '-93%',
     width: '500px',
     height: '30px',
     overflow: 'hidden',     // ensures the text is clipped when off the top
@@ -247,7 +247,7 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
       fontSize: '16px',
       whiteSpace: 'nowrap',
       transition: 'opacity 2s ease-in, opacity 2s ease-out',
-      color: 'rgba(229, 226, 194)',
+      color: 'rgba(200, 200, 200, 0.9)',
       opacity: !game ? 0 : nextTrackTransition ? 0 : 1,
     }}
     >
