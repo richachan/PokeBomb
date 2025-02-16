@@ -252,7 +252,6 @@ function chooseRandomGeneration()
     } while ((liveMap.get(userList[currTurn]) ?? 0) <= 0);
     //Get next Pokemon
     checkPokemonName();
-    
 
     currentSprite = getSprite(currentPoke);
     
@@ -263,8 +262,6 @@ function chooseRandomGeneration()
     
     io.emit('updateGlobalKey','');
     io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
-    
-    
   }
   
   function getPokemon() 
@@ -564,7 +561,8 @@ function chooseRandomGeneration()
           }
         });
   
-        socket.on('disconnect', () => {
+        socket.on('disconnect', () => 
+        {
           console.log('Client disconnected:', socket.id);
           let index = userList.indexOf(socket.id);
           
@@ -578,9 +576,9 @@ function chooseRandomGeneration()
           userList.splice(index, 1);
           userMap.delete(socket.id);
           liveMap.delete(socket.id);
-   
-
-          if (userList.length === 0) {
+        
+          if (userList.length === 0) 
+          {
             //Reset if no players left
             currTurn = 0;
             currLevel = 0;
@@ -601,7 +599,21 @@ function chooseRandomGeneration()
               userMap: Object.fromEntries(userMap),
               currTurn,
               lives: Object.fromEntries(liveMap),
+              
             });
+
+            //Generate a new pokemon for incoming player's turn
+            checkPokemonName();
+
+            currentSprite = getSprite(currentPoke);
+            
+            if(currentPoke === "Flabébé")
+            {
+              currentSprite = getSprite("Flabebe");
+            }
+            io.emit('updateGlobalKey','');
+            io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
+
           }
           else if (currTurn === index) 
           {
@@ -624,11 +636,22 @@ function chooseRandomGeneration()
   
             //Clear timer
             clearInterval(timer);
-        
+            
+            //Generate a new pokemon for incoming player's turn
+            checkPokemonName();
+
+            currentSprite = getSprite(currentPoke);
+            
+            if(currentPoke === "Flabébé")
+            {
+              currentSprite = getSprite("Flabebe");
+            }
+            io.emit('updateGlobalKey','');
             io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
           }
   
-          io.emit('players', {
+          io.emit('players', 
+          {
             userMap: Object.fromEntries(userMap),
             currTurn,
             lives: Object.fromEntries(liveMap),
