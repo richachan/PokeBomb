@@ -231,13 +231,15 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
     
     {/* game from tag */}
   <div
-  style={{
+  style = 
+  {{
     position: 'absolute',
     bottom: '-93%',
     width: '500px',
     height: '30px',
     overflow: 'hidden',     // ensures the text is clipped when off the top
     textAlign: 'center',
+    marginBottom: '-5px',
   }}
 >
   <h3
