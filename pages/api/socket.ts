@@ -250,7 +250,6 @@ function chooseRandomGeneration()
       io.to(userMap[currTurn]).emit('updateGlobalKey', '');
       
     } while ((liveMap.get(userList[currTurn]) ?? 0) <= 0);
-
     //Get next Pokemon
     checkPokemonName();
     
@@ -264,6 +263,8 @@ function chooseRandomGeneration()
     
     io.emit('updateGlobalKey','');
     io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
+    
+    
   }
   
   function getPokemon() 
@@ -579,8 +580,7 @@ function chooseRandomGeneration()
           liveMap.delete(socket.id);
    
 
-          if (userList.length === 0) 
-          {
+          if (userList.length === 0) {
             //Reset if no players left
             currTurn = 0;
             currLevel = 0;
@@ -600,7 +600,7 @@ function chooseRandomGeneration()
             {
               userMap: Object.fromEntries(userMap),
               currTurn,
-              lives: Object.fromEntries(liveMap)
+              lives: Object.fromEntries(liveMap),
             });
           }
           else if (currTurn === index) 
@@ -624,15 +624,7 @@ function chooseRandomGeneration()
   
             //Clear timer
             clearInterval(timer);
-
-            currentSprite = getSprite(currentPoke);
-    
-            if(currentPoke === "Flabébé")
-            {
-              currentSprite = getSprite("Flabebe");
-            }
-            
-            io.emit('updateGlobalKey','');
+        
             io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
           }
   

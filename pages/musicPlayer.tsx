@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
-interface prop {
+interface prop 
+{
   gameActive: boolean;
 }
+
 const MusicPlayer = React.memo(({ gameActive }: prop) => 
 {
     const [isPlaying, setIsPlaying] = useState(true);
@@ -61,10 +63,10 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
         if (gameActive) {
           audioRef.current.play();
           if (autoPlay) {
-            setTimeout(() => setTitle(true), 2700);
-            setTimeout(() => setGame(true), 4500);
-            setTimeout(() => setTitle(false), 8500);
-            setTimeout(() => setGame(false), 8500);
+            setTimeout(() => setTitle(true), 2500);
+            setTimeout(() => setGame(true), 4000);
+            setTimeout(() => setTitle(false), 8000);
+            setTimeout(() => setGame(false), 8000);
             setHasAnimated(false);
           }
         } else {
@@ -208,9 +210,9 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
                 opacity: !title ? 0 : nextTrackTransition ? 0 : 1,
                 transform:
                 nextTrackTransition
-                ? 'translateY(5px)'
+                ? 'translateY(7px)'
                 : !hasAnimated
-                ? 'translateY(5px)'
+                ? 'translateY(7px)'
                 : 'translateY(0px)',
                 }}  //track Title  
         >
@@ -218,9 +220,9 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
               style =
               {{
                 position: 'relative',
-                fontSize: '16px',
+                fontSize: '20px',
                 top: '13px',
-                right: '7px',
+                right: '15px',
                 
               }}
               className = "fa-solid fa-music fa-sm">
@@ -234,7 +236,7 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
   style = 
   {{
     position: 'absolute',
-    bottom: '-93%',
+    bottom: '-100%',
     width: '500px',
     height: '30px',
     overflow: 'hidden',     // ensures the text is clipped when off the top
@@ -249,7 +251,7 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
       fontSize: '16px',
       whiteSpace: 'nowrap',
       transition: 'opacity 2s ease-in, opacity 2s ease-out',
-      color: 'rgba(200, 200, 200, 0.9)',
+      color: 'rgba(229, 226, 194)',
       opacity: !game ? 0 : nextTrackTransition ? 0 : 1,
     }}
     >
