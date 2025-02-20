@@ -37,6 +37,7 @@ const MusicPlayer = React.memo(({ gameActive }: prop) =>
       { path: "/music/National Park.mp3", gameFrom: "Pokémon Heart Gold & Soul Silver" },
       { path: "/music/Eterna Forest.mp3", gameFrom: "Pokémon Diamond & Pearl" },
       { path: "/music/Eterna City.mp3", gameFrom: "Pokémon Diamond & Pearl" },
+      { path: "/music/Emotion.mp3", gameFrom: "Pokémon Legends: Arceus" },
     ];
 
     useEffect(() => {
