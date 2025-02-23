@@ -12,6 +12,7 @@ export default function usePokemonGame() {
 
   //read username from query, or you can pass it in as a param
   const username = router.query.username as string || '';
+  const roomID = router.query.roomID as string || '';
 
   const [message, setMessage] = useState('');
   const [chat, setChat] = useState('');
@@ -34,7 +35,7 @@ export default function usePokemonGame() {
   const deferredMessage = useDeferredValue(message);
 
   useEffect(() => {
-    if (!username) return; //wait until username is known
+    if (!username || !roomID) return; //wait until username is known
 
     //Make sure server is ready
     fetch('/api/socket').catch((err) => console.error(err));
@@ -45,6 +46,8 @@ export default function usePokemonGame() {
 
       socket.on('connect', () => {
         console.log('Connected:', socket?.id);
+        //join room
+        socket?.emit('join', { username, roomID });
         socket?.emit('message', { user: username, text: 'has connected' });
         socket?.emit('register', username);
       });
