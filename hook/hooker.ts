@@ -1,5 +1,3 @@
-// hooks/usePokemonGame.ts
-
 import { useRouter } from 'next/router';
 import { useDeferredValue, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
@@ -12,7 +10,7 @@ let socket: Socket | null = null;
 export default function usePokemonGame() {
   const router = useRouter();
 
-  // read username from query, or you can pass it in as a param
+  //read username from query, or you can pass it in as a param
   const username = router.query.username as string || '';
 
   const [message, setMessage] = useState('');
@@ -27,7 +25,6 @@ export default function usePokemonGame() {
   const [selectedGenerations, setSelectedGenerations] = useState<number[]>([]);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [turnTimer, setTurnTimer] = useState<number | string | null>(null);
-  // extra flags
   const [fade, setFade] = useState<boolean>(false);
   const [blur, setBlur] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
@@ -36,17 +33,14 @@ export default function usePokemonGame() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const deferredMessage = useDeferredValue(message);
 
-  /**
-   * Connect to socket, attach events once.
-   */
   useEffect(() => {
-    if (!username) return; // wait until username is known
+    if (!username) return; //wait until username is known
 
-    // Make sure server is ready
+    //Make sure server is ready
     fetch('/api/socket').catch((err) => console.error(err));
 
     if (!socket) {
-      // connect
+      //connect
       socket = io({ path: '/api/socket_io' });
 
       socket.on('connect', () => {
@@ -66,7 +60,7 @@ export default function usePokemonGame() {
       });
 
       socket.on('updateGlobalKey', (incoming: string) => {
-        // only override my local message if I'm NOT the current turn
+        //only override my local message if I'm NOT the current turn
         if (socket && socket.id !== Object.keys(userMap)[currTurn]) {
           setMessage(incoming);
         }
@@ -102,7 +96,7 @@ export default function usePokemonGame() {
         if (time !== 4) setVisible(true);
         else setVisible(false);
 
-        // small fade effect
+
         setTimeout(() => setFade(true), 0);
         setTimeout(() => setFade(false), 500);
       });
@@ -121,18 +115,14 @@ export default function usePokemonGame() {
     };
   }, [username]);
 
-  /**
-   * If it's now my turn, clear the input
-   */
+  /*If it's now my turn, clear the input*/
   useEffect(() => {
     if (socket?.id === Object.keys(userMap)[currTurn]) {
       setMessage('');
     }
   }, [currTurn, userMap]);
 
-  /**
-   * Keep chat scrolled to bottom
-   */
+ 
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollTo({
@@ -142,10 +132,6 @@ export default function usePokemonGame() {
     }
   }, [messages]);
 
-  /* -----------------------------
-   *  Methods
-   * -----------------------------
-   */
 
   function sendMessage(e: React.FormEvent) {
     e.preventDefault();
@@ -178,7 +164,7 @@ export default function usePokemonGame() {
   }
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    // Only let me type if it's my turn
+    //Only let me type if it's my turn
     if (!socket) return;
     if (socket.id === Object.keys(userMap)[currTurn]) {
       const newValue = e.target.value;
@@ -187,9 +173,8 @@ export default function usePokemonGame() {
     }
   }
 
-  /* Return everything your theme component needs. */
+
   return {
-    // State that other components might need:
     username,
     message,
     setMessage,
@@ -211,13 +196,10 @@ export default function usePokemonGame() {
     socket,
     turnTimer,
 
-    // Derived arrays/objects
     playerEntries: Object.entries(userMap),
 
-    // Refs
     messagesEndRef,
 
-    // Functions
     sendMessage,
     sendChat,
     toggleGeneration,
