@@ -62,7 +62,7 @@ export default function UserPage() {
     />
     </div>
     <div>
-    <img src={"/homepage art.png"} 
+    <img src={"/lunalaCosmog.png"} 
     style =
     {{  
       filter: 'saturate(70%) blur(3px) brightness(80%)',
@@ -105,10 +105,10 @@ export default function UserPage() {
     <div style={{
       position: 'absolute',
       width: '100%',
-      height: '65px',
+      height: '55px',
       backgroundColor: 'rgba(23, 23, 23, 0.95)',
       boxShadow: '0 -2px 4px rgba(69, 69, 69, 0.5)',
-      bottom: '-2%',
+      bottom: '0%',
       left: '0%',
       zIndex: -1,
 
@@ -116,10 +116,9 @@ export default function UserPage() {
       <div
       style = 
       {{
-        marginBottom: '3px',
-        bottom: '30%',
-        right: '1%',
-        position: 'absolute',
+        bottom: '-15%',
+        right: '-40%',
+        position: 'relative',
         fontSize: '25px',
         color: 'rgb(65, 65, 65)',
       }}
