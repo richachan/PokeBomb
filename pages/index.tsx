@@ -13,9 +13,13 @@ export default function UserPage() {
   };
 
   return (
-    <div style={{ height: '100vh', overflow: 'hidden', position: 'relative' }}>
-    <div style={{ maxWidth: 400, margin: '50px auto', marginTop: '20%'}}>
-      <h1>Welcome to PokéBomb!</h1>
+    <div style={{ 
+      height: '100vh', overflow: 'hidden', position: 'relative' 
+      }}>
+    <div style={{ 
+      width: 250, top: '53%', position: 'absolute', left: '50%', transform: 'translate(-50%, -50%)',
+      }}>
+      
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -26,8 +30,9 @@ export default function UserPage() {
             color: 'black', border: '1px solid #ccc',
           }}
         />
-        <button type="submit" style={{ width: '100%' }}>Enter Room</button>
+        <button type="submit" style={{ width: '100%', color: 'white' }}>Enter Room</button>
       </form>
+    </div>
     <div>
     <img src={"/pokebomb_logo.png"} 
     style =
@@ -66,7 +71,7 @@ export default function UserPage() {
       height: 'auto',
       
       left: '0%',
-      top: '0%',
+      bottom: '-270px',
       zIndex: -1,
     }} 
     />
@@ -81,7 +86,21 @@ export default function UserPage() {
       top: '0%',
       left: '0%',
       zIndex: -1,
-    }}></div>
+      
+    }}><div
+    style={{
+    width: '1000px',
+    height: '32px',
+    fontSize: '30px',
+    color: 'grey',
+    top: '15%',
+    left: '1%',
+    position: 'absolute',
+    }}
+    >
+    HOME
+  </div>
+  </div>
     {/*footer*/}
     <div style={{
       position: 'absolute',
@@ -92,24 +111,11 @@ export default function UserPage() {
       bottom: '-2%',
       left: '0%',
       zIndex: -1,
-    }}></div>
-    </div>
-    <div
-      style={{
-      width: '1000px',
-      height: '32px',
-      fontSize: '30px',
-      color: 'grey',
-      top: '1.5%',
-      left: '1%',
-      position: 'absolute',
-      }}
-      >
-      HOME
-    </div>
-    <div
+
+    }}>
+      <div
       style = {{
-        bottom: '1%',
+        bottom: '30%',
         right: '1%',
         position: 'absolute',
         fontSize: '25px',
@@ -118,8 +124,12 @@ export default function UserPage() {
       >
         Created by richachan and junchaoo
     </div>
-    
     </div>
+    </div>
+    
+    
+    
+  
  
 
   );

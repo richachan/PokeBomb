@@ -20,8 +20,7 @@ export default function UserPage() {
 
   return (
     <div style={{ height: '100vh', overflow: 'hidden', position: 'relative' }}>
-    <div style={{ maxWidth: 400, margin: '50px auto', marginTop: '20%'}}>
-      <h1>Choose a name!</h1>
+    <div style={{width: 250, top: '53%', position: 'absolute', left: '50%', transform: 'translate(-50%, -50%)'}}>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -32,8 +31,9 @@ export default function UserPage() {
             color: 'black', border: '1px solid #ccc',
           }}
         />
-        <button type="submit" style={{ width: '100%' }}>Join Game</button>
+        <button type="submit" style={{ width: '100%', color: 'white' }}>Join Game</button>
       </form>
+    </div>
     <div>
     <img src={"/pokebomb_logo.png"} 
     style =
@@ -59,7 +59,7 @@ export default function UserPage() {
       height: 'auto',
       
       left: '0%',
-      top: '0%',
+      bottom: '-270px',
       zIndex: -1,
     }} 
     />
@@ -74,21 +74,9 @@ export default function UserPage() {
       boxShadow: '0 2px 4px rgba(69, 69, 69, 0.5)',
       top: '0%',
       left: '0%',
-      zIndex: -1,
-    }}></div>
-    {/*footer*/}
-    <div style={{
-      position: 'absolute',
-      width: '100%',
-      height: '65px',
-      backgroundColor: 'rgba(23, 23, 23, 0.95)',
-      boxShadow: '0 -2px 4px rgba(69, 69, 69, 0.5)',
-      bottom: '-2%',
-      left: '0%',
-      zIndex: -1,
-    }}></div>
-
-    <button
+      zIndex: 1,
+    }}>
+      <button
            onClick={backHome}
             style={{
             width: '100px',
@@ -99,26 +87,43 @@ export default function UserPage() {
             borderRadius: '7px',
             backgroundColor: 'rgba(255, 255, 255, 0)',
             backdropFilter: 'blur(1.5px)',
-            top: '1.5%',
+            top: '15%',
             left: '0.5%',
             position: 'absolute',
+            zIndex: 1000,
           }}
         >
           BACK
     </button>
     </div>
-    <div
+    {/*footer*/}
+    <div style={{
+      position: 'absolute',
+      width: '100%',
+      height: '65px',
+      backgroundColor: 'rgba(23, 23, 23, 0.95)',
+      boxShadow: '0 -2px 4px rgba(69, 69, 69, 0.5)',
+      bottom: '-2%',
+      left: '0%',
+      zIndex: -1,
+    }}>
+      <div
       style = {{
-        bottom: '1%',
+        bottom: '30%',
         right: '1%',
         position: 'absolute',
         fontSize: '25px',
         color: 'rgb(65, 65, 65)',
       }}
       >
-        Created by Richard Chan and Jun Chao Wu
+        Created by richachan and junchaoo
     </div> 
     </div>
+
+    
+    </div>
+    
+  
   );
 }
 
