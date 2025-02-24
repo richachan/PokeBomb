@@ -1,21 +1,30 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { Server as HTTPServer } from 'http';
+import { get, type Server as HTTPServer } from 'http';
 import type { Socket } from 'net';
 import { Server } from 'socket.io';
 import { matchesGlob } from 'path';
 import { clear, time } from 'console';
 
 
-let userMap = new Map<string,string>() //socket.id, username
-let liveMap = new Map<string,number>() //socket.id, lives
-let userList = new Array()            //list of socket ids
-let currTurn: number = 0;
-let timer;
-let currLevel: number = 0;
-let currentGenerations: number[] = [];
-let gameActive = false;
-let timeout;
-let countdownInterval;
+interface RoomState {
+  userMap: Map<string, string>;   
+  liveMap: Map<string, number>;     
+  userList: string[];               
+  currTurn: number;
+  //timer for deleting room if no activity (default: 2 min)
+  timer?: NodeJS.Timeout;
+  currLevel: number;
+  currentGenerations: number[];
+  gameActive: boolean;
+  countdownInterval?: NodeJS.Timeout;
+  
+  // For Pokémon state:
+  currentPoke: string;
+  currentPokeAnswer: string;
+  currentSprite: string;
+}
+
+const rooms: { [roomID: string]: RoomState } = {};
 
 type NextApiResponseServerIO = NextApiResponse & {
   socket: Socket & {
@@ -151,59 +160,60 @@ const gen9pokedex = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Croca
 
 
 //only return players with lives left
-function activePlayers() 
+function activePlayers(room: RoomState): string[] 
 {
-  return userList.filter((id) => (liveMap.get(id) ?? 0 > 0)); 
+  return room.userList.filter((id) => (room.liveMap.get(id) ?? 0) > 0);
 }
 
-function checkGame(io: Server) 
-{ 
-  const active = activePlayers();
+function checkGame(io: Server, room: RoomState, roomID: string): boolean 
+{
+  const active = activePlayers(room);
   if (active.length === 1) 
   {
-    if (timer) clearInterval(timer);
+    if (room.timer) clearInterval(room.timer);
     //one player left and wins
     const winnerId = active[0];
-    const winnerName = userMap.get(winnerId);
-    io.emit('setTimer', winnerName + " has won the game!");
-    io.emit('message', { user: winnerName, text: " is the winner!" });
-    io.emit('updateGlobalKey',''); //clear the global input field when game ends
-    gameActive = false;
-    io.emit('gameStatus', { gameActive });
+    const winnerName = room.userMap.get(winnerId);
+    io.to(roomID).emit('setTimer', winnerName + " has won the game!");
+    io.to(roomID).emit('message', { user: winnerName, text: " is the winner!" });
+    io.to(roomID).emit('updateGlobalKey',''); //clear the global input field when game ends
+    room.gameActive = false;
+    io.emit('gameStatus', { gameActive: room.gameActive });
 
     return true;
   }
-  else if (active.length === 0 && userList.length > 0) {
+  else if (active.length === 0 && room.userList.length > 0) {
     //no players left
-    io.emit('message', { user: 'No one', text: " has won. Restarting..." });
-    userList.forEach((id) => { liveMap.set(id, 3); });
-    currTurn = 0
-    currLevel = 0;
+    io.to(roomID).emit('message', { user: 'No one', text: " has won. Restarting..." });
+    room.userList.forEach((id) => { room.liveMap.set(id, 3); });
+    room.currTurn = 0
+    room.currLevel = 0;
     io.emit('players', {
-      userMap: Object.fromEntries(userMap),
-      currTurn,
-      lives: Object.fromEntries(liveMap),
+      userMap: Object.fromEntries(room.userMap),
+      currTurnL: room.currTurn,
+      lives: Object.fromEntries(room.liveMap),
     });
     return true;
   }
-  io.emit('players', 
+  io.to(roomID).emit('players', 
   {
-    userMap: Object.fromEntries(userMap),
-    currTurn,
-    lives: Object.fromEntries(liveMap),
+    userMap: Object.fromEntries(room.userMap),
+    currTurn: room.currTurn,
+    lives: Object.fromEntries(room.liveMap),
   });
 
   return false;
 }
 
-function loseLife(socketId: string, io: Server) {
-  let old = liveMap.get(socketId) ?? 0;
-  liveMap.set(socketId, old - 1); //decrement lives
+function loseLife(socketId: string, io: Server, room: RoomState, roomID: string) 
+{
+  let old = room.liveMap.get(socketId) ?? 0;
+  room.liveMap.set(socketId, old - 1); //decrement lives
   //don't forget to emit!
-  io.emit('players', {
-    userMap: Object.fromEntries(userMap),
-    currTurn,
-    lives: Object.fromEntries(liveMap),
+  io.to(roomID).emit('players', {
+    userMap: Object.fromEntries(room.userMap),
+    currTurn: room.currTurn,
+    lives: Object.fromEntries(room.liveMap),
   });
 
 }
@@ -211,10 +221,10 @@ function loseLife(socketId: string, io: Server) {
 //if there are 2 or more players active ensure the current turn is a valid player, otherwise skip over them
 
 
-function chooseRandomGeneration() 
+function chooseRandomGeneration(room: RoomState): string[]
 {
     let randomGeneration: number;
-    if (currentGenerations.length === 0) 
+    if (room.currentGenerations.length === 0) 
     {
       //If no gens chosen, pick from 1 to 9
       randomGeneration = Math.floor(Math.random() * 9) + 1;
@@ -222,7 +232,7 @@ function chooseRandomGeneration()
     else 
     {
       //Otherwise pick from whichever gens are selected
-      randomGeneration = currentGenerations[Math.floor(Math.random() * currentGenerations.length)];
+      randomGeneration = room.currentGenerations[Math.floor(Math.random() * room.currentGenerations.length)];
     }
   
     switch (randomGeneration) 
@@ -240,31 +250,30 @@ function chooseRandomGeneration()
     }
   }
 
-  function advanceTurn(io: Server) 
+  function advanceTurn(io: Server, room: RoomState, roomID: string)
   {
     do 
     {
-      if(currTurn === userList.length - 1)currLevel = currLevel + 1;
-      if(checkGame(io)) return;
-      currTurn = (currTurn + 1) % userList.length;
-      io.to(userMap[currTurn]).emit('updateGlobalKey', '');
+      if(room.currTurn === room.userList.length - 1)room.currLevel = room.currLevel + 1;
+      if(checkGame(io, room, roomID)) return;
+      room.currTurn = (room.currTurn + 1) % room.userList.length;
+      io.to(room.userMap[room.currTurn]).to(roomID).emit('updateGlobalKey', '');
       
-    } while ((liveMap.get(userList[currTurn]) ?? 0) <= 0);
+    } while ((room.liveMap.get(room.userList[room.currTurn]) ?? 0) <= 0);
     //Get next Pokemon
-    checkPokemonName();
-
-    currentSprite = getSprite(currentPoke);
+    checkPokemonName(room);
+    room.currentSprite = getSprite(room.currentPoke);
     
-    if(currentPoke === "Flabébé")
+    if(room.currentPoke === "Flabébé")
     {
-      currentSprite = getSprite("Flabebe");
+      room.currentSprite = getSprite("Flabebe");
     }
     
-    io.emit('updateGlobalKey','');
-    io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
+    io.to(roomID).emit('updateGlobalKey','');
+    io.to(roomID).emit('pokemon', { name: room.currentPokeAnswer, sprite: room.currentSprite, guessed: true });
   }
   
-  function getPokemon() 
+  function getPokemon(room: RoomState) 
   {
     const missingNo = Math.floor(Math.random() * 5000);
     if(missingNo === 152)
@@ -272,7 +281,7 @@ function chooseRandomGeneration()
       return "MissingNo."
     }
     
-    const getPokedex = chooseRandomGeneration();
+    const getPokedex = chooseRandomGeneration(room);
     const randomIndex = Math.floor(Math.random() * getPokedex.length);
     return getPokedex[randomIndex];
   }
@@ -287,12 +296,11 @@ function chooseRandomGeneration()
   }
   
   //Shuffle the initial Pokémon
-  let currentPoke: string;
-  let currentPokeAnswer;
 
-  function checkPokemonName()
+  function checkPokemonName(room: RoomState)
   {
-    currentPoke = getPokemon();
+    const currentPoke = getPokemon(room);
+    let currentPokeAnswer = currentPoke;
     if(currentPoke === "Mrmime") {currentPokeAnswer = "Mr. Mime"}
     else if(currentPoke === "Farfetchd") {currentPokeAnswer = "Farfetch'd"}
     else if(currentPoke === "Porygon2") {currentPokeAnswer = "Porygon-2"}
@@ -312,16 +320,10 @@ function chooseRandomGeneration()
     else if(currentPoke === "Mrrime") {currentPokeAnswer = "Mr. Rime"}
     else if(currentPoke === "MissingNo.") {currentPokeAnswer = "MissingNo."}
     else{currentPokeAnswer = currentPoke}
+    room.currentPoke = currentPoke;
+    room.currentPokeAnswer = currentPokeAnswer;
   }
 
-  checkPokemonName();
-  let currentSprite = getSprite(currentPoke);
-
-  if(currentPoke === "Flabébé")
-  {
-    currentSprite = getSprite("Flabebe");
-  }
-  
   export default function handler(req: NextApiRequest, res: NextApiResponseServerIO) {
     if (!res.socket.server.io) {
       console.log('Initializing new Socket.IO server...');
@@ -335,31 +337,81 @@ function chooseRandomGeneration()
       
       io.on('connection', (socket) => {
         console.log('A client connected:', socket.id);
+        socket.on('join', ({ username, roomID }) => {
+          console.log(`User ${username} joining room ${roomID}. Current rooms:`, Object.keys(rooms));
+          if (!rooms[roomID]) {
+            console.log(`Room ${roomID} does not exist. Creating new room.`);
+            rooms[roomID] = {
+              userMap: new Map(),
+              liveMap: new Map(),
+              userList: [],
+              currTurn: 0,
+              currLevel: 0,
+              currentGenerations: [],
+              gameActive: false,
+              currentPoke: '',
+              currentPokeAnswer: '',
+              currentSprite: '',
+            };
+          } 
+          else 
+          {
+            console.log(`Room ${roomID} already exists.`, rooms[roomID]);
+          }
+          const room = rooms[roomID];
+          socket.join(roomID);
+          // Save roomID in socket data for later retrieval
+          (socket.data as any).roomID = roomID;
+          
+          checkPokemonName(room);
+
+          // Register the user in this room
+          room.userList.push(socket.id);
+          room.userMap.set(socket.id, username);
+          room.liveMap.set(socket.id, 0);
+          io.to(roomID).emit('message', { user: username, text: " has joined the game!" });
+          socket.emit('gameStatus', { gameActive: room.gameActive });
+          io.to(roomID).emit('players', {
+            userMap: Object.fromEntries(room.userMap),
+            currTurn: room.currTurn,
+            lives: Object.fromEntries(room.liveMap),
+          });
+          io.to(roomID).emit('updateGenerations', room.currentGenerations);
+          // Optionally, send the current Pokémon (if any)
+          io.to(roomID).emit('pokemon', { name: room.currentPokeAnswer, sprite: room.currentSprite, guessed: false });
+        });
+
         socket.on('chat', (msg) => {
-          let chatMsg = {
-            user: userMap.get(socket.id), text: ": " + msg.text
-          };
-          io.emit('chat', msg);
+          const roomID = (socket.data as any).roomID;
+          if(!roomID) return;
+          const room = rooms[roomID];
+          const chatMsg = { user: room.userMap.get(socket.id) || '', text: msg.text };
+          io.to(roomID).emit('chat', chatMsg);
         });
         
         socket.on('logKey', (message) => {
-          if (socket.id === userList[currTurn]) {
-          const currentPlayerSocketId = Object.keys(userMap)[currTurn];
-          socket.broadcast.emit('updateGlobalKey', message)
+          const roomID = (socket.data as any).roomID;
+          if(!roomID) return;
+          const room = rooms[roomID];
+          if (socket.id === room.userList[room.currTurn]) {
+            socket.broadcast.to(roomID).emit('updateGlobalKey', message)
           }
         });
         
         socket.on('countdown', () => {  
+          const roomID = (socket.data as any).roomID;
+          if(!roomID) return; 
+          const room = rooms[roomID];
           let time = 4;
-          if (countdownInterval) {
-            clearInterval(countdownInterval);
+          if (room.countdownInterval) {
+            clearInterval(room.countdownInterval);
           }
           
-          countdownInterval = setInterval(() => {
-            io.emit('countdownUpdate', time); 
+          room.countdownInterval = setInterval(() => {
+            io.to(roomID).emit('countdownUpdate', time); 
             if (time === 0) { 
-              clearInterval(countdownInterval);
-              io.emit('countdownEnd');
+              clearInterval(room.countdownInterval);
+              io.to(roomID).emit('countdownEnd');
               
           }
           time--;
@@ -367,294 +419,268 @@ function chooseRandomGeneration()
         });
 
         socket.on('message', (msg) => {
-          if (userList.length === 0) return;
+          const roomID = (socket.data as any).roomID;
+          if(!roomID) return;
+          const room = rooms[roomID];
+          if (room.userList.length === 0) return;
   
           //Compare guess
 
 
-          if(gameActive === true)
+          if(room.gameActive === true)
           {
-            if (socket.id === userList[currTurn] && msg.text.toLowerCase() === currentPokeAnswer.toLowerCase())
+            if (socket.id === room.userList[room.currTurn] && msg.text.toLowerCase() === room.currentPokeAnswer.toLowerCase())
             {
               let msg1 = 
               {
-                user: userMap.get(socket.id),  // Using .get(...) for the Map
-                text: " has correctly guessed " + currentPokeAnswer + "!"
+                user: room.userMap.get(socket.id),  // Using .get(...) for the Map
+                text: " has correctly guessed " + room.currentPokeAnswer + "!"
               };
-              io.emit('message', msg1);
+              io.to(roomID).emit('message', msg1);
     
               //Advance turn
               socket.removeAllListeners('logkey');
-              io.emit('updateGlobalKey','');
-              advanceTurn(io);
+              io.to(roomID).emit('updateGlobalKey','');
+              advanceTurn(io, room, roomID);
+
               socket.on('logKey', (message) => {
-         
-                const currentPlayerSocketId = Object.keys(userMap)[currTurn];
-                socket.broadcast.emit('updateGlobalKey', message)
+                socket.broadcast.to(roomID).emit('updateGlobalKey', message)
               });
 
-              if(checkGame(io)) return;
+              if(checkGame(io, room, roomID)) return;
 
-              io.emit('players', 
+              io.to(roomID).emit('players', 
               {
-                userMap: Object.fromEntries(userMap),
-                currTurn,
-                lives: Object.fromEntries(liveMap),
+                userMap: Object.fromEntries(room.userMap),
+                currTurn: room.currTurn,
+                lives: Object.fromEntries(room.liveMap),
               });
 
               //check status of game before announcing next turn
-              if (checkGame(io)) return;
+              if (checkGame(io, room, roomID)) return;
               msg1 = 
               {
-                user: "It is now " + userMap.get(userList[currTurn]) + "'s turn to guess!",
+                user: "It is now " + room.userMap.get(room.userList[room.currTurn]) + "'s turn to guess!",
                 text: ""
               };
-              io.emit('message', msg1);
+              io.to(roomID).emit('message', msg1);
     
               //Clear timer
-              clearInterval(timer);
+              clearInterval(room.timer);
     
 
             } 
-            else if (socket.id === userList[currTurn]) 
+            else if (socket.id === room.userList[room.currTurn]) 
             {
               //Wrong guess
               const msg2 = 
               {
-                user: userMap.get(socket.id), 
+                user: room.userMap.get(socket.id), 
                 text: " incorrectly guessed " + msg.text
               };
-              io.emit('message', msg2);
+              io.to(roomID).emit('message', msg2);
             }
           }  
         });
  
-        socket.on('register', (userName) => {
-
-          userList.push(socket.id);
-          userMap.set(socket.id, userName);
-          liveMap.set(socket.id, 0);  
-
-          console.log(userMap.get(socket.id) + " has joined the game with client id: " + socket.id);
-          let registerMsg = 
-          {
-            user: userMap.get(socket.id),
-            text: " has joined the game!"
-          };
-          io.emit('message', registerMsg);
-
-          socket.emit('gameStatus', { gameActive });
-
-          if (userList.length === 1) {
-            currTurn = 0;
-            io.emit('players', {
-              userMap: Object.fromEntries(userMap),
-              currTurn,
-              lives: Object.fromEntries(liveMap),
-            });
-          }
-  
-          console.log("Current turn socket ID: " + userList[currTurn]);
-  
-          io.emit('players', {
-            userMap: Object.fromEntries(userMap),
-            currTurn,
-            lives: Object.fromEntries(liveMap),
-          });
-  
-          io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: false });
-          
-          io.emit('updateGenerations', currentGenerations);
-        });
+        
 
         socket.on('updateGenerations', (gens: number[]) => 
         {
-          currentGenerations = gens;
-          io.emit('updateGenerations', currentGenerations);
+          const roomID = (socket.data as any).roomID;
+          if(!roomID) return;
+          const room = rooms[roomID];
+          room.currentGenerations = gens;
+          io.to(roomID).emit('updateGenerations', room.currentGenerations);
         });
   
         socket.on('newTimer', () => 
         {
-          if(timer)
+          const roomID = (socket.data as any).roomID;
+          if(!roomID) return;
+          const room = rooms[roomID];
+          if(room.timer)
           {
-            clearInterval(timer)
+            clearInterval(room.timer)
           }
-          let count = Math.max(15 - currLevel , 5);
-          io.emit('setTimer', count);
-          if(checkGame(io)) return;
-          timer = setInterval(() => {
+          let count = Math.max(15 - room.currLevel , 5);
+          io.to(roomID).emit('setTimer', count);
+          if(checkGame(io, room, roomID)) return;
+          room.timer = setInterval(() => {
             count--;
             if (count === 0) 
             {
               //Time ran out
-              io.emit('setTimer', count);
-              clearInterval(timer);
+              io.to(roomID).emit('setTimer', count);
+              clearInterval(room.timer);
               let msg1 = 
               {
-                user: userMap.get(userList[currTurn]),
-                text: " has failed to guess " + currentPokeAnswer + "!"
+                user: room.userMap.get(room.userList[room.currTurn]),
+                text: " has failed to guess " + room.currentPokeAnswer + "!"
               };
-              io.emit('message', msg1);
-              loseLife(userList[currTurn], io);
+              io.to(roomID).emit('message', msg1);
+              loseLife(room.userList[room.currTurn], io, room, roomID);
               //if timer is 5 seconds or less, set it back to 10 as a cooldown period
-              if (currLevel >= 10) {
-                currLevel = 5;
+              if (room.currLevel >= 10) {
+                room.currLevel = 5;
               }
               //check status of game before announcing next turn
-              if(checkGame(io)) return;
-              
-              clearInterval(timer);
+              if(checkGame(io, room, roomID)) return;
+              clearInterval(room.timer);
               //skip over dead players
-              io.emit('updateGlobalKey',''); 
-              advanceTurn(io);
-              io.emit('updateGlobalKey',''); //clear the global input field
+              io.to(roomID).emit('updateGlobalKey',''); 
+              advanceTurn(io, room, roomID);
+              io.to(roomID).emit('updateGlobalKey',''); //clear the global input field
               
-              io.emit('players', 
+              io.to(roomID).emit('players', 
               {
-                userMap: Object.fromEntries(userMap),
-                currTurn,
-                lives: Object.fromEntries(liveMap),
+                userMap: Object.fromEntries(room.userMap),
+                currTurn: room.currTurn,
+                lives: Object.fromEntries(room.liveMap),
               });
               msg1 = 
               {
-                user: "It is now " + userMap.get(userList[currTurn]) + "'s turn to guess!",
+                user: "It is now " + room.userMap.get(room.userList[room.currTurn]) + "'s turn to guess!",
                 text: ""
               };
               
-              io.emit('message', msg1);
+              io.to(roomID).emit('message', msg1);
             }
   
-            io.emit('setTimer', count);
+            io.to(roomID).emit('setTimer', count);
           }, 1000);
         });
 
         socket.on('gameStarted', () =>
         {
-          if(gameActive === false)
+          const roomID = (socket.data as any).roomID;
+          if(!roomID) return;
+          const room = rooms[roomID];
+
+          if(room.gameActive === false)
           {
-            gameActive = true;
-            io.emit('gameStatus', { gameActive });
-            //Clear timer
+            room.gameActive = true;
+            io.to(roomID).emit('gameStatus', { gameActive: room.gameActive });
             
-            clearInterval(timer);
+            //Clear timer
+            clearInterval(room.timer);
 
             //Get next Pokemon
-            checkPokemonName();
+            checkPokemonName(room);
             
-            currentSprite = getSprite(currentPoke);
+            room.currentSprite = getSprite(room.currentPoke);
             
-            if(currentPoke === "Flabébé")
+            if(room.currentPoke === "Flabébé")
             {
-              currentSprite = getSprite("Flabebe");
+              room.currentSprite = getSprite("Flabebe");
             }
                         
             //new game! everyone has 3 lives again, reset the timer level to 0
-            currLevel = 0;
-            userList.forEach((id) => { liveMap.set(id, 3); });
-            io.emit('players', 
+            room.currLevel = 0;
+            room.userList.forEach((id) => { room.liveMap.set(id, 3); });
+            io.to(roomID).emit('players', 
             {
-              userMap: Object.fromEntries(userMap),
-              currTurn,
-              lives: Object.fromEntries(liveMap),
+              userMap: Object.fromEntries(room.userMap),
+              currTurn: room.currTurn,
+              lives: Object.fromEntries(room.liveMap),
             });
-            io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
+            io.to(roomID).emit('pokemon', { name: room.currentPokeAnswer, sprite: room.currentSprite, guessed: true });
           }
         });
   
         socket.on('disconnect', () => 
         {
+          const roomID = (socket.data as any).roomID;
+          if(!roomID) return;
+          const room = rooms[roomID];
+
           console.log('Client disconnected:', socket.id);
-          let index = userList.indexOf(socket.id);
+          let index = room.userList.indexOf(socket.id);
           
           let msg1 = 
           {
-            user: userMap.get(socket.id),
+            user: room.userMap.get(socket.id),
             text: " has disconnected "
           };
-          io.emit('message', msg1);
+          io.to(roomID).emit('message', msg1);
   
-          userList.splice(index, 1);
-          userMap.delete(socket.id);
-          liveMap.delete(socket.id);
-        
-          if (userList.length === 0) 
+          room.userList.splice(index, 1);
+          room.userMap.delete(socket.id);
+          room.liveMap.delete(socket.id);
+          
+          if (room.userList.length === 0) 
           {
-            //Reset if no players left
-            currTurn = 0;
-            currLevel = 0;
-            io.emit('players', 
-            {
-              userMap: Object.fromEntries(userMap),
-              currTurn,
-              lives: Object.fromEntries(liveMap),
-            });
+            //because there are rooms now we are
+            //deleting the entire room instead of
+            //resetting the game
+            delete rooms[roomID];
             return;
           }
   
-          if (currTurn > index) 
+          if (room.currTurn > index) 
           {
-            currTurn--;
-            io.emit('players', 
+            room.currTurn--;
+            io.to(roomID).emit('players', 
             {
-              userMap: Object.fromEntries(userMap),
-              currTurn,
-              lives: Object.fromEntries(liveMap),
+              userMap: Object.fromEntries(room.userMap),
+              currTurn: room.currTurn,
+              lives: Object.fromEntries(room.liveMap),
               
             });
 
             //Generate a new pokemon for incoming player's turn
-            checkPokemonName();
+            checkPokemonName(room);
 
-            currentSprite = getSprite(currentPoke);
+            room.currentSprite = getSprite(room.currentPoke);
             
-            if(currentPoke === "Flabébé")
+            if(room.currentPoke === "Flabébé")
             {
-              currentSprite = getSprite("Flabebe");
+              room.currentSprite = getSprite("Flabebe");
             }
-            io.emit('updateGlobalKey','');
-            io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
+            io.to(roomID).emit('updateGlobalKey','');
+            io.to(roomID).emit('pokemon', { name: room.currentPokeAnswer, sprite: room.currentSprite, guessed: true });
 
           }
-          else if (currTurn === index) 
+          else if (room.currTurn === index) 
           {
-            if(currTurn >= userList.length - 1)currLevel = currLevel + 1;
-            currTurn = currTurn % userList.length;
-            if(checkGame(io)) return;
-            io.emit('players', 
+            if(room.currTurn >= room.userList.length - 1)room.currLevel = room.currLevel + 1;
+            room.currTurn = room.currTurn % room.userList.length;
+            if(checkGame(io, room, roomID)) return;
+            io.to(roomID).emit('players', 
             {
-              userMap: Object.fromEntries(userMap),
-              currTurn,
-              lives: Object.fromEntries(liveMap),
+              userMap: Object.fromEntries(room.userMap),
+              currTurn: room.currTurn,
+              lives: Object.fromEntries(room.liveMap),
             });
             msg1 = 
             {
-              user: "It is now " + userMap.get(userList[currTurn]) + "'s turn to guess!",
+              user: "It is now " + room.userMap.get(room.userList[room.currTurn]) + "'s turn to guess!",
               text: ""
             };
             
-            io.emit('message', msg1);
+            io.to(roomID).emit('message', msg1);
   
             //Clear timer
-            clearInterval(timer);
+            clearInterval(room.timer);
             
             //Generate a new pokemon for incoming player's turn
-            checkPokemonName();
+            checkPokemonName(room);
 
-            currentSprite = getSprite(currentPoke);
+           room. currentSprite = getSprite(room.currentPoke);
             
-            if(currentPoke === "Flabébé")
+            if(room.currentPoke === "Flabébé")
             {
-              currentSprite = getSprite("Flabebe");
+              room.currentSprite = getSprite("Flabebe");
             }
-            io.emit('updateGlobalKey','');
-            io.emit('pokemon', { name: currentPokeAnswer, sprite: currentSprite, guessed: true });
+            io.to(roomID).emit('updateGlobalKey','');
+            io.to(roomID).emit('pokemon', { name: room.currentPokeAnswer, sprite: room.currentSprite, guessed: true });
           }
   
-          io.emit('players', 
+          io.to(roomID).emit('players', 
           {
-            userMap: Object.fromEntries(userMap),
-            currTurn,
-            lives: Object.fromEntries(liveMap),
+            userMap: Object.fromEntries(room.userMap),
+            currTurn: room.currTurn,
+            lives: Object.fromEntries(room.liveMap),
           });
         });
       });

@@ -116,7 +116,7 @@ export default function usePokemonGame() {
       socket?.disconnect();
       socket = null;
     };
-  }, [username]);
+  }, [username, roomID]);
 
   /*If it's now my turn, clear the input*/
   useEffect(() => {
@@ -179,6 +179,7 @@ export default function usePokemonGame() {
 
   return {
     username,
+    roomID,
     message,
     setMessage,
     deferredMessage,

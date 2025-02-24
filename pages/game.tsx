@@ -9,7 +9,7 @@ export default function UserPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!roomID.trim()) return;
-    router.push(`/room?username=${encodeURIComponent(username)}?ID=${encodeURIComponent(roomID)}`);
+    router.push(`/room?username=${encodeURIComponent(username)}&roomID=${encodeURIComponent(roomID)}`);
   };
 
   return (
@@ -18,14 +18,14 @@ export default function UserPage() {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Choose a name"
+          placeholder="Enter room code"
           value={roomID}
           onChange={(e) => setRoomID(e.target.value)}
           style={{ width: '100%', marginBottom: 10, borderRadius: 8, padding: 5,
             color: 'black', border: '1px solid #ccc',
           }}
         />
-        <button type="submit" style={{ width: '100%' }}>Join Game</button>
+        <button type="submit" style={{ width: '100%' }}>Join Room</button>
       </form>
     <div>
     <img src={"/pokebomb_logo.png"} 

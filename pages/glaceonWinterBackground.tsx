@@ -277,7 +277,7 @@ export default function theme()
           justifyContent: 'center',
           height: '100px',
           pointerEvents: 'none',
- 
+          visibility: gameActive ? 'visible' : 'hidden',
           zIndex: 2,
           position: 'absolute',
           top: '20%',
