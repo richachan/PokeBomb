@@ -8,6 +8,7 @@ import { clear } from 'console';
 import dynamic from 'next/dynamic';
 import { trackSynchronousPlatformIOAccessInDev } from 'next/dist/server/app-render/dynamic-rendering';
 
+
 import usePokemonGame from '../hook/hooker';
 
 
@@ -17,6 +18,7 @@ export default function theme()
   const { query } = router;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const {
+    roomID,
     playerEntries,
     startGame,
     sendMessage,
@@ -555,6 +557,32 @@ export default function theme()
   </div>
   </div>
   </div>
+  </div>
+  <div 
+    style = 
+    {{
+      position: 'absolute',
+      top: '10px',
+      right: '10px',
+      fontSize: '14px',
+      color: 'white',
+    }}>
+    <button
+           onClick={() => navigator.clipboard.writeText('https://pokebomb.onrender.com/game?roomID=' + roomID)}
+          style={{
+            width: '100px',
+            height: '32px',
+            fontSize: '15px',
+            color: 'white',
+            cursor: 'pointer',
+            borderRadius: '7px',
+            backgroundColor: 'rgba(255, 255, 255, 0)',
+            backdropFilter: 'blur(1.5px)',
+        
+          }}
+        >
+          Share Game
+        </button>
   </div>
   </div>
   );  

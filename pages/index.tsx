@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 
 export default function UserPage() {
-  const [username, setUsername] = useState('');
+  const [roomID, setRoomID] = useState('');
+  
   const router = useRouter();
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username.trim()) return;
-    router.push(`/game?username=${encodeURIComponent(username)}`);
+    if (!roomID.trim()) return;
+    router.push(`/game?roomID=${encodeURIComponent(roomID)}`);
   };
 
   return (
@@ -17,9 +18,9 @@ export default function UserPage() {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Choose a name"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Enter room code"
+          value={roomID}
+          onChange={(e) => setRoomID(e.target.value)}
           style={{ width: '100%', marginBottom: 10, borderRadius: 8, padding: 5,
             color: 'black', border: '1px solid #ccc',
           }}
