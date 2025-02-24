@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+
+
+
+
 
 export default function UserPage() {
   const [roomID, setRoomID] = useState('');
-  
+  //Welcome to PokeBomb!
+  const [welcome, setWelcome] = useState(false);
+  //Compete with your friends and challenge your Pokémon knowledge!
+  const [instruction, setInstruction] = useState(false);
+
   const router = useRouter();
   
   const handleSubmit = (e: React.FormEvent) => {
@@ -12,12 +20,22 @@ export default function UserPage() {
     router.push(`/game?roomID=${encodeURIComponent(roomID)}`);
   };
 
+  useEffect(() => {
+    // Fade in the welcome text immediately on mount
+    setWelcome(true);
+    // Fade in the instruction text after a short delay (e.g., 800ms)
+    const timeout = setTimeout(() => {
+      setInstruction(true);
+    }, 550);
+    return () => clearTimeout(timeout);
+  }, []);
+  
   return (
     <div style={{ 
       height: '100vh', overflow: 'hidden', position: 'relative' 
       }}>
     <div style={{ 
-      width: 250, top: '53%', position: 'absolute', left: '50%', transform: 'translate(-50%, -50%)',
+      width: 250, top: '58%', position: 'absolute', left: '50%', transform: 'translate(-50%, -50%)',
       }}>
       
       <form onSubmit={handleSubmit}>
@@ -32,6 +50,38 @@ export default function UserPage() {
         />
         <button type="submit" style={{ width: '100%', color: 'white' }}>Enter Room</button>
       </form>
+    <div style={{
+      position: 'absolute',
+      left: '-36%',
+      top: '-210%',
+      fontSize: '40px',
+      width: '500px',
+      opacity: welcome ? 1 : 0,
+      transition: 'opacity 1.6s ease, transform 1.2s ease',
+      transform: welcome ? 'translateY(-10px)' : 'translateY(0)',
+    }}>
+      
+    <h1>Welcome to 
+      <span style= {{color: 'rgb(50, 38, 80)'}}> PokéBomb!</span>
+    </h1>
+    </div>
+    <div style={{
+      position: 'absolute',
+      left: '-44%',
+      top: '-120%',
+      fontSize: '22px',
+      width: '470px',
+      alignItems: 'center',
+      justifyContent: 'center',
+      textAlign: 'center',
+      opacity: instruction ? 1 : 0,
+      transition: 'opacity 1.6s ease, transform 1.2s ease',
+      transform: instruction ? 'translateY(-10px)' : 'translateY(0)',
+    }}>
+      
+    <h1>Compete with your friends and challenge your Pokémon knowledge!</h1>
+    
+    </div>
     </div>
     <div>
     <img src={"/pokebomb_logo.png"} 
@@ -65,17 +115,19 @@ export default function UserPage() {
     <img src={"/lunalaCosmog.png"} 
     style =
     {{  
-      filter: 'saturate(70%) blur(3px) brightness(80%)',
+      filter: 'saturate(70%) blur(4px) brightness(80%)',
       position: 'absolute', 
       width: '100vw',
       height: 'auto',
-      
       left: '0%',
-      bottom: '-270px',
+      top: '-16%',
       zIndex: -1,
     }} 
     />
     </div>
+    
+    
+
     {/*Header*/}
     <div style={{
       position: 'absolute',
@@ -116,11 +168,12 @@ export default function UserPage() {
       <div
       style = 
       {{
-        bottom: '-15%',
-        right: '-40%',
-        position: 'relative',
+        bottom: '15%',
+        right: '10px',
+        position: 'absolute',
         fontSize: '25px',
         color: 'rgb(65, 65, 65)',
+      
       }}
       >
         Created by richachan and junchaoo

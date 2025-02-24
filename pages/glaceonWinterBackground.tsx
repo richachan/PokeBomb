@@ -568,7 +568,7 @@ export default function theme()
       color: 'white',
     }}>
     <button
-           onClick={() => navigator.clipboard.writeText('https://pokebomb.onrender.com/game?roomID=' + roomID)}
+          onClick={() => navigator.clipboard.writeText('https://pokebomb.onrender.com/game?roomID=' + roomID)}
           style={{
             width: '100px',
             height: '32px',
@@ -581,7 +581,7 @@ export default function theme()
         
           }}
         >
-          Share Game
+          Invite
         </button>
   </div>
   </div>

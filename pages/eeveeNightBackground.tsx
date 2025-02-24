@@ -576,7 +576,7 @@ export default function theme()
         
           }}
         >
-          Share Game
+          Invite
         </button>
   </div>
   </div>

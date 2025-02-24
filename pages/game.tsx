@@ -20,7 +20,7 @@ export default function UserPage() {
 
   return (
     <div style={{ height: '100vh', overflow: 'hidden', position: 'relative' }}>
-    <div style={{width: 250, top: '53%', position: 'absolute', left: '50%', transform: 'translate(-50%, -50%)'}}>
+    <div style={{width: 250, top: '58%', position: 'absolute', left: '50%', transform: 'translate(-50%, -50%)'}}>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -33,6 +33,34 @@ export default function UserPage() {
         />
         <button type="submit" style={{ width: '100%', color: 'white' }}>Join Game</button>
       </form>
+      <div style={{
+      position: 'absolute',
+      left: '-36%',
+      top: '-210%',
+      fontSize: '40px',
+      width: '500px',
+      transform: 'translateY(-10px)',
+    }}>
+      
+    <h1>Welcome to 
+      <span style= {{color: 'rgb(50, 38, 80)'}}> PokéBomb!</span>
+    </h1>
+    </div>
+    <div style={{
+      position: 'absolute',
+      left: '-44%',
+      top: '-120%',
+      fontSize: '22px',
+      width: '470px',
+      alignItems: 'center',
+      justifyContent: 'center',
+      textAlign: 'center',
+      transform: 'translateY(-10px)',
+    }}>
+      
+    <h1>Compete with your friends and challenge your Pokémon knowledge!</h1>
+    
+    </div>
     </div>
     <div>
     <img src={"/pokebomb_logo.png"} 
@@ -64,18 +92,18 @@ export default function UserPage() {
     }} 
     />
     </div>
-
+    
     <div>
     <img src={"/lunalaCosmog.png"} 
     style =
     {{  
-      filter: 'saturate(70%) blur(3px) brightness(80%)',
+      filter: 'saturate(70%) blur(4px) brightness(80%)',
       position: 'absolute', 
       width: '100vw',
       height: 'auto',
       
       left: '0%',
-      bottom: '-270px',
+      top: '-16%',
       zIndex: -1,
     }} 
     />
@@ -116,29 +144,28 @@ export default function UserPage() {
     <div style={{
       position: 'absolute',
       width: '100%',
-      height: '65px',
+      height: '55px',
       backgroundColor: 'rgba(23, 23, 23, 0.95)',
       boxShadow: '0 -2px 4px rgba(69, 69, 69, 0.5)',
-      bottom: '-2%',
+      bottom: '0%',
       left: '0%',
       zIndex: -1,
+
     }}>
       <div
       style = 
       {{
-        marginBottom: '3px',
-        bottom: '30%',
-        right: '1%',
+        bottom: '15%',
+        right: '10px',
         position: 'absolute',
         fontSize: '25px',
         color: 'rgb(65, 65, 65)',
+      
       }}
       >
         Created by richachan and junchaoo
-    </div> 
     </div>
-
-    
+    </div>
     </div>
     
   
