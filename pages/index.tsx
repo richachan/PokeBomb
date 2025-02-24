@@ -42,7 +42,20 @@ export default function UserPage() {
     }} 
     />
     </div>
-
+    <div>
+    <img src={"/spin.gif"} 
+    style =
+    {{ 
+      filter: 'saturate(50%)',
+      opacity: '0.25',
+      position: 'absolute', 
+      top: '-7px', 
+      right: '25px', 
+      maxWidth: '130px',
+      height: 'auto', 
+    }} 
+    />
+    </div>
     <div>
     <img src={"/homepage art.png"} 
     style =
@@ -103,7 +116,7 @@ export default function UserPage() {
         color: 'rgb(65, 65, 65)',
       }}
       >
-        Created by Richard Chan and Jun Chao Wu
+        Created by richachan and junchaoo
     </div>
     
     </div>
