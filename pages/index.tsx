@@ -114,7 +114,9 @@ export default function UserPage() {
 
     }}>
       <div
-      style = {{
+      style = 
+      {{
+        marginBottom: '3px',
         bottom: '30%',
         right: '1%',
         position: 'absolute',

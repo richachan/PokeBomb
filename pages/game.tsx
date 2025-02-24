@@ -50,6 +50,22 @@ export default function UserPage() {
     </div>
 
     <div>
+    <img src={"/spin.gif"} 
+    style =
+    {{ 
+      filter: 'saturate(50%)',
+      opacity: '0.25',
+      position: 'absolute', 
+      top: '-7px', 
+      right: '25px', 
+      maxWidth: '130px',
+      height: 'auto', 
+      zIndex: '10',
+    }} 
+    />
+    </div>
+
+    <div>
     <img src={"/homepage art.png"} 
     style =
     {{  
@@ -108,7 +124,9 @@ export default function UserPage() {
       zIndex: -1,
     }}>
       <div
-      style = {{
+      style = 
+      {{
+        marginBottom: '3px',
         bottom: '30%',
         right: '1%',
         position: 'absolute',
