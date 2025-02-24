@@ -178,7 +178,7 @@ function checkGame(io: Server, room: RoomState, roomID: string): boolean
     io.to(roomID).emit('message', { user: winnerName, text: " is the winner!" });
     io.to(roomID).emit('updateGlobalKey',''); //clear the global input field when game ends
     room.gameActive = false;
-    io.emit('gameStatus', { gameActive: room.gameActive });
+    io.to(roomID).emit('gameStatus', { gameActive: room.gameActive });
 
     return true;
   }
@@ -188,7 +188,7 @@ function checkGame(io: Server, room: RoomState, roomID: string): boolean
     room.userList.forEach((id) => { room.liveMap.set(id, 3); });
     room.currTurn = 0
     room.currLevel = 0;
-    io.emit('players', {
+    io.to(roomID).emit('players', {
       userMap: Object.fromEntries(room.userMap),
       currTurnL: room.currTurn,
       lives: Object.fromEntries(room.liveMap),
@@ -370,7 +370,7 @@ function chooseRandomGeneration(room: RoomState): string[]
           room.userMap.set(socket.id, username);
           room.liveMap.set(socket.id, 0);
           io.to(roomID).emit('message', { user: username, text: " has joined the game!" });
-          socket.emit('gameStatus', { gameActive: room.gameActive });
+          socket.to(roomID).emit('gameStatus', { gameActive: room.gameActive });
           io.to(roomID).emit('players', {
             userMap: Object.fromEntries(room.userMap),
             currTurn: room.currTurn,
