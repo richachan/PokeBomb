@@ -66,7 +66,7 @@ export default function UserPage() {
     </div>
 
     <div>
-    <img src={"/homepage art.png"} 
+    <img src={"/lunalaCosmog.png"} 
     style =
     {{  
       filter: 'saturate(70%) blur(3px) brightness(80%)',
