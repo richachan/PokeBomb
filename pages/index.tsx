@@ -98,7 +98,7 @@ export default function UserPage() {
     />
     </div>
     <div>
-    <img src={"/spin.gif"} 
+    <img src={"/pikachuSpin.gif"} 
     style =
     {{ 
       filter: 'saturate(50%)',

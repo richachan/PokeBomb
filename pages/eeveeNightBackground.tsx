@@ -110,7 +110,7 @@ export default function theme()
           this.x, this.y, 0,
           this.x, this.y, this.size
         );
-        gradient.addColorStop(0, 'rgb(255, 216, 162)');
+        gradient.addColorStop(0, 'rgb(252, 156, 23)');
         gradient.addColorStop(1, 'rgba(255, 221, 158, 0)');
         context.fillStyle = gradient;
         context.beginPath();
@@ -435,8 +435,8 @@ export default function theme()
     display: 'flex',
     flexDirection: 'column',
     backgroundColor: 'rgba(170, 170, 170, 0.08)',
-    border: '1px solid rgba(205, 205, 205, 0.1)',
     boxShadow : '0 0 5px 0.5px rgba(200, 200, 200, 0.2)',
+    border: '1px solid rgba(205, 205, 205, 0.1)',
     backdropFilter: 'blur(1.5px)'
   }}
 >
@@ -553,6 +553,8 @@ export default function theme()
   </div>
   </div>
   </div>
+
+  {/* Invite Friends Button */}
   <div 
     style = 
     {{
@@ -563,21 +565,34 @@ export default function theme()
       color: 'white',
     }}>
     <button
-           onClick={() => navigator.clipboard.writeText('https://pokebomb.onrender.com/game?roomID=' + roomID)}
-          style={{
-            width: '100px',
-            height: '32px',
-            fontSize: '15px',
-            color: 'white',
+          onClick={() => navigator.clipboard.writeText('https://pokebomb.onrender.com/game?roomID=' + roomID)}
+          style = 
+          {{
+            padding: '1px',
+            width: '115px',
+            height: '40px',
+            fontSize: '20px',
             cursor: 'pointer',
-            borderRadius: '7px',
-            backgroundColor: 'rgba(255, 255, 255, 0)',
+            borderRadius: '5px',
             backdropFilter: 'blur(1.5px)',
-        
+            color: '#f9e2c2',
+            fontWeight: 'bold',
+            letterSpacing: '0.5px',
+            backgroundColor: 'rgba(170, 170, 170, 0.08)',
+            boxShadow : '0 0 5px 0.5px rgba(200, 200, 200, 0.2)',
+            border: '1px solid rgba(205, 205, 205, 0.1)', 
+          }}
+    >
+        <i 
+          className = "fa-solid fa-link"
+          style = 
+          {{
+            marginRight: '7px',
           }}
         >
+        </i>
           Invite
-        </button>
+    </button>
   </div>
   </div>
   );  
