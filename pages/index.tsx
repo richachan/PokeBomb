@@ -97,20 +97,7 @@ export default function UserPage() {
     }} 
     />
     </div>
-    <div>
-    <img src={"/pikachuSpin.gif"} 
-    style =
-    {{ 
-      filter: 'saturate(50%)',
-      opacity: '0.25',
-      position: 'absolute', 
-      top: '-7px', 
-      right: '25px', 
-      maxWidth: '130px',
-      height: 'auto', 
-    }} 
-    />
-    </div>
+    
     <div>
     <img src={"/lunalaCosmog.png"} 
     style =

@@ -570,7 +570,7 @@ export default function theme()
       color: 'white',
     }}>
     <button
-          onClick={() => navigator.clipboard.writeText('https://pokebomb.onrender.com/game?roomID=' + roomID)}
+          onClick={() => navigator.clipboard.writeText('' + roomID)}
           style = 
           {{
             padding: '1px',

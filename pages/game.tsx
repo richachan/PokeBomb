@@ -78,23 +78,6 @@ export default function UserPage() {
     </div>
 
     <div>
-    <img src={"/wooperBounce.gif"} 
-    style =
-    {{ 
-      filter: 'saturate(100%)',
-      opacity: '0.25',
-      position: 'absolute', 
-      top: '3px', 
-      right: '10px', 
-      maxWidth: '78px',
-      height: 'auto', 
-      zIndex: '10',
-      transform: 'scale(-1, 1)'
-    }} 
-    />
-    </div>
-    
-    <div>
     <img src={"/lunalaCosmog.png"} 
     style =
     {{  

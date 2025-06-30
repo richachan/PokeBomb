@@ -20,7 +20,7 @@ export default function Room() {
 
   return (
     <div>
-      {backgroundNumber === 1 ? <EeveeNightBackground /> : <GlaceonWinterBackground />}
+      {backgroundNumber === 1 ? <GlaceonWinterBackground /> : <GlaceonWinterBackground />}
     </div>
   );
 }
